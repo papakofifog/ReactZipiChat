@@ -1,0 +1,42 @@
+.side-navItem{
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    border-radius: 10%;
+    gap: 10px;
+    min-width: 150px;
+    max-width:300px;
+    color: #464647;
+    
+}
+
+.side-navItem > div{
+    justify-self: flex-start;
+    align-self: center;
+    flex: 0.2 ;
+}
+
+.side-navItem > p{
+    justify-self: flex-start;
+    align-self: center;
+    flex: 2 ;
+}
+
+
+
+.side-navItem > p+p{
+    justify-self: flex-start;
+    align-self: center;
+    flex: 1 ;
+}
+
+.side-navItemText{
+    font-size: 1rem;
+}
+
+
+.side-navItem:hover{
+    background-color: #fff;
+    cursor: pointer;
+    color: #1A5F7A;
+}

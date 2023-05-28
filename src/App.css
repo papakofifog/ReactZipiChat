@@ -1,0 +1,116 @@
+.hide{
+  display: none;
+}
+
+.images{
+  width: 40px;
+  height: 45px;
+  border-radius: 50%;
+  border: 1px solid black;
+  
+}
+
+.details{
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.actionCard{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  gap: 20px;
+  padding: 10px;
+  margin: 10px;
+  
+  border-radius: 10px;
+}
+
+.actionModal{
+  
+  background-color: white;
+  width: 353px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.cancel{
+  background-color: rgba(255, 0, 0, 0.566);
+  padding: 15px;
+  border-radius: 10px;
+  border: none;
+  color: #ccc;
+
+}
+
+.cancel:hover{
+  background-color: red;
+  
+}
+
+.action{
+  background-color: rgba(0, 128, 0, 0.566);
+  padding: 15px;
+  border-radius: 10px;
+  border: none;
+  color: #ccc;
+
+}
+
+.action:hover{
+  background-color: green;
+}
+
+.filePreview{
+  width: 30rem;
+  height: 30rem;
+}
+
+
+.chatImage{
+  width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.uploadState{
+  display: flex;
+  flex-direction: row;
+}
+
+.uploadPreview{
+  flex:3;
+  
+}
+
+.uploadPreview img{
+  width: 15rem;
+}
+
+.uploadPreview a{
+ width: 15rem;
+}
+
+.uploadPreview video{
+  width: 15rem;
+}
+
+
+.uploadPreviewCloseButtonContainer{
+  flex: 1;
+}
+
+.uploadPreviewCloseButton{
+  width: 20px;
+  height: 20px;
+}
+

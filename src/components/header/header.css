@@ -1,0 +1,84 @@
+.header{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 1.0rem;
+    background-color: #1A5F7A;
+}
+
+.app-brand{
+    color: #000;
+    flex: 1;
+    font-size: 1.3rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+.brand{
+    color: #ccc;
+}
+
+.chatAction-section{
+    flex: 3;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.simpleActions-section{
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    
+}
+
+.light-mode{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    width: 60px;
+    border-radius: 40%;
+    height: fit-content;
+    border: 1px outset #5850D4;
+    border-right: none ;
+    cursor: pointer;
+}
+
+.toggle-circle{
+    border: 1px solid none;
+    height: 30px;
+    border-radius: 50%;
+    width: 30px;
+    position: sticky;
+    background-color: #3E54AC;
+    
+}
+
+.profile{
+    flex: 2;
+    display: flex;
+    flex-direction: row;
+    height: 5rem;
+    gap: 1.87rem;
+    align-items: center;
+}
+
+.profile-text{
+    font-size: 16px;
+    margin: 10px 0 0 0;
+    color: #464647;
+}
+
+.profile>img{
+    flex: 0.5;
+    height: auto;
+}
+
+
+
+

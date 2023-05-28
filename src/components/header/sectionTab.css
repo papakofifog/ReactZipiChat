@@ -1,0 +1,18 @@
+.section-tab{
+    display: flex;
+    align-items: center;
+    gap:5px;
+    color: #ccc;
+}
+
+.section-tab:hover{
+    border-top: 4px inset #002B5B ;
+    cursor: pointer;
+    color: #002B5B;
+}
+
+.section-name{
+    font-size: 1.0rem;
+    color: inherit;
+}
+

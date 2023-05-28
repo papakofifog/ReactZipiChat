@@ -1,0 +1,31 @@
+.contact-message{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+    flex: 1;
+    margin:20px
+    
+}
+
+.user-details{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+
+}
+
+.unread-messages{
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+    border-radius: 50%;
+    height: 35px;
+    width: 35px;
+    z-index: 50px;
+}
+
+.date{
+    flex:1;
+}
