@@ -49,6 +49,7 @@ function App() {
   },response)
   
 
+<<<<<<< HEAD
 
   return (
     <div className='App'>
@@ -57,6 +58,22 @@ function App() {
         <Main activeUser={response.userId} count={count} /> 
       </SocketContext.Provider>
       
+=======
+  /*return (
+    <div className="App">
+      <Header fullName={response.userFullname} number={response.number} />
+      <Main activeUser={response.userId}/>  
+    </div>
+  )*/
+
+  return (
+    <div className='App'>
+      <ConnectionState isConnected={ isConnected} />
+      <Events events={ fooEvent } />
+      <ConnectionManager />
+      <Header fullName={response.userFullname} number={response.number} />
+      <Main activeUser={response.userId}/> 
+>>>>>>> e3d7715 (socket.io has been added to the project, I am yet to configure it well so that it works as expected)
     </div>
      
   )
