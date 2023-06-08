@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Image from "../image";
 import LabelText from "../label";
@@ -12,9 +12,38 @@ import {FiPaperclip, FiSend, FiSmile, FiMicOff, FiMic } from "react-icons/fi"
 import Message from "./message";
 import {showFileAsToast } from '../../utility/showToast'
 import DisplayUploadedFile from "./UploadedFile";
+import { socket, emitEvent, isSocketConneted, listenToSocket } from "../../socket";
+
 
 
 export default function Chat(props){
+    const [isConnected, setIsConnected] = useState(isSocketConneted);
+     const[socketEvent, setSocketEvents] = useState([]);
+
+    useEffect(()=>{
+    function onConnect(){
+        console.log(isConnected);
+        setIsConnected(true);
+    }
+
+    function onDisconnect(){
+      setIsConnected(false);
+    }
+
+    function onReceivedMessage(value){
+      setSocketEvents(previous => [...previous,value]);
+    }
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('receiveMessage',onReceivedMessage);
+  })
+
+  console.log(isConnected);
+
+
+
+
 
     let [ModalDetails, showModal ] = useState({
         show: false,
@@ -209,6 +238,8 @@ export default function Chat(props){
              senderId:props.activeUser,
             recipientId: props.relation.receiver}
         await SendData("http://localhost:3000/convo/addmessage",messageToSend);
+        //emitEvent("sendMessage",messageToSend);
+        socket.emit('sendMessage', { message: messageToSend });
         updateMessage({
             messageString:"",
             fileSent: {

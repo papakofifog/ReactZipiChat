@@ -27,7 +27,7 @@ export default function Main(props){
     })
 
     let [relationship, setRelationship] = useState({
-        sender:'',
+        sender:props.activeUser,
         receiver:''
     })
 
@@ -41,14 +41,13 @@ export default function Main(props){
 
         //console.log({sender:activeUserName, receiver:friendUsername})
         
-        setRelationship((prevRelationship,)=> {
-            return {...prevRelationship,
-            sender:props.activeUser, receiver:friendUsername}
-        })
+    
+        setRelationship({sender:props.activeUser, receiver:friendUsername})
+       
 
         
 
-        await getAllConversations(relationship)
+        await getAllConversations({sender:props.activeUser, receiver:friendUsername})
     }
 
     async function getAllConversations(data){

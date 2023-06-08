@@ -5,8 +5,19 @@ import '@fontsource/roboto/300.css';
 import { fetchData, fetchUserDataLocally} from './utility/handleAxiousRequest';
 import { useEffect, useState } from 'react';
 
+import { connectToSocket, emitEvent, socket } from './socket';
+
+
+
+
+
+const SERVER= "http://localhost:3000"
 
 function App() {
+  
+
+
+
   const [response, setResponse] = useState({
     success: false,
     userFullname:'',
@@ -27,18 +38,63 @@ function App() {
       }
     })
   }
+  function ConnectWithChatServer(){
+    return emitEvent('setUserId', response.userId)
+
+  }
+
+  
+    
+    // Connect to the server
+    socket.on('connect', () => {
+      console.log('Connected to the chat server');
+    });
+    
+    socket.on('receiveMessage', (message) => {
+      console.log('Received a new message:', message);
+    });
+
+    socket.emit('setUserId', response.userId)
+
+      // Error handling
+    socket.on('error', (error) => {
+      console.error('Socket error:', error);
+    });
+
+    // Clean up the socket connection
+    socket.on('disconnect', () => {
+      console.log('Disconnected from the chat server');
+    });
+    
+    
+ 
   
 
 
   useEffect(()=>{
     getActiveUser();
+    return () => {
+      socket.disconnect();
+    };
+    
+    //connectToSocket(response.userId)
+    //ConnectWithChatServer();
   },[])
+  
 
-  return (
+  /*return (
     <div className="App">
       <Header fullName={response.userFullname} number={response.number} />
       <Main activeUser={response.userId}/>   
     </div>
+  )*/
+
+  return (
+    <div className='App'>
+      <Header fullName={response.userFullname} number={response.number} />
+      <Main activeUser={response.userId}/> 
+    </div>
+     
   )
 }
 
