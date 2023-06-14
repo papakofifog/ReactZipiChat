@@ -2,7 +2,9 @@ main{
     display: flex;
     flex-direction: row;
     background-color: #d4d7ea;
-    height: 80vh;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
 }
 
 .navigation{
@@ -394,11 +396,12 @@ div[type=button]:hover{
 
 .fullwidth{
     flex-grow: 1;
+    font-size: 0.9rem;
 }
 
 #input { 
     border: none; 
-    padding: 0 1rem; 
+    padding: 0 0.1rem; 
     flex-grow: 1;
     border-radius: 0.32rem; 
     width: 100%;
@@ -417,7 +420,7 @@ div[type=button]:hover{
 .message-spicer{
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.1rem;
     align-items: start;
     flex-grow: 1;
     width: 100%;

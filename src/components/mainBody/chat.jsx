@@ -22,7 +22,7 @@ export default function Chat(props){
 
     useEffect(()=>{
     function onConnect(){
-        console.log(isConnected);
+        //console.log(isConnected);
         setIsConnected(true);
     }
 
@@ -39,7 +39,7 @@ export default function Chat(props){
     socket.on('receiveMessage',onReceivedMessage);
   })
 
-  console.log(isConnected);
+ // console.log(isConnected);
 
 
 
@@ -57,10 +57,11 @@ export default function Chat(props){
         name:'',
         size:'',
         type:'',
-        url:''
+        url:'',
+        file: null
     })
 
-    let [message, updateMessage]= useState({
+    let [messageToRead, updateMessage]= useState({
         messageString:"",
         fileSent: {
             url: "",
@@ -74,68 +75,48 @@ export default function Chat(props){
     let [content, manageContent] = useState(null);
 
     async function uploadFunctionCloudinary(value){
-        
-        let formData= new FormData();
-        formData.append('file', value);
-        let uploadedFileData= await sendFormData("http://localhost:3000/users/upload", formData);
-        let CloudinaryFileData=uploadedFileData.data;
-        if(CloudinaryFileData.success){
-            let { url, original_filename, fileType} = CloudinaryFileData.data;
-            setUploadedFile((prevMessage)=>{
-                return {...prevMessage,
-                    fileSent :{
-                        url:url,
-                        name:original_filename,
-                        type:fileType
-                    }
-                }
-            })
-            
-             
-        } 
-        
-        
+
+        try{
+            let formData= new FormData();
+            formData.append('file', value);
+            let uploadedFileData= await sendFormData("http://localhost:3000/users/upload", formData);
+            let CloudinaryFileData=uploadedFileData.data;
+            if(CloudinaryFileData.success){
+                let { url, original_filename, fileType} = CloudinaryFileData.data;
+                //console.log()
+                return {url, original_filename, fileType}
     
+            } 
+            return null;
+        }catch(e){
+            console.error(e)
+        }
+        
+        
     }
+
+    
+
+    //console.log(fileToUpload)
 
 
     function handleInputFileChangeEvent(event){
         let { files }= event.target;
+
+        //console.log(files);
         
-        //await uploadFunctionCloudinary(files[0]);
+        
 
-        if(files[0]){
-            const reader = new FileReader();
-            //set a file reader onload event
-            
-
-            reader.onload = function (e){
-                console.log(e.target.result)
-                setFileToUpload(()=>{
-                    return {name:files[0].name, size: files[0].size, type: files[0].type,url: e.target.result}
-                });
-            }
-
-            reader.readAsDataURL(files[0]);
-            
-        }
-
-
-
-
-       
-       
+        setFileToUpload((prevUploadedFile)=> {
+            return { ...prevUploadedFile,name:files[0].name, size: files[0].size, type: files[0].type,url: URL.createObjectURL(files[0]), file:files[0]}
+        });
+        
+        
     }
 
 
 
-    function ManageContent(context){
-
-        manageContent((prevContent)=>{
-            return {... prevContent, }
-        })
-
-    }
+    
 
 
 
@@ -177,7 +158,7 @@ export default function Chat(props){
 
 
             default:
-                console.log("we are here")
+                //console.log("we are here")
                 break;
                 
             
@@ -197,7 +178,7 @@ export default function Chat(props){
         }
             )
 
-        console.log(message);
+        //console.log(message);
         let curActionElement={title:'', content:''}
         showModal((prevModalDetails)=>{
                 return {... prevModalDetails, show: false, ... curActionElement}      
@@ -231,15 +212,38 @@ export default function Chat(props){
         
     }
 
-    console.log(message)
+   
 
     async function handleSendMessage(){
+
+        let uploadedFile;
+        let message;
+
+        if(fileToUpload.file){
+            let data=await uploadFunctionCloudinary(fileToUpload.file);
+
+            uploadedFile={
+                url: data.url,
+                type:data.fileType,
+                name:data.original_filename
+            }
+
+            message= {
+                messageString: messageToRead.messageString,
+                fileSent: uploadedFile
+            }
+        }
+        message= messageToRead;
         let messageToSend= {message,
              senderId:props.activeUser,
             recipientId: props.relation.receiver}
+
+
         await SendData("http://localhost:3000/convo/addmessage",messageToSend);
         //emitEvent("sendMessage",messageToSend);
-        socket.emit('sendMessage', { message: messageToSend });
+        //socket.emit('sendMessage', { message: messageToSend });
+
+        //console.log(message)
         updateMessage({
             messageString:"",
             fileSent: {
@@ -249,25 +253,42 @@ export default function Chat(props){
             }
         });
 
+        setFileToUpload({
+            name:'',
+            size:'',
+            type:'',
+            url:'',
+            file: null
+        })
+
         props.update(true);
 
     }
    
 
-    let messagesList= props.conversations.data.map((message,index)=>{
-       return message.senderId == props.activeUser ?<Message 
+    let messagesList= props.conversations.data.map((messageloaded,index)=>{
+       return messageloaded.senderId == props.activeUser ?<Message 
        key={index}
        class="sender"
-       message={message.message}
+       message={messageloaded.message}
        />:<Message 
        key={index}
        class="receiver"
-       message={message.message}
+       message={messageloaded.message}
        />
        
     })
 
-    
+    function handleCancelUpload(event){
+        setFileToUpload({
+            url: "",
+            type:"",
+            name:"",
+            file:null
+        })
+    }
+
+    //console.log(fileToUpload)
     return(
         <div className="chats-view">
                     <div className="chat-profile">
@@ -282,23 +303,25 @@ export default function Chat(props){
 
                     <div id="form" class="">
                         <div class="message-spicer">
-                            <input 
+                            <textarea 
+                            rows={3}
                             className="fullwidth" 
                             id="input" 
                             autocomplete="off"
                             onChange={handleChatMessageChange} 
-                            value={message.messageString}
+                            value={messageToRead.messageString}
                             />
                             <div className="displayFile">
                                 
-                                <DisplayUploadedFile fileType={fileToUpload.type}  fileName={fileToUpload.name} fileUrl={fileToUpload.url}/>
+                                
+                                <DisplayUploadedFile fileType={fileToUpload.type}  fileName={fileToUpload.name} fileUrl={fileToUpload.url} close={true} cancelUplaod={handleCancelUpload}/>
 
                             </div>
                             
-                            <div class="actions flex ">
-                                <div  class="m-attachments">
+                            <div className="actions flex ">
+                                <div  className="m-attachments">
                                     <CustomButton 
-                                    class="message-auxilliaries" 
+                                    className="message-auxilliaries" 
                                     id="addEmoji" 
                                     icon={<Icon icon={<FiSmile className="icon gray" /> } />} 
                                     click={handleChatButtonClick}
