@@ -37,7 +37,7 @@ export default function DisplayUploadedFile(props){
             {fileloaded && <div className="fileLoadingOverlay"> <CircularStatic emitProgress={useProgress} />   </div>}
                 {chosenCode}</div>
              <div className="uploadPreviewCloseButtonContainer">
-                { props.close && <button className="uploadPreviewCloseButton" onClick={(event)=>props.cancelUplaod(event)}
+                { props.close && props.fileUrl && <button className="uploadPreviewCloseButton" onClick={(event)=>props.cancelUplaod(event)}
                     ><span><CloseIcon  /></span></button>}
             </div>
             

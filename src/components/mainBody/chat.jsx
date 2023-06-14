@@ -232,8 +232,10 @@ export default function Chat(props){
                 messageString: messageToRead.messageString,
                 fileSent: uploadedFile
             }
+        }else{
+            message= messageToRead;
         }
-        message= messageToRead;
+        
         let messageToSend= {message,
              senderId:props.activeUser,
             recipientId: props.relation.receiver}
