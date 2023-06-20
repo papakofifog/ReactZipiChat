@@ -13,6 +13,8 @@ import Message from "./message";
 import {showFileAsToast } from '../../utility/showToast'
 import DisplayUploadedFile from "./UploadedFile";
 import { socket, emitEvent, isSocketConneted, listenToSocket } from "../../socket";
+import { RecordMedia } from "./recordAudio/audioRecord";
+import convertBlobUrlToFile from "../../utility/handlingFileConversion";
 
 
 
@@ -114,14 +116,19 @@ export default function Chat(props){
         
     }
 
+    async function handleUploadAudioFile(fileUrl){
+        let file= await convertBlobUrlToFile(fileUrl);
 
+        if(file){
+            setFileToUpload({name:"recordedAudio", size: file.size, type: "audio" ,url: fileUrl, file:file});
+            handleCloseEvent();
+        }
+        
 
-    
+    }
 
+    console.log(fileToUpload)
 
-
-
-    
 
     function handleChatButtonClick(id) {
         
@@ -137,24 +144,20 @@ export default function Chat(props){
 
             case "attatchFile":
                 handleInputFileChangeEvent()
-                
                 return;
                 
 
             case "record-audio":
                 curActionElement= {
                     title:"Record and Audio",
-                    content:<RecordAudio />,
-                    action:"Stop"
+                    content:<RecordMedia recordType={"audio"} uploadAudioFile={handleUploadAudioFile}  />,
+                    action: ""
                 }
                 break; 
 
             case "sendMessage":
                 handleSendMessage();
                 return;
-
-
-            
 
 
             default:
@@ -176,9 +179,8 @@ export default function Chat(props){
             return {...prevMessage, 
                 messageString: prevMessage.messageString+emoji}
         }
-            )
+        )
 
-        //console.log(message);
         let curActionElement={title:'', content:''}
         showModal((prevModalDetails)=>{
                 return {... prevModalDetails, show: false, ... curActionElement}      
@@ -212,16 +214,20 @@ export default function Chat(props){
         
     }
 
-   
+   console.log(messageToRead)
 
     async function handleSendMessage(){
 
         let uploadedFile;
         let message;
 
+        
+
         if(fileToUpload.file){
             let data=await uploadFunctionCloudinary(fileToUpload.file);
 
+            console.log("here we go")
+            
             uploadedFile={
                 url: data.url,
                 type:data.fileType,
@@ -234,6 +240,7 @@ export default function Chat(props){
             }
         }else{
             message= messageToRead;
+            console.log("hello, we are here")
         }
         
         let messageToSend= {message,

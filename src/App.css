@@ -43,30 +43,38 @@
 }
 
 .cancel{
-  background-color: rgba(255, 0, 0, 0.566);
-  padding: 15px;
-  border-radius: 10px;
-  border: none;
-  color: #ccc;
+  padding: 0.32rem;
+  
+
 
 }
 
 .cancel:hover{
-  background-color: red;
+  color: red;
   
 }
 
 .action{
-  background-color: rgba(0, 128, 0, 0.566);
+  background-color: rgba(128, 0, 4, 0.678);
   padding: 15px;
   border-radius: 10px;
   border: none;
-  color: #ccc;
+  color: #fff;
 
 }
 
 .action:hover{
   background-color: green;
+}
+
+.audioButtons{
+  display: flex;
+  gap: 2.5rem;
+  justify-content: center;
+}
+
+.buttonDisable{
+  
 }
 
 .filePreview{
@@ -135,4 +143,46 @@
   align-items: center;
   align-self: self-start;
 }
+
+.record{
+  font-size: 10rem;
+  align-self: center;
+  padding: 0.6rem;
+}
+
+.recording {
+  font-size: 10rem;
+  border-radius: 50%;
+  animation-name: microPhoneRecording;
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  align-self: center;
+  padding: 0.6rem;
+}
+
+@keyframes microPhoneRecording {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.recordMedia{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3rem;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+}
+
 

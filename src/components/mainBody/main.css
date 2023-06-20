@@ -373,6 +373,7 @@ div[type=button]:hover{
     color: black;
     margin: 15px;
     padding: 10px;
+    
 }
 
 .sender > div{
@@ -383,6 +384,10 @@ div[type=button]:hover{
     padding: 10px;
     max-width: 15rem;
     border-radius: 10px;
+}
+
+h4{
+    max-width: 10rem;
 }
 
 .sideNodge{

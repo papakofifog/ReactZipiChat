@@ -19,7 +19,10 @@ export default function DisplayUploadedFile(props){
             chosenCode= <video controls>
                     <source src={props.fileUrl} type="video/mp4" />
                 </video>
-        }else{
+        }else if (props.fileType==="audio" || props.fileType==="audio/wav"){
+            chosenCode= <audio src={props.fileUrl} controls /> 
+        }
+        else{
             chosenCode= <img src={props.fileUrl} alt={props.fileName} />
         }
 

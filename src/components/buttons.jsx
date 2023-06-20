@@ -12,7 +12,7 @@ export default function CustomButton(props){
             }
          disabled={props.isdisabled}
         >
-            {content}
+            {content || props.childComponent}
         </button>
     );
 }
