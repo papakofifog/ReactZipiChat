@@ -7,7 +7,9 @@ export default function CustomButton(props){
         <button
          className={props.style}
          onClick={()=>{
-            props.click(props.id)
+            ///console.log(props.id)
+            ///console.log(props.click);
+            props.id?props.click(props.id):props.click();
          }
             }
          disabled={props.isdisabled}

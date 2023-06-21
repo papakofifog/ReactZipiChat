@@ -13,8 +13,13 @@ import ActionCards from "../actionCards";
 
 export default function Header(props){
 
-    let [response, setResponse]= useState({
+    let [nonFriendsResponse, setnonFriendsResponse]= useState({
         success:false,
+        data:[]
+    })
+
+    let [friendRequestResponse, updateFriendRequestResponse]= useState({
+        success: false,
         data:[]
     })
 
@@ -27,17 +32,31 @@ export default function Header(props){
 
     let [nonFriends, addNonFriends] = useState([])
 
-    let nonFriendElements= response.data.map((nonFriend,index)=>{
+    let [friendRequest, updateFriendRequest]= useState([])
+
+    let nonFriendElements= nonFriendsResponse.data.map((nonFriend,index)=>{
         return  <ActionCards 
         key={index}  
         firstname={nonFriend.firstname} 
         number="+233552661939"
         buttonsName="Send Request"
+        close={handleCloseEvent}
         />
         
     });
 
-    console.log(nonFriendElements)
+    let userRequestElements= friendRequestResponse.data.map((friendRequest, index)=>{
+        return <ActionCards 
+        key={index}  
+        firstname={friendRequest.firstname} 
+        number="+233552661939"
+        buttonsName="Accept Request"
+        friendId={friendRequest.username}
+        close={handleCloseEvent}
+        />
+    })
+
+    //console.log(nonFriendElements)
     
 
 
@@ -49,18 +68,20 @@ export default function Header(props){
 
         console.log(nonFriends)
 
-        addNonFriends(nonFriendElements);
+       
+
         let curDetails= ""
         switch (id) {
             case "contacts":
                 curDetails={   title:"Send friend Request",
-                    content: nonFriends
+                    content: nonFriendElements
                 } 
                 break;
             
             case "requests":
                 curDetails={ title:"Accept Requests",
-                content:[]}
+                content:userRequestElements
+            }
                 break;
         
             default:
@@ -69,12 +90,11 @@ export default function Header(props){
                 break;
         }
 
+        
 
         
         
-        showModal((prevModalDetails)=>{
-          return {... prevModalDetails, show: true, ... curDetails}      
-        });
+        showModal({show: true,...curDetails});
         
     }
 
@@ -88,19 +108,21 @@ export default function Header(props){
 
     async function getAllNonFriends(){
         let Response = await fetchData('http://localhost:3000/friend/allnonFriends');
-        setResponse((prevResponse)=>{
-            return {
-                ...prevResponse,
-                success: Response.success,
-                data: Response.data
-            }
+        setnonFriendsResponse((prevNonFriends)=>{
+            return {...prevNonFriends,success: Response.success,data: Response.data}
         })
         
+    }
+
+    async function getAllFriendRequest(){
+        let Response = await fetchData('http://localhost:3000/friend/getAllFriendRequest');
+        updateFriendRequestResponse({success: Response.success,data: Response.data})
     }
 
 
     useEffect(()=>{
         getAllNonFriends();
+        getAllFriendRequest();
     },[])
 
     let modal=ModalDetails.show ?
