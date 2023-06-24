@@ -2,22 +2,42 @@ import React, { useState } from "react";
 import CustomButton from "./buttons";
 import Contact from "./mainBody/contacts";
 import { SendData } from "../utility/handleAxiousRequest";
+import { showToast } from "../utility/showToast";
 
 export default function ActionCards(props){
 
-    let [addFriendResponse, updateAddFriendResponse]= useState(null)
+    let [AddFriendResponse, updateAddFriendResponse]= useState(null);
+    let [acceptFriendResponse, updateAcceptFriendRequest]= useState(null);
 
-    async function sendAddfriendRequest(userId){
 
-        let receivedData=await SendData("http://localhost:3000/friend/addFriend", {"friend":userId});
-        updateAddFriendResponse(receivedData.data);
+    async function handleAddfriend(){
 
-        if(addFriendResponse.status){
-            showToast(addFriendResponse.message,"green", true)
+        let receivedData=await SendData("http://localhost:3000/friend/addFriend", {"friend":props.friendId});
+        updateAddFriendResponse(receivedData);
+        console.log(AddFriendResponse);
+        if(AddFriendResponse.success){
+            showToast(AddFriendResponse.message,"green", true)
+            props.close();
+            
+        }else{
+            showToast(AddFriendResponse.message,"red", false)
+            
+        }
+        return;
+    }
+
+    async function handleSendRequest(){
+        let friend= {"friend":props.friendId};
+        console.log(friend)
+        let receivedData= await SendData("http://localhost:3000/friend/sendFriendRequest", friend );
+        updateAcceptFriendRequest(receivedData.data);
+        console.log(acceptFriendResponse)
+        if(acceptFriendResponse.success){
+            showToast(acceptFriendResponse.message,"green", true)
             props.close();
             return 
         }else{
-            showToast(addFriendResponse.message,"red", false)
+            showToast(acceptFriendResponse.message,"red", false)
             return
         }
     }
@@ -28,7 +48,10 @@ export default function ActionCards(props){
         switch(props.buttonsName){
             case "Accept Request":
                 console.log("hello we are here baby")
-                await sendAddfriendRequest(props.friendId);
+                await handleAddfriend();
+                break;
+            case "Send Request":
+                await handleSendRequest();
                 break;
         }
 

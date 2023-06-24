@@ -66,6 +66,7 @@
     height: 5rem;
     gap: 1.87rem;
     align-items: center;
+    cursor: pointer;
 }
 
 .profile-text{

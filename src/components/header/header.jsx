@@ -7,8 +7,10 @@ import LabelText from "../label";
 import ZipiLogo from "../../assets/zipiLogo/1024.png";
 import Modal from "../modal/modal";
 import { MdPersonPin, MdSettings, MdShieldMoon, MdCall, MdPersonAdd } from "react-icons/md"
-import { fetchData } from "../../utility/handleAxiousRequest";
+import { SendData, fetchData } from "../../utility/handleAxiousRequest";
 import ActionCards from "../actionCards";
+import CustomButton from "../buttons";
+import { Logout } from "@mui/icons-material";
 
 
 export default function Header(props){
@@ -40,6 +42,7 @@ export default function Header(props){
         firstname={nonFriend.firstname} 
         number="+233552661939"
         buttonsName="Send Request"
+        friendId={nonFriend.username}
         close={handleCloseEvent}
         />
         
@@ -51,8 +54,8 @@ export default function Header(props){
         firstname={friendRequest.firstname} 
         number="+233552661939"
         buttonsName="Accept Request"
-        friendId={friendRequest.username}
         close={handleCloseEvent}
+        friendId={friendRequest.username}
         />
     })
 
@@ -135,6 +138,18 @@ export default function Header(props){
     let DateNow= new Date();
 
     let greeting= DateNow.getHours()<12?"morning": DateNow.getHours()>12 && DateNow.getHours()< 18 ? "Afternoon": "Evening";
+    let [isListDisplayed, setdisplayListStatus]= useState(false);
+
+
+    function handleDropDownDisplay(){
+        setdisplayListStatus((prevStatus)=> !prevStatus)
+    }
+
+    async function handleLogOut(){
+        await SendData(`${import.meta.env.BASEURL}/api/logout`);
+        window.sessionStorage.setItem('access-token', '')
+        setTimeout(()=>{location.href='/'},1000)
+    }
 
     return (
 
@@ -190,14 +205,24 @@ export default function Header(props){
 
             </div>
 
-            <div className="profile">
+            <div className="profile" onClick={handleDropDownDisplay} >
                 <div className="details">
                 <LabelText class={"profile-text"} text={"Good "+greeting} />
                 <LabelText class={"profile-text"} text={props.fullName} />
                 {props.number && <LabelText class={"profile-text"} text={"+233552661939"} />}
                 </div>
                 <Image src={"src"} />
+
+                <div className={isListDisplayed?"dropDownList":"hideDropdownlist"}>
+                    <div className="options" role="button" onClick={handleLogOut}>
+                            <Logout className="logOut" />
+                            Log Out
+                    </div>
+                </div>
+                
             </div>
+            
+            
 
         </div>
         

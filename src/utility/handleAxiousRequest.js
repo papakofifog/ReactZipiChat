@@ -34,7 +34,7 @@ async function fetchData(baseurl) {
     }
 }
 
-async function SendData(baseurl,Body,) {
+async function SendData(baseurl,Body) {
     try{
         Headers.headers['Content-Type']='application/json';
         let results= await axios.post(baseurl, Body, Headers );
