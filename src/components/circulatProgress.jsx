@@ -40,7 +40,7 @@ CircularProgressWithLabel.propTypes = {
 export default function CircularStatic(props) {
   const [progress, setProgress] = React.useState(10);
 
-  if (progress === 100){
+  if (progress === 110){
     props.emitProgress(false);
   }
 

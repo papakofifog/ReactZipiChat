@@ -21,7 +21,7 @@ function FileUpload(props){
         <button>
             <div className={props.class}>
                 
-                <label htmlFor="getFile1" class=""> {props.icon }</label>
+                <label htmlFor="getFile1"> {props.icon }</label>
                 <input 
                 type="file" 
                 id="getFile1" 

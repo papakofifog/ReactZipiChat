@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CustomButton from "./buttons";
 import Contact from "./mainBody/contacts";
 import { SendData } from "../utility/handleAxiousRequest";
@@ -13,8 +13,10 @@ export default function ActionCards(props){
     async function handleAddfriend(){
 
         let receivedData=await SendData("http://localhost:3000/friend/addFriend", {"friend":props.friendId});
-        updateAddFriendResponse(receivedData);
-        console.log(AddFriendResponse);
+        updateAddFriendResponse(()=>{
+           return receivedData.data
+        });
+        console.log(receivedData);
         if(AddFriendResponse.success){
             showToast(AddFriendResponse.message,"green", true)
             props.close();
@@ -30,16 +32,19 @@ export default function ActionCards(props){
         let friend= {"friend":props.friendId};
         console.log(friend)
         let receivedData= await SendData("http://localhost:3000/friend/sendFriendRequest", friend );
-        updateAcceptFriendRequest(receivedData.data);
-        console.log(acceptFriendResponse)
+        updateAcceptFriendRequest(()=>{
+            return receivedData.data
+        });
+        
         if(acceptFriendResponse.success){
             showToast(acceptFriendResponse.message,"green", true)
             props.close();
-            return 
+            
         }else{
             showToast(acceptFriendResponse.message,"red", false)
-            return
+            
         }
+        return
     }
 
 
@@ -56,6 +61,8 @@ export default function ActionCards(props){
         }
 
     }
+
+   
 
     //console.log(props.buttonName)
     return (

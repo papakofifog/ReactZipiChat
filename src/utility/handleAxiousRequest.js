@@ -41,7 +41,8 @@ async function SendData(baseurl,Body) {
         JWTExpiredRedirect(results.data)
         return results;
     }catch(e){
-        console.error(e)
+        console.error(e.response.data)
+        return e.response;
     }
     
       

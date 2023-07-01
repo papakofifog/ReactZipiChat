@@ -310,13 +310,13 @@ export default function Chat(props){
                     </ul>
                     {modal}
 
-                    <div id="form" class="">
-                        <div class="message-spicer">
+                    <div id="form" className="">
+                        <div className="message-spicer">
                             <textarea 
                             rows={3}
                             className="fullwidth" 
                             id="input" 
-                            autocomplete="off"
+                            autoComplete="off"
                             onChange={handleChatMessageChange} 
                             value={messageToRead.messageString}
                             />
@@ -350,7 +350,7 @@ export default function Chat(props){
                                     click={handleChatButtonClick}
                                     />
                                 </div>
-                                <div class="m-send">
+                                <div className="m-send">
                                     <CustomButton 
                                     id="sendMessage" 
                                     class="message-auxilliaries" 

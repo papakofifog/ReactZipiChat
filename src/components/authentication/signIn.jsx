@@ -45,6 +45,8 @@ export default function SignIn() {
 
   const [issubmitting, setSubmission] = useState(false);
 
+  const [isdisabled, setisdisabled] = useState(true);
+
   const [receivedData, setRecievedData] = useState(null)
 
 
@@ -54,20 +56,27 @@ export default function SignIn() {
     setFormData((prevFormData)=>{
       return name==="rememberMe"?  {...prevFormData, [name]: !prevFormData.rememberMe} : {...prevFormData, [name]: value};
     })
+    validateInput("email", formdata.email );
+    validateInput("password",formdata.password)
+  }
+
+  function resetForm(){
+    setFormData({
+      email: "",
+      password: "",
+      rememberMe: false
+    });
   }
 
   
 
     const handleSubmit = (event) => {
       event.preventDefault();
-      setSubmission(true)
-
-      
+      setSubmission((prevValue)=> !prevValue)
     };
 
     async function PostData() {
       const response = await SendData('http://localhost:3000/api/login', {email: formdata.email, password:formdata.password} );
-      //const response= await sendAndVerifyUserDataLocaly({email: formdata.email, password:formdata.password});
       const json = response;
       
       setRecievedData(json.data);
@@ -81,9 +90,36 @@ export default function SignIn() {
         setTimeout(()=>{location.href='/home'},4000)
         
       }else{
-        showToast(receivedData.message,"red", false)
+        showToast(receivedData.message,"red", false);
         
+        setSubmission((prevValue)=> !prevValue);
+
+        resetForm();
         
+      }
+    }
+
+    function inputNotEmpty(inputState){
+      return inputState.trim().length===0?false:true;
+    }
+
+    function getRegexPerInput(input){
+      switch(input){
+        case "email":
+          return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+          
+        case "password":
+          return /\W*/;
+      }
+    }
+
+    function validateInput(inputType,inputState){
+      let inputRegex=getRegexPerInput(inputType);
+      let emptyInputStatus=inputNotEmpty(inputState);
+      if(inputRegex.test(inputState) && emptyInputStatus){
+        setisdisabled(false);
+      }else{
+        setisdisabled(true);
       }
     }
 
@@ -92,7 +128,7 @@ export default function SignIn() {
           PostData();
         }
       }
-      , receivedData);
+      , [issubmitting] );
 
       
 
@@ -156,6 +192,7 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={isdisabled}
             >
               Sign In
             </Button>
