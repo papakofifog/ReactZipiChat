@@ -71,7 +71,7 @@ export default function SignUp() {
       email:formData.email,
       password: formData.password,
       username: formData.username,
-      Dob: formData.username
+      Dob: formData.Dob
     } );
     const json = response;
     
@@ -82,17 +82,18 @@ export default function SignUp() {
       setTimeout(()=>{location.href='/'},4000)
     }else{
       showToast(receivedData.message,"red", false)
+      setSubmission((prevValue)=> !prevValue);
     }
   }
 
-  console.log(formData)
+  
 
   useEffect(() => {
     if(issubmitting){
         PostData();
       }
     }
-    , receivedData);
+    , [issubmitting,receivedData]);
 
   
   

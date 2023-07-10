@@ -6,65 +6,81 @@ import { showToast } from "../utility/showToast";
 
 export default function ActionCards(props){
 
-    let [AddFriendResponse, updateAddFriendResponse]= useState(null);
-    let [acceptFriendResponse, updateAcceptFriendRequest]= useState(null);
-
+    let [dataResponse, updateDataResponse]= useState(null);
+    let [isSubmitting, setIsSubmitting]= useState(false);
 
     async function handleAddfriend(){
 
         let receivedData=await SendData("http://localhost:3000/friend/addFriend", {"friend":props.friendId});
-        updateAddFriendResponse(()=>{
-           return receivedData.data
-        });
-        console.log(receivedData);
-        if(AddFriendResponse.success){
-            showToast(AddFriendResponse.message,"green", true)
-            props.close();
-            
-        }else{
-            showToast(AddFriendResponse.message,"red", false)
-            
-        }
-        return;
+        
+        updateDataResponse(receivedData.data);
+        handleDisplayToast(receivedData.data.message, receivedData.data.success,"Accept Request");
+        setIsSubmitting(false);
+        
     }
 
     async function handleSendRequest(){
         let friend= {"friend":props.friendId};
-        console.log(friend)
         let receivedData= await SendData("http://localhost:3000/friend/sendFriendRequest", friend );
-        updateAcceptFriendRequest(()=>{
-            return receivedData.data
-        });
+        updateDataResponse(receivedData.data);
+        handleDisplayToast(receivedData.data.message,receivedData.data.success,"Send Request");
+        setIsSubmitting(false);
         
-        if(acceptFriendResponse.success){
-            showToast(acceptFriendResponse.message,"green", true)
-            props.close();
-            
-        }else{
-            showToast(acceptFriendResponse.message,"red", false)
-            
-        }
-        return
+        
     }
 
+    async function handleCancelFriendRequest(){
+        let friend= {"friend":props.friendId};
+        let receivedData= await SendData("http://localhost:3000/friend/cancelFriendRequest", friend );
+        updateDataResponse(receivedData.data);
+        handleDisplayToast(receivedData.data.message,receivedData.data.success,"Send Request");
+        setIsSubmitting(false);
+    }
+
+    function handleDisplayToast(responseMessage,status,state){
+        
+        //return showToast(dataResponse.message,"green", true)
+        if(status){
+            showToast(responseMessage,"green", true)
+            props.close(state);
+        }else{
+            showToast(responseMessage,"red", true)
+        }
+    }
 
     async function handleButtonClick(){
-        console.log(props.buttonsName)
-        switch(props.buttonsName){
-            case "Accept Request":
-                console.log("hello we are here baby")
-                await handleAddfriend();
-                break;
-            case "Send Request":
-                await handleSendRequest();
-                break;
-        }
-
+        setIsSubmitting(true)
     }
 
-   
+    
 
-    //console.log(props.buttonName)
+    useEffect(()=>{
+        const handleCallBack= async ()=>{
+            if(isSubmitting){
+            
+                switch(props.buttonsName){
+                    case "Accept Request":
+                       await handleAddfriend();
+                        break;
+                    case "Send Request":
+                        await handleSendRequest();
+                        break;
+                    case "Cancel Request":
+                        await handleCancelFriendRequest();
+                        break;
+                }
+                
+            }
+        };
+        handleCallBack();
+                
+    },[isSubmitting]
+    )
+
+
+
+
+
     return (
         <div className="actionCard">
             <Contact 

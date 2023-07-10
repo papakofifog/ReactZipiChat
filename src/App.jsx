@@ -14,16 +14,15 @@ import { connectToSocket, emitEvent, socket } from './socket';
 const SERVER= "http://localhost:3000"
 
 function App() {
-  
-
-
-
+ 
   const [response, setResponse] = useState({
     success: false,
     userFullname:'',
     userId:'',
     number:''
   });
+
+  const [refresh, setRefresh]= useState(false);
 
   async function getActiveUser(){
     let Response= await fetchData("http://localhost:3000/users/activeUser");
@@ -41,58 +40,30 @@ function App() {
   function ConnectWithChatServer(){
     return emitEvent('setUserId', response.userId)
 
+  } 
+
+
+  function handleRefresh(){
+    
   }
 
   
-    
-    // Connect to the server
-    socket.on('connect', () => {
-      console.log('Connected to the chat server');
-    });
-    
-    socket.on('receiveMessage', (message) => {
-      console.log('Received a new message:', message);
-    });
 
-    socket.emit('setUserId', response.userId)
-
-      // Error handling
-    socket.on('error', (error) => {
-      console.error('Socket error:', error);
-    });
-
-    // Clean up the socket connection
-    socket.on('disconnect', () => {
-      console.log('Disconnected from the chat server');
-    });
-    
+  console.log(refresh)
     
  
-  
-
 
   useEffect(()=>{
     getActiveUser();
-    return () => {
-      socket.disconnect();
-    };
     
-    //connectToSocket(response.userId)
-    //ConnectWithChatServer();
-  },[])
+  },response)
   
 
-  /*return (
-    <div className="App">
-      <Header fullName={response.userFullname} number={response.number} />
-      <Main activeUser={response.userId}/>   
-    </div>
-  )*/
 
   return (
     <div className='App'>
       <Header fullName={response.userFullname} number={response.number} />
-      <Main activeUser={response.userId}/> 
+      <Main activeUser={response.userId} /> 
     </div>
      
   )

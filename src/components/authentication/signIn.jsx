@@ -79,18 +79,18 @@ export default function SignIn() {
       const response = await SendData('http://localhost:3000/api/login', {email: formdata.email, password:formdata.password} );
       const json = response;
       
-      setRecievedData(json.data);
+      setRecievedData(()=>json.data);
 
       //setRecievedData(json);
 
-      if(receivedData.success){
-        showToast(receivedData.message,"green", true)
-        window.sessionStorage.setItem('access-token', receivedData.token)
+      if(response.data.success){
+        showToast(response.data.message,"green", true)
+        window.sessionStorage.setItem('access-token', response.data.token)
         
         setTimeout(()=>{location.href='/home'},4000)
         
       }else{
-        showToast(receivedData.message,"red", false);
+        showToast(response.data.message,"red", false);
         
         setSubmission((prevValue)=> !prevValue);
 

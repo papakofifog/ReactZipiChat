@@ -32,17 +32,17 @@ export default function Header(props){
         setting: {}
     });
 
-    let [nonFriends, addNonFriends] = useState([])
 
-    let [friendRequest, updateFriendRequest]= useState([])
+    let [isTimeToRefresh, updateRefreshStatus]= useState(false)
 
     let nonFriendElements= nonFriendsResponse.data.map((nonFriend,index)=>{
         return  <ActionCards 
         key={index}  
         firstname={nonFriend.firstname} 
         number="+233552661939"
-        buttonsName="Send Request"
+        buttonsName={nonFriend.isRequestSent?"Cancel Request":"Send Request"}
         friendId={nonFriend.username}
+        requestSent={nonFriend.isRequestSent}
         close={handleCloseEvent}
         />
         
@@ -69,7 +69,6 @@ export default function Header(props){
 
     function handleTabClickEvent(id){
 
-        console.log(nonFriends)
 
        
 
@@ -101,7 +100,19 @@ export default function Header(props){
         
     }
 
-    function handleCloseEvent(){
+    async function handleCloseEvent(actualState){
+        console.log("hello")
+        
+            switch(actualState){
+                case "Accept Request":
+                   await getAllFriendRequest();
+                    break;
+                case "Send Request":
+                case "Cancel Request":
+                    await getAllNonFriends();
+                    break;
+                
+            }
 
         showModal((prevModalDetails)=>{
             return {... prevModalDetails, show: false, title:"", content:[]} 
