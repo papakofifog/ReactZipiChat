@@ -6,8 +6,8 @@ import './contacts.css';
 export default function Contact(props){
     let number=1;
     return (
-        <div className="contact-message" onClick={()=>props.handleMessages(props.username)}>
-            <div>
+        /*{<div className="contact-message" onClick={()=>props.handleMessages(props.username, props.fullName)}>
+             <div>
                 <Image src={"hey"} /> 
                 { number? <div className="unread-messages">
                     {number}
@@ -16,17 +16,28 @@ export default function Contact(props){
             
 
             <div className="user-details">
-                <LabelText class={"profile-text"} text={props.fullName} />
-                <LabelText class={"profile-text"} text={props.number} />
-                <LabelText class={"profile-text"} text={props.lastMessage} />
+                <p>{props.fullName}</p>
+                <p>{props.number}</p>
+                <p>{props.lastMessage}</p>
+               
 
             </div>
             <div className="date">
                 <LabelText class={"profile-text"} text={props.lastMessageDate} />
             </div>
+        </div>}*/
 
-            
-
+        <div class="contact-item"onClick={()=>props.handleMessages(props.username, props.fullName)}>
+                    <Image src={"hey"} />
+                    { number? <div className="unread-messages">
+                        {number}
+                    </div> : '' }
+                    <div>
+                        <div class="contact-name">{props.fullName}</div>
+                        <div class="contact-email">{props.number}</div>
+                        <div class="contact-email">{props.lastMessage}</div>
+                        
+                    </div>
         </div>
     );
 }

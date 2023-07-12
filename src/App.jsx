@@ -4,14 +4,11 @@ import Main from './components/mainBody/mainBody';
 import '@fontsource/roboto/300.css';
 import { fetchData, fetchUserDataLocally} from './utility/handleAxiousRequest';
 import { useEffect, useState } from 'react';
-
-import { connectToSocket, emitEvent, socket } from './socket';
-
+import { SocketContext, socket } from './context/socket';
 
 
 
 
-const SERVER= "http://localhost:3000"
 
 function App() {
  
@@ -22,7 +19,10 @@ function App() {
     number:''
   });
 
-  const [refresh, setRefresh]= useState(false);
+  const[count, updateCount]=useState(0);
+
+
+  
 
   async function getActiveUser(){
     let Response= await fetchData("http://localhost:3000/users/activeUser");
@@ -37,20 +37,10 @@ function App() {
       }
     })
   }
-  function ConnectWithChatServer(){
-    return emitEvent('setUserId', response.userId)
 
-  } 
-
-
-  function handleRefresh(){
-    
+  function reRender(){
+    updateCount((prevCount)=>prevCount+1);
   }
-
-  
-
-  console.log(refresh)
-    
  
 
   useEffect(()=>{
@@ -62,8 +52,11 @@ function App() {
 
   return (
     <div className='App'>
-      <Header fullName={response.userFullname} number={response.number} />
-      <Main activeUser={response.userId} /> 
+      <SocketContext.Provider value={socket} >
+        <Header fullName={response.userFullname} number={response.number} rerunMainpage={reRender}/>
+        <Main activeUser={response.userId} count={count} /> 
+      </SocketContext.Provider>
+      
     </div>
      
   )

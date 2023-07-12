@@ -44,6 +44,7 @@ export default function Header(props){
         friendId={nonFriend.username}
         requestSent={nonFriend.isRequestSent}
         close={handleCloseEvent}
+        buttonClass={nonFriend.isRequestSent?"cancelRequest":"sendRequest"}
         />
         
     });
@@ -56,22 +57,12 @@ export default function Header(props){
         buttonsName="Accept Request"
         close={handleCloseEvent}
         friendId={friendRequest.username}
+        buttonClass="acceptRequest"
         />
     })
 
-    //console.log(nonFriendElements)
-    
-
-
-    
-
-    
 
     function handleTabClickEvent(id){
-
-
-       
-
         let curDetails= ""
         switch (id) {
             case "contacts":
@@ -92,20 +83,18 @@ export default function Header(props){
                 break;
         }
 
-        
-
-        
-        
         showModal({show: true,...curDetails});
         
     }
 
     async function handleCloseEvent(actualState){
-        console.log("hello")
+
         
             switch(actualState){
                 case "Accept Request":
                    await getAllFriendRequest();
+                   await getAllNonFriends();
+                   props.rerunMainpage();
                     break;
                 case "Send Request":
                 case "Cancel Request":
@@ -200,8 +189,6 @@ export default function Header(props){
                 text={"Settings"}  
                 />
 
-
-               
                 {modal}
             </div>
 

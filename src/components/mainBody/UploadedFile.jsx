@@ -27,9 +27,6 @@ export default function DisplayUploadedFile(props){
         }
 
         
-        //setCode(chosenCode);
-        
-        //console.log(code)
     function useProgress(fileloaded){
         setfileloading(fileloaded);
     }

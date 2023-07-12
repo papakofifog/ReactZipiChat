@@ -9,7 +9,7 @@ export default function Search(props){
             <span>
                 <Icon icon={props.icon} />
             </span>
-            <input type="text" placeholder="Search" />
+            <input name="searchCode" type="text" placeholder="Search" value={props.searchQuery.searchCode} onChange={props.change} />
         </div>
 
     );

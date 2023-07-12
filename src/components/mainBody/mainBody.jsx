@@ -14,8 +14,6 @@ import Chat from "./chat";
 
 export default function Main(props){
 
-    
-
     let [response, setResponse ]= useState({
         success:false,
         data: []
@@ -26,26 +24,28 @@ export default function Main(props){
         data:[]
     })
 
-    let [relationship, setRelationship] = useState({
-        sender:props.activeUser,
-        receiver:''
+    let [searchedContacts, setSearchedContacts]= useState({
+        success: false,
+        data:[]
     })
 
+    let [relationship, setRelationship] = useState({
+        sender:props.activeUser,
+        receiver:'',
+        usersActualName:''
+    })
+
+    let [searchQuery, updateSearchQuery]= useState({
+        searchCode:''
+    });
 
     async function handleRerender(newState){
         newState && await getAllConversations(relationship);  
     }
 
-    async function handleRelationshipUpdate(friendUsername){
-        
-
-        //console.log({sender:activeUserName, receiver:friendUsername})
-        
-    
-        setRelationship({sender:props.activeUser, receiver:friendUsername})
-       
-
-        
+    async function handleRelationshipUpdate(friendUsername, usersActualName){
+   
+        setRelationship({sender:props.activeUser, receiver:friendUsername, usersActualName:usersActualName })
 
         await getAllConversations({sender:props.activeUser, receiver:friendUsername})
     }
@@ -64,6 +64,41 @@ export default function Main(props){
 
     }
 
+    async function handleSearchForFriendByName(event){
+        
+        let {name, value}= event.target;
+        
+
+        updateSearchQuery((prevValue)=>{
+            return {...prevValue, [name]: value}
+        });
+
+        returnSearchResults();
+
+    }
+
+    
+
+    async function returnSearchResults(){
+        try{
+            let Response= await SendData("http://localhost:3000/friend/searchUserFriendByName",{firstName:searchQuery.searchCode});
+            
+        setSearchedContacts((prevResponse)=>{
+            return {
+                ...prevResponse,
+                success:Response.data.success,
+                data: Response.data.data
+            }
+        })
+        }catch(e){
+            console.error(e)
+        }
+        
+
+    }
+
+    
+
     useEffect(()=>{
         getAllConversations(relationship) 
     }, [])
@@ -71,10 +106,15 @@ export default function Main(props){
     
     
 
-
-    let friendListElements= response.data.map((friendItem, index)=>{
+    let friendListElements= searchQuery.searchCode?
+    searchedContacts.data.map((friendItem, index)=>{
         
-        return <Contact key={index}  fullName={friendItem.firstname+friendItem.lastname} number={friendItem.number} lastMessage="Are you home" lastMessageDate="Friday 2023" handleMessages={handleRelationshipUpdate} username={friendItem.username} />
+        return <Contact key={index}  fullName={friendItem.firstname+" "+friendItem.lastname} number={friendItem.number} lastMessage="Are you home" lastMessageDate="Friday 2023" handleMessages={handleRelationshipUpdate} username={friendItem.username} />
+    })
+    
+    : response.data.map((friendItem, index)=>{
+        
+        return <Contact key={index}  fullName={friendItem.firstname+" "+friendItem.lastname} number={friendItem.number} lastMessage="Are you home" lastMessageDate="Friday 2023" handleMessages={handleRelationshipUpdate} username={friendItem.username} />
     })
 
     async function getAllContacts(){
@@ -92,26 +132,18 @@ export default function Main(props){
     
     useEffect(()=>{
         getAllContacts();
-    }, [])
+    }, [props.count])
 
 
     return (
         <main>
-            <div className="navigation">
-
-                <SideNavItem class={"side-navItemText"} icon={<FiUsers className="icon"/>} text="Friends" />
-                <SideNavItem class={"side-navItemText"} icon={<FiMessageCircle className="icon"/>} text="Groups" />
-                <SideNavItem class={"side-navItemText"} icon={<FiArchive className="icon" />} text="Archived" />
-                <SideNavItem class={"side-navItemText"} icon={<FiTrash  className="icon"/>} text="Trash" />
-
-            </div>
 
             <div className="chat-content">
                 <div className="contacts">
                     
-                    <Search  icon={<FiSearch className="icon white-color"/>} />
+                    <Search  icon={<FiSearch className="icon white-color"/>} searchQuery={searchQuery.searchCode} change={handleSearchForFriendByName} />
 
-                    <div className="contacts-container">
+                    <div className="contacts-container contact-list">
 
                         {friendListElements.length ? friendListElements: "" }
 

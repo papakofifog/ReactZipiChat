@@ -51,13 +51,7 @@ function RecordAudio(){
         updateRecord({ record: false });
     }
 
-    function onData(recordedBlob) {
-        console.log('chunk of real-time data is: ', recordedBlob);
-    }
-     
-    function onStop(recordedBlob) {
-        console.log('recordedBlob is: ', recordedBlob);
-    }
+  
 
     return (
 

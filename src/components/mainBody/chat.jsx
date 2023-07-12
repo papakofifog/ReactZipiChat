@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-
+import React, { useState, useContext, useCallback, useEffect } from "react";
 import Image from "../image";
 import LabelText from "../label";
 import Icon from "../icons";
@@ -10,42 +9,16 @@ import data from '@emoji-mart/data';
 import Modal from "../modal/modal";
 import {FiPaperclip, FiSend, FiSmile, FiMicOff, FiMic } from "react-icons/fi"
 import Message from "./message";
-import {showFileAsToast } from '../../utility/showToast'
 import DisplayUploadedFile from "./UploadedFile";
-import { socket, emitEvent, isSocketConneted, listenToSocket } from "../../socket";
 import { RecordMedia } from "./recordAudio/audioRecord";
 import convertBlobUrlToFile from "../../utility/handlingFileConversion";
-
+import { SocketContext } from "../../context/socket";
 
 
 export default function Chat(props){
-    const [isConnected, setIsConnected] = useState(isSocketConneted);
-     const[socketEvent, setSocketEvents] = useState([]);
+    const socketConnection = useContext(SocketContext);
 
-    useEffect(()=>{
-    function onConnect(){
-        //console.log(isConnected);
-        setIsConnected(true);
-    }
-
-    function onDisconnect(){
-      setIsConnected(false);
-    }
-
-    function onReceivedMessage(value){
-      setSocketEvents(previous => [...previous,value]);
-    }
-
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    socket.on('receiveMessage',onReceivedMessage);
-  })
-
- // console.log(isConnected);
-
-
-
-
+    const [messageSent, sendMessage] = useState(false);
 
     let [ModalDetails, showModal ] = useState({
         show: false,
@@ -85,7 +58,7 @@ export default function Chat(props){
             let CloudinaryFileData=uploadedFileData.data;
             if(CloudinaryFileData.success){
                 let { url, original_filename, fileType} = CloudinaryFileData.data;
-                //console.log()
+                
                 return {url, original_filename, fileType}
     
             } 
@@ -99,15 +72,11 @@ export default function Chat(props){
 
     
 
-    //console.log(fileToUpload)
+    
 
 
     function handleInputFileChangeEvent(event){
         let { files }= event.target;
-
-        //console.log(files);
-        
-        
 
         setFileToUpload((prevUploadedFile)=> {
             return { ...prevUploadedFile,name:files[0].name, size: files[0].size, type: files[0].type,url: URL.createObjectURL(files[0]), file:files[0]}
@@ -127,7 +96,7 @@ export default function Chat(props){
 
     }
 
-    console.log(fileToUpload)
+    
 
 
     function handleChatButtonClick(id) {
@@ -161,7 +130,7 @@ export default function Chat(props){
 
 
             default:
-                //console.log("we are here")
+                
                 break;
                 
             
@@ -214,19 +183,13 @@ export default function Chat(props){
         
     }
 
-   console.log(messageToRead)
-
     async function handleSendMessage(){
 
         let uploadedFile;
         let message;
 
-        
-
         if(fileToUpload.file){
             let data=await uploadFunctionCloudinary(fileToUpload.file);
-
-            console.log("here we go")
             
             uploadedFile={
                 url: data.url,
@@ -240,19 +203,18 @@ export default function Chat(props){
             }
         }else{
             message= messageToRead;
-            console.log("hello, we are here")
+            
         }
         
         let messageToSend= {message,
              senderId:props.activeUser,
             recipientId: props.relation.receiver}
 
-
+        
         await SendData("http://localhost:3000/convo/addmessage",messageToSend);
-        //emitEvent("sendMessage",messageToSend);
-        //socket.emit('sendMessage', { message: messageToSend });
+        
+        socketConnection.emit("sendMessage",messageToSend);
 
-        //console.log(message)
         updateMessage({
             messageString:"",
             fileSent: {
@@ -297,12 +259,23 @@ export default function Chat(props){
         })
     }
 
-    //console.log(fileToUpload)
+    useEffect(()=>{
+        //emit USER_ID event 
+        socketConnection.emit("setUserId", props.activeUser);
+
+    },[socketConnection,props.activeUser])
+
+    
     return(
         <div className="chats-view">
                     <div className="chat-profile">
+                        {props.src?
+                        <>
                         <Image  />
-                        <LabelText class={"chat-profile-text"} text={`Conversation with ${props.relation.receiver}`} />
+                        <LabelText class={"chat-profile-text"} text={`${props.relation.usersActualName}`} />
+                        </>
+                        : <LabelText class={"chat-profile-text"} text={`${props.relation.usersActualName}`} /> }
+                        
                     </div>
                     <ul className="chat-messages">
                         {messagesList}

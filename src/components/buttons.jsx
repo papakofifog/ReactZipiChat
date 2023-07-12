@@ -7,8 +7,6 @@ export default function CustomButton(props){
         <button
          className={props.style}
          onClick={()=>{
-            ///console.log(props.id)
-            ///console.log(props.click);
             props.id?props.click(props.id):props.click();
          }
             }

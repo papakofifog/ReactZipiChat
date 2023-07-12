@@ -54,7 +54,9 @@ main{
 }
 
 .chat-profile-text{
-    color: #ccc;
+    color: #000000b2;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .chat-messages{
@@ -98,7 +100,8 @@ main{
 
 
 .contacts-container{
-    margin-top: 20px;
+    margin: 20px;
+    overflow-y: scroll;
 }
 
 
@@ -653,3 +656,65 @@ li:nth-child(2){
 .logOut{
     color: red;
 }
+
+.cancelRequest {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #D9534F;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cancelRequest:hover {
+    background-color: #B33B39;
+  }
+  
+  .cancelRequest:focus {
+    outline: none;
+  }
+
+  .sendRequest {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .sendRequest:hover {
+    background-color: #0056b3;
+  }
+  
+  .sendRequest:focus {
+    outline: none;
+  }
+
+  .acceptRequest {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #44C767;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .acceptRequest:hover {
+    background-color: #399A5D;
+  }
+  
+  .acceptRequest:focus {
+    outline: none;
+  }
+
+

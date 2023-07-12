@@ -17,7 +17,7 @@ import { SendData ,sendAndVerifyUserDataLocaly} from '../../utility/handleAxious
 import {showToast} from '../../utility/showToast';
 import { useState, useEffect } from 'react';
 let hiddenVaraibles= import.meta.env.BASEURL;
-import {  connectToSocket } from '../../socket';
+
 
 
 function Copyright(props) {
