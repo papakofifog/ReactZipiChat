@@ -16,7 +16,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { SendData ,sendAndVerifyUserDataLocaly} from '../../utility/handleAxiousRequest';
 import {showToast} from '../../utility/showToast';
 import { useState, useEffect } from 'react';
-let hiddenVaraibles= import.meta.env.BASEURL;
+import { SignInWithGoogle } from './GoogleAuthentication/continueWithGoogle';
 
 
 
@@ -196,6 +196,7 @@ export default function SignIn() {
             >
               Sign In
             </Button>
+            <SignInWithGoogle />
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">

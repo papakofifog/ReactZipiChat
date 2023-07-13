@@ -5,7 +5,7 @@ import '@fontsource/roboto/300.css';
 import { fetchData, fetchUserDataLocally} from './utility/handleAxiousRequest';
 import { useEffect, useState } from 'react';
 import { SocketContext, socket } from './context/socket';
-
+let client_id= import.meta.env.CLIENTID;
 
 
 
@@ -47,11 +47,30 @@ function App() {
     getActiveUser();
     
   },response)
-  
+
+  function handleCallbackResponse(response){
+    console.log("Encoded JWT ID token: "+ response.credential)
+  }
+
+
+ /* useEffect(()=>{
+    /*global google
+    google.accounts.id.initialize({
+      client_id:client_id,
+      callback: handleCallbackResponse
+    });
+
+    google.accounts.id.renderButton(
+      document.getElementById("signInDiv"),
+      {theme:"outline", size: "large"}
+    )
+  },[]);*/
+
 
 
   return (
     <div className='App'>
+
       <SocketContext.Provider value={socket} >
         <Header fullName={response.userFullname} number={response.number} rerunMainpage={reRender}/>
         <Main activeUser={response.userId} count={count} /> 
