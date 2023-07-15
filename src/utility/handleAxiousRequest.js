@@ -1,6 +1,8 @@
 import axios from "axios";
 import {showToast} from '../utility/showToast';
 import sampleUsers from "../assets/data/sampleUsers";
+import jwt_decode from "jwt-decode";
+import { ControlCamera } from "@mui/icons-material";
 
 
 const user_access_token=window.sessionStorage.getItem('access-token')
@@ -8,6 +10,17 @@ const Headers= {
     headers: {
         authorization: 'Bearer '+user_access_token,
         ['Content-Type']:'application/json'
+    }
+}
+
+function checkJWExpiryDate(){
+    let data= jwt_decode(sessionStorage.getItem("access-token"));
+    console.log(data);
+   
+    if(data.exp < Date.now()){
+        return false;
+    }else{
+       return true;
     }
 }
 
@@ -36,10 +49,11 @@ async function fetchData(baseurl) {
 
 async function SendData(baseurl,Body) {
     try{
-        Headers.headers['Content-Type']='application/json';
-        let results= await axios.post(baseurl, Body, Headers );
-        JWTExpiredRedirect(results.data)
-        return results;
+        
+            Headers.headers['Content-Type']='application/json';
+            let results= await axios.post(baseurl, Body, Headers );
+            return results;
+        
     }catch(e){
         console.error(e.response.data)
         return e.response;
@@ -47,6 +61,23 @@ async function SendData(baseurl,Body) {
     
       
 }
+
+async function UpdateData(baseurl,Body) {
+    try{
+        
+            Headers.headers['Content-Type']='application/json';
+            let results= await axios.put(baseurl, Body, Headers );
+            return results;
+        
+    }catch(e){
+        console.error(e.response.data)
+        return e.response;
+    }
+    
+      
+}
+
+
 
 async function sendFormData(baseurl,Body){
     try{
@@ -93,4 +124,4 @@ async function fetchUserDataLocally(token){
     }
 }
 
-export {fetchData,SendData,sendFormData, sendAndVerifyUserDataLocaly, fetchUserDataLocally}
+export {fetchData,SendData, UpdateData,sendFormData, sendAndVerifyUserDataLocaly, fetchUserDataLocally}

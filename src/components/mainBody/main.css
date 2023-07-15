@@ -717,4 +717,38 @@ li:nth-child(2){
     outline: none;
   }
 
+.edit-form{
+    display:  flex;
+    flex-flow: wrap;
+    gap:25px;
+}
+
+.form-input-section{
+    display: flex;
+    flex-direction: column;
+    column-gap: 20px;
+
+}
+
+.form-input-section > label{
+    font-size: 25px;
+}
+
+.form-input-section > input{
+    width: 10rem;
+    height: 40px;
+    border-radius: 5px;
+}
+
+.form-container{
+    display: flex;
+    flex-direction: row;
+}
+
+.formStructure{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex-basis: 1fr;
+}
 

@@ -16,7 +16,7 @@ import { SocketContext } from "../../context/socket";
 
 
 export default function Chat(props){
-    const socketConnection = useContext(SocketContext);
+    const connection = useContext(SocketContext);
 
     const [messageSent, sendMessage] = useState(false);
 
@@ -213,7 +213,7 @@ export default function Chat(props){
         
         await SendData("http://localhost:3000/convo/addmessage",messageToSend);
         
-        socketConnection.emit("sendMessage",messageToSend);
+        //socketConnection.emit("sendMessage",messageToSend);
 
         updateMessage({
             messageString:"",
@@ -259,11 +259,9 @@ export default function Chat(props){
         })
     }
 
-    useEffect(()=>{
-        //emit USER_ID event 
-        socketConnection.emit("setUserId", props.activeUser);
-
-    },[socketConnection,props.activeUser])
+    
+    
+    
 
     
     return(

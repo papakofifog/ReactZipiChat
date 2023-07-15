@@ -11,6 +11,8 @@ import { SendData, fetchData } from "../../utility/handleAxiousRequest";
 import ActionCards from "../actionCards";
 import CustomButton from "../buttons";
 import { Logout } from "@mui/icons-material";
+import { ProfileFilled, ProfileOutlined } from "@ant-design/icons";
+import { EditProfile } from "../mainBody/editProfile";
 
 
 export default function Header(props){
@@ -74,7 +76,14 @@ export default function Header(props){
             case "requests":
                 curDetails={ title:"Accept Requests",
                 content:userRequestElements
-            }
+                }
+                break;
+
+            case "editProfile":
+                curDetails= {title:"Edit Profile",
+                content:[]
+
+                }
                 break;
         
             default:
@@ -85,6 +94,14 @@ export default function Header(props){
 
         showModal({show: true,...curDetails});
         
+    }
+
+    async function handleProfileDisplay(){
+        let curDetails={title:"Edit Profile",
+        content:[<EditProfile key={0} activeUserData={props.activeUserData} close={handleCloseEvent} />]
+        }
+        showModal({show:true,...curDetails})
+
     }
 
     async function handleCloseEvent(actualState){
@@ -99,6 +116,9 @@ export default function Header(props){
                 case "Send Request":
                 case "Cancel Request":
                     await getAllNonFriends();
+                    break;
+                case "editProfile":
+                    props.rerunMainpage();
                     break;
                 
             }
@@ -212,10 +232,19 @@ export default function Header(props){
                 <Image src={"src"} />
 
                 <div className={isListDisplayed?"dropDownList":"hideDropdownlist"}>
+
+                    <div className="options" role="button" onClick={handleProfileDisplay}>
+                            <ProfileOutlined className="logOut" />
+                            Edit Profile
+                    </div>
+
+
                     <div className="options" role="button" onClick={handleLogOut}>
                             <Logout className="logOut" />
                             Log Out
                     </div>
+
+                    
                 </div>
                 
             </div>

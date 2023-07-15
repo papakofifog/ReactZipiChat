@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import './main.css'
 import SideNavItem from "./sideNavItem";
 import Search from "../search";
@@ -8,11 +8,18 @@ import Contact from "./contacts";
 import { SendData, fetchData } from "../../utility/handleAxiousRequest";
 import { FiUsers,FiArchive, FiTrash, FiMessageCircle, FiSearch } from "react-icons/fi"
 import Chat from "./chat";
+import { SocketContext } from "../../context/socket";
 
 
 
 
 export default function Main(props){
+
+    let activeUser= props.activeUser;
+
+    console.log(activeUser)
+
+    let connection = useContext(SocketContext)
 
     let [response, setResponse ]= useState({
         success:false,
@@ -39,6 +46,8 @@ export default function Main(props){
         searchCode:''
     });
 
+    
+
     async function handleRerender(newState){
         newState && await getAllConversations(relationship);  
     }
@@ -53,7 +62,7 @@ export default function Main(props){
     async function getAllConversations(data){
         let Response= await SendData("http://localhost:3000/convo/readAllConvo",data);
 
-
+        
         setConvesations((prevConversation)=>{
             return {
                 ...prevConversation,
@@ -61,6 +70,8 @@ export default function Main(props){
                 data: Response.data
             }
         })
+
+        connection.emit('setUserId', relationship.sender)
 
     }
 
@@ -98,14 +109,10 @@ export default function Main(props){
     }
 
     
-
     useEffect(()=>{
         getAllConversations(relationship) 
+        
     }, [])
-
-    
-    
-
     let friendListElements= searchQuery.searchCode?
     searchedContacts.data.map((friendItem, index)=>{
         
@@ -128,12 +135,14 @@ export default function Main(props){
         })
         
     }
-
-    
     useEffect(()=>{
         getAllContacts();
+        
     }, [props.count])
 
+    useEffect(()=>{
+        connection.emit("setUserId", response.userId)
+    })
 
     return (
         <main>
@@ -148,20 +157,10 @@ export default function Main(props){
                         {friendListElements.length ? friendListElements: "" }
 
                     </div>
-
-                    
-
                 </div>
 
                 {conversations.success && <Chat conversations={conversations.data || [] } activeUser={props.activeUser} relation={relationship} update={handleRerender} /> }
-
-                
-
-
-
-                
             </div>
-
         </main>
     );
 }
