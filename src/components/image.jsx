@@ -1,5 +1,9 @@
-import React from "react";
+import React, { useState,useEffect } from "react";
 
 export default function Image(props){
-    return <img className="images" src={props.src} />
+
+    return (<div className="retlative">
+        <img className={props.style||"images"} src={props.src} />
+        {props.children}
+    </div>);
 }

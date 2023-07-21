@@ -4,7 +4,7 @@ import Main from './components/mainBody/mainBody';
 import '@fontsource/roboto/300.css';
 import { fetchData, fetchUserDataLocally} from './utility/handleAxiousRequest';
 import { useEffect, useState, useContext } from 'react';
-import { SocketContext,connection  } from './context/socket';
+import { connection  } from './context/socket';
 let client_id= import.meta.env.CLIENTID;
 
 
@@ -24,6 +24,7 @@ function App() {
   });
 
   const[count, updateCount]=useState(0);
+
  
 
   
@@ -32,6 +33,7 @@ function App() {
     let Response= await fetchData("http://localhost:3000/users/activeUser");
     
     sessionStorage.setItem('activeUserName', Response.data.username);
+
     setResponse((prevResponse)=>{
       return {
         ...prevResponse,
@@ -42,10 +44,27 @@ function App() {
         userId: Response.data.username,
         number: Response.data.friendCount,
         Dob: Response.data.Dob,
-        pictures: Response.data.pictures
+        picture: Response.data.pictures
       }
     })
+
+    connection.emit("setUserId", Response.data.username);
+
   }
+
+  async function handleGetActiveUserPicture(){
+    try{
+        let Response= await fetchData("http://localhost:3000/users/getUserPicture");
+        setResponse((prevResponse)=>{
+          return {
+            ...prevResponse,
+            picture: Response.data.userPicUrl
+          }
+        })
+    }catch(e){
+        console.error(e)
+    }
+}
 
   function reRender(){
     updateCount((prevCount)=>prevCount+1);
@@ -55,6 +74,25 @@ function App() {
   useEffect(()=>{
     
     getActiveUser();
+    handleGetActiveUserPicture();
+
+    function onConnect(){
+      setIsConnected(prevValue=>!prevValue);
+    }
+
+    function onDisconnect(){
+      setIsConnected(prevValue=>!prevValue);
+    }
+
+    
+
+    connection.on('connect', onConnect);
+    connection.on('disconect', onDisconnect);
+
+    return ()=>{
+      connection.off('connect', onConnect);
+      connection.off('disconnect', onDisconnect);
+    }
 
   },[count])
 
@@ -69,10 +107,10 @@ function App() {
   return (
     <div className='App'>
 
-      <SocketContext.Provider value={connection} >
+      
         <Header fullName={response.userFullname} number={response.number} rerunMainpage={reRender} activeUserData={response}/>
         <Main activeUser={response.userId} count={count} /> 
-      </SocketContext.Provider>
+      
       
     </div>
      

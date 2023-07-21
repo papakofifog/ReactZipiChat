@@ -17,7 +17,7 @@ import { SendData ,sendAndVerifyUserDataLocaly} from '../../utility/handleAxious
 import {showToast} from '../../utility/showToast';
 import { useState, useEffect, useContext } from 'react';
 import { SignInWithGoogle } from './GoogleAuthentication/continueWithGoogle';
-import { SocketContext } from '../../context/socket';
+import { connection } from '../../context/socket';
 
 
 function Copyright(props) {
@@ -37,7 +37,7 @@ const theme = createTheme();
 
 export default function SignIn() {
 
-  let connection= useContext(SocketContext);
+  
 
   const [formdata,setFormData] = useState({
     email: "",
@@ -196,7 +196,7 @@ export default function SignIn() {
             >
               Sign In
             </Button>
-            {/* google && <SignInWithGoogle />*/}
+            {/*google && <SignInWithGoogle />*/}
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">

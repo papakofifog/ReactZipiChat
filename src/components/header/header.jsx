@@ -47,6 +47,7 @@ export default function Header(props){
         requestSent={nonFriend.isRequestSent}
         close={handleCloseEvent}
         buttonClass={nonFriend.isRequestSent?"cancelRequest":"sendRequest"}
+        //userPic={nonFriend.userPic.userPicUrl}
         />
         
     });
@@ -60,6 +61,7 @@ export default function Header(props){
         close={handleCloseEvent}
         friendId={friendRequest.username}
         buttonClass="acceptRequest"
+        userPic={friendRequest.userPic.userPicUrl}
         />
     })
 
@@ -96,17 +98,30 @@ export default function Header(props){
         
     }
 
+    async function handleGetActiveUserPicture(){
+        try{
+            let Response= await fetchData("http://localhost:3000/users/getUserPicture");
+            return Response.data.userPicUrl;
+        }catch(e){
+            console.error(e)
+        }
+    }
+
+    
+
     async function handleProfileDisplay(){
+        let UserPicture=await handleGetActiveUserPicture();
         let curDetails={title:"Edit Profile",
-        content:[<EditProfile key={0} activeUserData={props.activeUserData} close={handleCloseEvent} />]
+        content:[<EditProfile key={0} activeUserData={props.activeUserData} close={handleCloseEvent} activeUserPicture={UserPicture}  rerun={handleUpdateMainPage}/>]
         }
         showModal({show:true,...curDetails})
+    }
 
+    function handleUpdateMainPage(){
+        props.rerunMainpage();
     }
 
     async function handleCloseEvent(actualState){
-
-        
             switch(actualState){
                 case "Accept Request":
                    await getAllFriendRequest();
@@ -142,7 +157,6 @@ export default function Header(props){
         updateFriendRequestResponse({success: Response.success,data: Response.data})
     }
 
-
     useEffect(()=>{
         getAllNonFriends();
         getAllFriendRequest();
@@ -170,7 +184,6 @@ export default function Header(props){
         window.sessionStorage.setItem('access-token', '')
         setTimeout(()=>{location.href='/'},1000)
     }
-
     return (
 
         <div className="header">
@@ -208,10 +221,8 @@ export default function Header(props){
                 class={"section-name"}  
                 text={"Settings"}  
                 />
-
                 {modal}
             </div>
-
             <div className="simpleActions-section">
                 <div className="light-mode">
                     <div className="toggle-circle">
@@ -219,39 +230,25 @@ export default function Header(props){
                     </div>
                 </div>
                 <Icon icon={<MdCall  className="icon" id="myCall"/>} />
-                
-
             </div>
-
             <div className="profile" onClick={handleDropDownDisplay} >
                 <div className="details">
                 <LabelText class={"profile-text"} text={"Good "+greeting} />
                 <LabelText class={"profile-text"} text={props.fullName} />
                 {props.number && <LabelText class={"profile-text"} text={"+233552661939"} />}
                 </div>
-                <Image src={"src"} />
-
+                <Image src={props.activeUserData.picture} />
                 <div className={isListDisplayed?"dropDownList":"hideDropdownlist"}>
-
                     <div className="options" role="button" onClick={handleProfileDisplay}>
                             <ProfileOutlined className="logOut" />
                             Edit Profile
                     </div>
-
-
                     <div className="options" role="button" onClick={handleLogOut}>
                             <Logout className="logOut" />
                             Log Out
                     </div>
-
-                    
                 </div>
-                
             </div>
-            
-            
-
         </div>
-        
         );
 }

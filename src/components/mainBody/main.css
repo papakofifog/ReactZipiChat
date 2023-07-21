@@ -745,10 +745,31 @@ li:nth-child(2){
     flex-direction: row;
 }
 
+.editProfile{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.editProfileImageUploadButton{
+    position: relative;
+    height: 2rem;
+    width: 2rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    bottom: 10rem;
+    left: 8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .formStructure{
     display: flex;
     flex-direction: column;
     gap: 20px;
-    flex-basis: 1fr;
+    flex: 2;
 }
+
 

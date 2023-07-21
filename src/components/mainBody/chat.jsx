@@ -1,22 +1,22 @@
-import React, { useState, useContext, useCallback, useEffect } from "react";
+import React, { useState, useContext, useCallback, useEffect, useRef } from "react";
 import Image from "../image";
 import LabelText from "../label";
 import Icon from "../icons";
 import { SendData, sendFormData } from "../../utility/handleAxiousRequest";
 import CustomButton from "../buttons";
-import {Emoji, FileUpload, RecordAudio} from "../emoji";
+import {Emoji, FileUpload} from "../emoji";
 import data from '@emoji-mart/data';
 import Modal from "../modal/modal";
-import {FiPaperclip, FiSend, FiSmile, FiMicOff, FiMic } from "react-icons/fi"
+import {FiPaperclip, FiSend, FiSmile, FiMic } from "react-icons/fi"
 import Message from "./message";
 import DisplayUploadedFile from "./UploadedFile";
 import { RecordMedia } from "./recordAudio/audioRecord";
 import convertBlobUrlToFile from "../../utility/handlingFileConversion";
-import { SocketContext } from "../../context/socket";
+import { connection } from "../../context/socket";
 
 
 export default function Chat(props){
-    const connection = useContext(SocketContext);
+    
 
     const [messageSent, sendMessage] = useState(false);
 
@@ -45,9 +45,28 @@ export default function Chat(props){
         }
     });
 
+    //console.log(props.conversations.data)
+
+    
+
+    //const [conversations, updateConversations]= useState([...props.conversations.data]);
+
+    //console.log(conversations)
+
+    
+
     let [file,setFile] = useState(null);
 
     let [content, manageContent] = useState(null);
+
+    const containRef= useRef(null);
+
+    function handleScrollToBottom(){
+        if(containRef.current){
+            const {scrollHeight, clientHeight} =containRef.current;
+            containRef.current.scrollTop = scrollHeight -clientHeight;
+        }
+    }
 
     async function uploadFunctionCloudinary(value){
 
@@ -213,7 +232,9 @@ export default function Chat(props){
         
         await SendData("http://localhost:3000/convo/addmessage",messageToSend);
         
-        //socketConnection.emit("sendMessage",messageToSend);
+        connection.emit("sendMessage",messageToSend);
+
+        
 
         updateMessage({
             messageString:"",
@@ -232,12 +253,13 @@ export default function Chat(props){
             file: null
         })
 
-        props.update(true);
+        handleReceivedMessage(messageToSend);
 
     }
    
+    
 
-    let messagesList= props.conversations.data.map((messageloaded,index)=>{
+    let messagesList= props.conversations.map((messageloaded,index)=>{
        return messageloaded.senderId == props.activeUser ?<Message 
        key={index}
        class="sender"
@@ -259,11 +281,35 @@ export default function Chat(props){
         })
     }
 
-    
-    
-    
+    function handleReceivedMessage(data){
+
+        props.onUpdateConversations((prevConversations)=> {
+            //console.log(prevConversations)
+            return {
+                ...prevConversations,
+                data: [...prevConversations.data,data]
+            }
+        })
+            
+    }
 
     
+
+
+    useEffect(() => {
+
+        // Listen for a custom event from the server
+        connection.on('receiveMessage',handleReceivedMessage)
+        
+        handleScrollToBottom();
+        
+        return()=>{
+            connection.off('receiveMessage',handleReceivedMessage)
+        }
+        
+      }, [props.conversations.data]);
+    
+
     return(
         <div className="chats-view">
                     <div className="chat-profile">
@@ -275,7 +321,7 @@ export default function Chat(props){
                         : <LabelText class={"chat-profile-text"} text={`${props.relation.usersActualName}`} /> }
                         
                     </div>
-                    <ul className="chat-messages">
+                    <ul className="chat-messages" ref={containRef}>
                         {messagesList}
                         
                     </ul>

@@ -3,11 +3,19 @@
 }
 
 .images{
-  width: 40px;
-  height: 45px;
+  width: 4rem;
+  height: 4.5rem;
   border-radius: 50%;
   border: 1px solid black;
   
+}
+
+.editImage{
+  position: relative;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.845);
 }
 
 .details{

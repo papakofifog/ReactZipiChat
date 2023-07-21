@@ -87,7 +87,7 @@ export default function ActionCards(props){
             key={props.count}  
             fullName={props.firstname} 
             number={props.number} 
-            
+            userPic={props.userPic}
             />
             <CustomButton 
             

@@ -12,7 +12,8 @@
 }
 
 .modal-content{
-    width: 500px;
+    max-width: 50rem;
+    min-width: 45rem;
     background-color: #fff;
     border-radius: 10px;
     

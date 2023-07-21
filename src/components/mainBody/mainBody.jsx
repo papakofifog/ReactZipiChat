@@ -8,7 +8,7 @@ import Contact from "./contacts";
 import { SendData, fetchData } from "../../utility/handleAxiousRequest";
 import { FiUsers,FiArchive, FiTrash, FiMessageCircle, FiSearch } from "react-icons/fi"
 import Chat from "./chat";
-import { SocketContext } from "../../context/socket";
+import { connection } from "../../context/socket";
 
 
 
@@ -19,7 +19,7 @@ export default function Main(props){
 
     console.log(activeUser)
 
-    let connection = useContext(SocketContext)
+    
 
     let [response, setResponse ]= useState({
         success:false,
@@ -62,16 +62,16 @@ export default function Main(props){
     async function getAllConversations(data){
         let Response= await SendData("http://localhost:3000/convo/readAllConvo",data);
 
-        
+        console.log(Response.data)
         setConvesations((prevConversation)=>{
             return {
                 ...prevConversation,
                 success: Response.data.success,
-                data: Response.data
+                data: Response.data.data
             }
         })
 
-        connection.emit('setUserId', relationship.sender)
+        //connection.emit('setUserId', relationship.sender)
 
     }
 
@@ -116,12 +116,11 @@ export default function Main(props){
     let friendListElements= searchQuery.searchCode?
     searchedContacts.data.map((friendItem, index)=>{
         
-        return <Contact key={index}  fullName={friendItem.firstname+" "+friendItem.lastname} number={friendItem.number} lastMessage="Are you home" lastMessageDate="Friday 2023" handleMessages={handleRelationshipUpdate} username={friendItem.username} />
+        return <Contact key={index}  fullName={friendItem.firstname+" "+friendItem.lastname} userPic={friendItem.userPic.userPicUrl} number={friendItem.number} lastMessage="Are you home" lastMessageDate="Friday 2023" handleMessages={handleRelationshipUpdate} username={friendItem.username} />
     })
     
     : response.data.map((friendItem, index)=>{
-        
-        return <Contact key={index}  fullName={friendItem.firstname+" "+friendItem.lastname} number={friendItem.number} lastMessage="Are you home" lastMessageDate="Friday 2023" handleMessages={handleRelationshipUpdate} username={friendItem.username} />
+        return <Contact key={index}  fullName={friendItem.firstname+" "+friendItem.lastname} userPic={friendItem.userPic.userPicUrl} number={friendItem.number} lastMessage="Are you home" lastMessageDate="Friday 2023" handleMessages={handleRelationshipUpdate} username={friendItem.username} />
     })
 
     async function getAllContacts(){
@@ -140,9 +139,7 @@ export default function Main(props){
         
     }, [props.count])
 
-    useEffect(()=>{
-        connection.emit("setUserId", response.userId)
-    })
+    
 
     return (
         <main>
@@ -159,7 +156,7 @@ export default function Main(props){
                     </div>
                 </div>
 
-                {conversations.success && <Chat conversations={conversations.data || [] } activeUser={props.activeUser} relation={relationship} update={handleRerender} /> }
+                {conversations.success && <Chat conversations={conversations.data || [] } activeUser={props.activeUser} relation={relationship} update={handleRerender} onUpdateConversations={setConvesations} /> }
             </div>
         </main>
     );
