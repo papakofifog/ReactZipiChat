@@ -76,24 +76,6 @@ function App() {
     getActiveUser();
     handleGetActiveUserPicture();
 
-    function onConnect(){
-      setIsConnected(prevValue=>!prevValue);
-    }
-
-    function onDisconnect(){
-      setIsConnected(prevValue=>!prevValue);
-    }
-
-    
-
-    connection.on('connect', onConnect);
-    connection.on('disconect', onDisconnect);
-
-    return ()=>{
-      connection.off('connect', onConnect);
-      connection.off('disconnect', onDisconnect);
-    }
-
   },[count])
 
   function handleCallbackResponse(response){

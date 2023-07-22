@@ -9,6 +9,7 @@ import { SendData, fetchData } from "../../utility/handleAxiousRequest";
 import { FiUsers,FiArchive, FiTrash, FiMessageCircle, FiSearch } from "react-icons/fi"
 import Chat from "./chat";
 import { connection } from "../../context/socket";
+import { useReducer } from "react";
 
 
 
@@ -46,6 +47,12 @@ export default function Main(props){
         searchCode:''
     });
 
+    let [unreadMessagesCount, increaseUnreadMessagesCount]= useReducer(reducer, 0);
+
+    function reducer(state){
+        return state+1;
+    }
+
     
 
     async function handleRerender(newState){
@@ -62,7 +69,6 @@ export default function Main(props){
     async function getAllConversations(data){
         let Response= await SendData("http://localhost:3000/convo/readAllConvo",data);
 
-        console.log(Response.data)
         setConvesations((prevConversation)=>{
             return {
                 ...prevConversation,
@@ -72,6 +78,7 @@ export default function Main(props){
         })
 
         //connection.emit('setUserId', relationship.sender)
+
 
     }
 
@@ -107,7 +114,7 @@ export default function Main(props){
         
 
     }
-
+    console.log(unreadMessagesCount)
     
     useEffect(()=>{
         getAllConversations(relationship) 
@@ -116,11 +123,18 @@ export default function Main(props){
     let friendListElements= searchQuery.searchCode?
     searchedContacts.data.map((friendItem, index)=>{
         
-        return <Contact key={index}  fullName={friendItem.firstname+" "+friendItem.lastname} userPic={friendItem.userPic.userPicUrl} number={friendItem.number} lastMessage="Are you home" lastMessageDate="Friday 2023" handleMessages={handleRelationshipUpdate} username={friendItem.username} />
+        return <Contact key={index} 
+        fullName={friendItem.firstname+" "+friendItem.lastname}
+        userPic={friendItem.userPic.userPicUrl}
+        number={   unreadMessagesCount}
+        lastMessage="Are you home" 
+        lastMessageDate="Friday 2023" 
+        handleMessages={handleRelationshipUpdate} 
+        username={friendItem.username} />
     })
     
     : response.data.map((friendItem, index)=>{
-        return <Contact key={index}  fullName={friendItem.firstname+" "+friendItem.lastname} userPic={friendItem.userPic.userPicUrl} number={friendItem.number} lastMessage="Are you home" lastMessageDate="Friday 2023" handleMessages={handleRelationshipUpdate} username={friendItem.username} />
+        return <Contact key={index}  fullName={friendItem.firstname+" "+friendItem.lastname} userPic={friendItem.userPic.userPicUrl} number={unreadMessagesCount} lastMessage="Are you home" lastMessageDate="Friday 2023" handleMessages={handleRelationshipUpdate} username={friendItem.username} />
     })
 
     async function getAllContacts(){
@@ -156,7 +170,7 @@ export default function Main(props){
                     </div>
                 </div>
 
-                {conversations.success && <Chat conversations={conversations.data || [] } activeUser={props.activeUser} relation={relationship} update={handleRerender} onUpdateConversations={setConvesations} /> }
+                {conversations.success && <Chat conversations={conversations.data || [] } activeUser={props.activeUser} relation={relationship} update={handleRerender} onUpdateConversations={setConvesations} updateNotifications={increaseUnreadMessagesCount} /> }
             </div>
         </main>
     );

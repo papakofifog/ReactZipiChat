@@ -45,13 +45,6 @@ export default function Chat(props){
         }
     });
 
-    //console.log(props.conversations.data)
-
-    
-
-    //const [conversations, updateConversations]= useState([...props.conversations.data]);
-
-    //console.log(conversations)
 
     
 
@@ -63,7 +56,7 @@ export default function Chat(props){
 
     function handleScrollToBottom(){
         if(containRef.current){
-            const {scrollHeight, clientHeight} =containRef.current;
+            const {scrollHeight, clientHeight} = containRef.current;
             containRef.current.scrollTop = scrollHeight -clientHeight;
         }
     }
@@ -283,6 +276,8 @@ export default function Chat(props){
 
     function handleReceivedMessage(data){
 
+        
+
         props.onUpdateConversations((prevConversations)=> {
             //console.log(prevConversations)
             return {
@@ -290,6 +285,12 @@ export default function Chat(props){
                 data: [...prevConversations.data,data]
             }
         })
+
+        //handleScrollToBottom();
+
+        props.updateNotifications(data.recipientId);
+
+
             
     }
 
@@ -301,7 +302,7 @@ export default function Chat(props){
         // Listen for a custom event from the server
         connection.on('receiveMessage',handleReceivedMessage)
         
-        handleScrollToBottom();
+        
         
         return()=>{
             connection.off('receiveMessage',handleReceivedMessage)

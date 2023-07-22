@@ -4,12 +4,13 @@ import LabelText from "../label";
 import './contacts.css';
 
 export default function Contact(props){
-    let number=1;
+    console.log(props.number);
+    //let number=1;
     return (
         <div className="contact-item"onClick={()=>props.handleMessages(props.username, props.fullName)}>
                     <Image src={props.userPic} />
-                    { number? <div className="unread-messages">
-                        {number}
+                    { props.number? <div className="unread-messages">
+                        {props.number}
                     </div> : '' }
                     <div>
                         <div className="contact-name">{props.fullName}</div>
