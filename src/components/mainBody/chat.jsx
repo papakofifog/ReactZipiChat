@@ -18,7 +18,7 @@ import { connection } from "../../context/socket";
 export default function Chat(props){
     
 
-    const [messageSent, sendMessage] = useState(false);
+    //const [messageSent, sendMessage] = useState(false);
 
     let [ModalDetails, showModal ] = useState({
         show: false,
@@ -44,9 +44,6 @@ export default function Chat(props){
             name:""
         }
     });
-
-
-    
 
     let [file,setFile] = useState(null);
 
@@ -82,11 +79,6 @@ export default function Chat(props){
         
     }
 
-    
-
-    
-
-
     function handleInputFileChangeEvent(event){
         let { files }= event.target;
 
@@ -107,9 +99,6 @@ export default function Chat(props){
         
 
     }
-
-    
-
 
     function handleChatButtonClick(id) {
         
@@ -246,7 +235,7 @@ export default function Chat(props){
             file: null
         })
 
-        handleReceivedMessage(messageToSend);
+        handleSendMessageEvent(messageToSend);
 
     }
    
@@ -288,10 +277,22 @@ export default function Chat(props){
 
         //handleScrollToBottom();
 
+        //props.updateSelectReceipient()
+
         props.updateNotifications(data.recipientId);
 
 
             
+    }
+
+    function handleSendMessageEvent(data){
+        props.onUpdateConversations((prevConversations)=> {
+            //console.log(prevConversations)
+            return {
+                ...prevConversations,
+                data: [...prevConversations.data,data]
+            }
+        })
     }
 
     

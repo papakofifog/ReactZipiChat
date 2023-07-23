@@ -8,7 +8,7 @@ import { ControlCamera } from "@mui/icons-material";
 const user_access_token=window.sessionStorage.getItem('access-token')
 const Headers= {
     headers: {
-        authorization: 'Bearer '+user_access_token,
+        authorization: 'Bearer '+window.sessionStorage.getItem('access-token'),
         ['Content-Type']:'application/json'
     }
 }

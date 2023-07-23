@@ -10,7 +10,7 @@ import { MdPersonPin, MdSettings, MdShieldMoon, MdCall, MdPersonAdd } from "reac
 import { SendData, fetchData } from "../../utility/handleAxiousRequest";
 import ActionCards from "../actionCards";
 import CustomButton from "../buttons";
-import { Logout } from "@mui/icons-material";
+import { DarkMode, DarkModeOutlined, LightMode, LightModeOutlined, Logout } from "@mui/icons-material";
 import { ProfileFilled, ProfileOutlined } from "@ant-design/icons";
 import { EditProfile } from "../mainBody/editProfile";
 
@@ -36,6 +36,8 @@ export default function Header(props){
 
 
     let [isTimeToRefresh, updateRefreshStatus]= useState(false)
+
+    
 
     let nonFriendElements= nonFriendsResponse.data.map((nonFriend,index)=>{
         return  <ActionCards 
@@ -184,9 +186,12 @@ export default function Header(props){
         window.sessionStorage.setItem('access-token', '')
         setTimeout(()=>{location.href='/'},1000)
     }
+
+   
+    
     return (
 
-        <div className="header">
+        <div className={!props.displayMode? 'headerLightMode': 'headerDarkMode'} >
         
             <div className="app-brand">
             <Image src={ZipiLogo} />
@@ -224,18 +229,14 @@ export default function Header(props){
                 {modal}
             </div>
             <div className="simpleActions-section">
-                <div className="light-mode">
-                    <div className="toggle-circle">
-                        <Icon icon={<MdShieldMoon className="icon" />} />
-                    </div>
-                </div>
+                <Icon
+                icon={props.displayMode?<LightModeOutlined style={{color:"white"}} onClick={()=>props.handleDarkMode} />: <DarkModeOutlined style={{color:"white"}} onClick={()=>props.handleDarkMode} />}
+                />
                 <Icon icon={<MdCall  className="icon" id="myCall"/>} />
             </div>
             <div className="profile" onClick={handleDropDownDisplay} >
                 <div className="details">
-                <LabelText class={"profile-text"} text={"Good "+greeting} />
-                <LabelText class={"profile-text"} text={props.fullName} />
-                {props.number && <LabelText class={"profile-text"} text={"+233552661939"} />}
+                    <p style={{color:"#ccc", fontSize:"1.2rem" }}>{props.firstName} </p>
                 </div>
                 <Image src={props.activeUserData.picture} />
                 <div className={isListDisplayed?"dropDownList":"hideDropdownlist"}>

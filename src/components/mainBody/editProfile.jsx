@@ -2,7 +2,7 @@ import React , {useEffect,useState} from "react";
 import Image from "../image";
 import { SendData, UpdateData, sendFormData, fetchData } from "../../utility/handleAxiousRequest";
 import { showToast } from "../../utility/showToast";
-import { Edit, EditRoadOutlined } from "@mui/icons-material";
+import { Edit, EditOutlined, EditRoadOutlined } from "@mui/icons-material";
 import { EditFilled } from "@ant-design/icons";
 import {FileUpload} from "../emoji";
 import Icon from '../icons';
@@ -114,8 +114,8 @@ export function EditProfile(props){
             <div className="editProfile">
             <Image style="editImage" src={fileToUpload.url} children={<div className="editProfileImageUploadButton"> <FileUpload 
                                     id="attatchFile" 
-                                    class="message-auxilliaries" 
-                                    icon={<Icon icon={<EditFilled className="icon gray"/>} />} 
+                                    style={{borderRadius:"50%"}}
+                                    icon={<EditOutlined style={{color:"black"}} />} 
                                     change={handleInputFileChangeEvent}
                                     /></div>} />
             

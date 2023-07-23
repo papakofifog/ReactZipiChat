@@ -8,6 +8,26 @@
     background-color: #1A5F7A;
 }
 
+.headerLightMode{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 1.0rem;
+    background-color: #1A5F7A;
+}
+
+.headerDarkMode{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 1.0rem;
+    background-color: #000000;
+}
+
 .app-brand{
     color: #000;
     flex: 1;

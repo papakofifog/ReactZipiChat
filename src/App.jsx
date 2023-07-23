@@ -10,8 +10,8 @@ let client_id= import.meta.env.CLIENTID;
 
 
 
-function App() {
 
+function App() {
   const [response, setResponse] = useState({
     success: false,
     userFullname:'',
@@ -24,10 +24,13 @@ function App() {
   });
 
   const[count, updateCount]=useState(0);
-
+  let [displayMode, setDisplayMode]= useState(false);
  
 
-  
+  function handleDisplaySwitch(event){
+    console.log("games fc")
+    setDisplayMode((prevValue)=>!prevValue)
+}
 
   async function getActiveUser(){
     let Response= await fetchData("http://localhost:3000/users/activeUser");
@@ -83,14 +86,13 @@ function App() {
   }
 
 
-  
 
   
   return (
     <div className='App'>
 
       
-        <Header fullName={response.userFullname} number={response.number} rerunMainpage={reRender} activeUserData={response}/>
+        <Header firstName={response.firstname} number={response.number} rerunMainpage={reRender} activeUserData={response} displayMode={displayMode} handleDarkMode={handleDisplaySwitch} />
         <Main activeUser={response.userId} count={count} /> 
       
       

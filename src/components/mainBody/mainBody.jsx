@@ -18,7 +18,7 @@ export default function Main(props){
 
     let activeUser= props.activeUser;
 
-    console.log(activeUser)
+    
 
     
 
@@ -48,6 +48,8 @@ export default function Main(props){
     });
 
     let [unreadMessagesCount, increaseUnreadMessagesCount]= useReducer(reducer, 0);
+
+    let [selectReceipient, setSelectedReceipient]= useState('');
 
     function reducer(state){
         return state+1;
@@ -114,7 +116,14 @@ export default function Main(props){
         
 
     }
-    console.log(unreadMessagesCount)
+    
+
+    function IncreaseUnreadMessagesCount(receiver){
+        if(relationship.receiver === receiver){
+            console.log("hello Bay")
+            increaseUnreadMessagesCount();
+        }
+    }
     
     useEffect(()=>{
         getAllConversations(relationship) 
@@ -122,11 +131,13 @@ export default function Main(props){
     }, [])
     let friendListElements= searchQuery.searchCode?
     searchedContacts.data.map((friendItem, index)=>{
+
+        
         
         return <Contact key={index} 
         fullName={friendItem.firstname+" "+friendItem.lastname}
         userPic={friendItem.userPic.userPicUrl}
-        number={   unreadMessagesCount}
+        number={upunreadMessagesCount}
         lastMessage="Are you home" 
         lastMessageDate="Friday 2023" 
         handleMessages={handleRelationshipUpdate} 
@@ -134,7 +145,7 @@ export default function Main(props){
     })
     
     : response.data.map((friendItem, index)=>{
-        return <Contact key={index}  fullName={friendItem.firstname+" "+friendItem.lastname} userPic={friendItem.userPic.userPicUrl} number={unreadMessagesCount} lastMessage="Are you home" lastMessageDate="Friday 2023" handleMessages={handleRelationshipUpdate} username={friendItem.username} />
+        return <Contact key={index}  fullName={friendItem.firstname+" "+friendItem.lastname} userPic={friendItem.userPic.userPicUrl} number={unreadMessagesCount} lastMessage="Are you home" lastMessageDate="Friday 2023" handleMessages={handleRelationshipUpdate} username={friendItem.username}  />
     })
 
     async function getAllContacts(){
@@ -170,7 +181,7 @@ export default function Main(props){
                     </div>
                 </div>
 
-                {conversations.success && <Chat conversations={conversations.data || [] } activeUser={props.activeUser} relation={relationship} update={handleRerender} onUpdateConversations={setConvesations} updateNotifications={increaseUnreadMessagesCount} /> }
+                {conversations.success && <Chat conversations={conversations.data || [] } activeUser={props.activeUser} relation={relationship} update={handleRerender} onUpdateConversations={setConvesations} updateNotifications={IncreaseUnreadMessagesCount} updateSelectReceipient={setSelectedReceipient} /> }
             </div>
         </main>
     );
