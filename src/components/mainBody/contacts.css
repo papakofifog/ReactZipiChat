@@ -18,12 +18,10 @@
 
 .unread-messages{
     position: absolute;
-    bottom: 20px;
-    right: 10px;
     border-radius: 50%;
-    height: 35px;
-    width: 35px;
-    z-index: 50px;
+    height: 5rem;
+    width: 5rem;
+    z-index: 200;
 }
 
 .date{
