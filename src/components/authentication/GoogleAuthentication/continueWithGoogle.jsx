@@ -12,7 +12,6 @@ export function SignInWithGoogle(){
 
     async function handleCallbackResponse(response){
         try{
-            console.log("Encoded JWT ID token: "+ response.credential)
             let userObject=  jwt_decode(response.credential);
             await handleGoogleSignIn(userObject);
         }catch(e){
@@ -35,7 +34,6 @@ export function SignInWithGoogle(){
                 Dob: "22/01/2000",
             
         }
-        console.log(userdata)
         let Response=  await SendData("http://localhost:3000/api/continueWithGoogle", userdata);
         if (Response.data.success){
             showToast(Response.data.message,"green", true)

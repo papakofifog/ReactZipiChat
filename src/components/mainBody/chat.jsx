@@ -276,7 +276,6 @@ export default function Chat(props) {
 
   function handleSendMessageEvent(data) {
     props.onUpdateConversations((prevConversations) => {
-      //console.log(prevConversations)
       return {
         ...prevConversations,
         data: [...prevConversations.data, data],

@@ -108,7 +108,6 @@ export default function Main(props) {
   }
 
   function IncreaseUnreadMessagesCount(receiver) {
-    console.log("receiver: ", receiver)
     setSelectedReceipient(receiver);
   }
 

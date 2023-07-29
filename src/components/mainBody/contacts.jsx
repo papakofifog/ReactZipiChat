@@ -8,8 +8,6 @@ export default function Contact(props) {
   const [isContactActive, updateActiveContactStatus]= useState(false);
 
   useEffect(() => {
-    console.log("Username : ", props.username);
-    console.log("Receipient : ", props.receipient);
     if (props.username === props.receipient  && props.username!=props.relation.receiver) {
       setUnreadMessageCount(prevValue=>prevValue+1);
       

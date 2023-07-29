@@ -23,7 +23,6 @@ function App() {
   let [displayMode, setDisplayMode] = useState(false);
 
   function handleDisplaySwitch(event) {
-    console.log("games fc");
     setDisplayMode((prevValue) => !prevValue);
   }
 
@@ -73,11 +72,6 @@ function App() {
     getActiveUser();
     handleGetActiveUserPicture();
   }, [count]);
-
-  function handleCallbackResponse(response) {
-    console.log("Encoded JWT ID token: " + response.credential);
-  }
-
   return (
     <div className="App">
       <Header

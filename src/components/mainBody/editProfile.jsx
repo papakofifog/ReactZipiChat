@@ -18,9 +18,6 @@ export function EditProfile(props){
         type:'',
         url:props.activeUserPicture,
     })
-
-    console.log(props.activeUserPicture)
-
     async function handleUpdateProfileData(){
         let data={
                 firstname:userProfile.firstname,
@@ -31,7 +28,6 @@ export function EditProfile(props){
         let Response= await UpdateData("http://localhost:3000/users/editProfile", data)
 
         if (Response.data.success){
-            console.log(Response.data.message);
             showToast(Response.data.message,"green",true);
             props.close("editProfile");
         }else{
@@ -76,21 +72,14 @@ export function EditProfile(props){
 
     async function handleInputFileChangeEvent(event){
         let { files }= event.target;
-
         let {url, original_filename, fileType}= await uploadFunctionCloudinary(files[0]);
-
         let Response= await UpdateData("http://localhost:3000/users/updatePicture", {picURL:url});
-
-        console.log(Response)
-
         if(Response.data.success){
             showToast(Response.data.message, "green", true);
-            props.rerun();
-            
+            props.rerun(); 
         }else{
             showToast(Response.data.message, "red", false);
         }
-
         setFileToUpload(()=>{
             return {
                 name:original_filename,
