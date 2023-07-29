@@ -5,15 +5,16 @@ import { BellFilled, BellOutlined } from "@ant-design/icons";
 
 export default function Contact(props) {
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
+  const [isContactActive, updateActiveContactStatus]= useState(false);
 
   useEffect(() => {
     console.log("Username : ", props.username);
     console.log("Receipient : ", props.receipient);
-    if (props.username === props.receipient) {
+    if (props.username === props.receipient  && props.username!=props.relation.receiver) {
       setUnreadMessageCount(prevValue=>prevValue+1);
-      props.updateSelectReceipient();
+      
     }
-    
+    props.updateSelectReceipient();
   }, [props.conversations]);
 
   return (
@@ -25,7 +26,7 @@ export default function Contact(props) {
       }}
     >
       <Image src={props.userPic} />
-      <div className="unread-messages">
+      {<div className="unread-messages">
         <span style={{ display: "flex" }}>
           {unreadMessageCount == 0 ? (
             <BellOutlined className="unread-message" />
@@ -44,7 +45,7 @@ export default function Contact(props) {
             ""
           )}
         </span>
-      </div>
+      </div>}
 
       <div>
         <div className="contact-name">{props.fullName}</div>

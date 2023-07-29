@@ -23,14 +23,14 @@ import { connection } from "../../context/socket";
 export default function Chat(props) {
   //const [messageSent, sendMessage] = useState(false);
 
-  let [ModalDetails, showModal] = useState({
+  const [ModalDetails, showModal] = useState({
     show: false,
     title: "",
     content: "",
     action: "",
   });
 
-  let [fileToUpload, setFileToUpload] = useState({
+  const [fileToUpload, setFileToUpload] = useState({
     name: "",
     size: "",
     type: "",
@@ -38,7 +38,7 @@ export default function Chat(props) {
     file: null,
   });
 
-  let [messageToRead, updateMessage] = useState({
+  const [messageToRead, updateMessage] = useState({
     messageString: "",
     fileSent: {
       url: "",
@@ -47,9 +47,7 @@ export default function Chat(props) {
     },
   });
 
-  let [file, setFile] = useState(null);
-
-  let [content, manageContent] = useState(null);
+  
 
   const containRef = useRef(null);
 
@@ -243,9 +241,17 @@ export default function Chat(props) {
 
   let messagesList = props.conversations.map((messageloaded, index) => {
     return messageloaded.senderId == props.activeUser ? (
-      <Message key={index} class="sender" message={messageloaded.message} />
+      <Message 
+      key={index} 
+      class="sender" 
+      message={messageloaded.message} 
+      />
     ) : (
-      <Message key={index} class="receiver" message={messageloaded.message} />
+      <Message 
+      key={index} 
+      class="receiver" 
+      message={messageloaded.message} 
+      />
     );
   });
 
@@ -306,7 +312,7 @@ export default function Chat(props) {
         )}
       </div>
       <ul className="chat-messages" ref={containRef}>
-        {messagesList}
+        {!props.disabledStatus && messagesList}
       </ul>
       {modal}
 
@@ -319,6 +325,7 @@ export default function Chat(props) {
             autoComplete="off"
             onChange={handleChatMessageChange}
             value={messageToRead.messageString}
+            disabled={props.disabledStatus}
           />
           <div className="displayFile">
             <DisplayUploadedFile
@@ -337,20 +344,21 @@ export default function Chat(props) {
                 id="addEmoji"
                 icon={<Icon icon={<FiSmile className="icon gray" />} />}
                 click={handleChatButtonClick}
+                isdisabled={props.disabledStatus}
               />
-
               <FileUpload
                 id="attatchFile"
                 class="message-auxilliaries"
                 icon={<Icon icon={<FiPaperclip className="icon gray" />} />}
                 change={handleInputFileChangeEvent}
+                isdisabled={props.disabledStatus}
               />
-
               <CustomButton
                 id="record-audio"
                 class="message-auxilliaries"
                 icon={<Icon icon={<FiMic className="icon gray" />} />}
                 click={handleChatButtonClick}
+                isdisabled={props.disabledStatus}
               />
             </div>
             <div className="m-send">
@@ -359,6 +367,7 @@ export default function Chat(props) {
                 class="message-auxilliaries"
                 icon={<Icon icon={<FiSend className="icon gray" />} />}
                 click={handleChatButtonClick}
+                isdisabled={messageToRead.messageString.trim()===""}
               />
             </div>
           </div>

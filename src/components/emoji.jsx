@@ -18,7 +18,9 @@ function FileUpload(props){
 
 
     return (
-        <button>
+        <button
+        disabled={props.isdisabled}
+        >
             <div className={props.class}>
                 
                 <label htmlFor="getFile1"> {props.icon }</label>
@@ -28,6 +30,7 @@ function FileUpload(props){
                 name="getFile1"
                 className="hide" 
                 onChange={(event)=>props.change(event)}
+                disabled={props.isdisabled}
                 />
                 
             </div>

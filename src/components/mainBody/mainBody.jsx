@@ -32,9 +32,9 @@ export default function Main(props) {
     searchCode: "",
   });
 
-  //let [unreadMessagesCount, increaseUnreadMessagesCount] = useState("");
-
   const [selectReceipient, setSelectedReceipient] = useState("");
+
+  const [buttonDisabledStatus, updateButtonDisabledStatus]= useState(true);
 
   async function handleRerender(newState) {
     newState && (await getAllConversations(relationship));
@@ -51,10 +51,16 @@ export default function Main(props) {
       sender: props.activeUser,
       receiver: friendUsername,
     });
+
+    handleDisableStatusUpdate();
   }
 
   function handleReceipientValueReset(){
     setSelectedReceipient('');
+  }
+
+  function handleDisableStatusUpdate(){
+    updateButtonDisabledStatus(false);
   }
 
   async function getAllConversations(data) {
@@ -70,8 +76,6 @@ export default function Main(props) {
         data: Response.data.data,
       };
     });
-
-    //connection.emit('setUserId', relationship.sender)
   }
 
   async function handleSearchForFriendByName(event) {
@@ -135,11 +139,13 @@ export default function Main(props) {
             lastMessage="Are you home"
             lastMessageDate="Friday 2023"
             handleMessages={handleRelationshipUpdate}
+            updateDisabledStatus= {handleDisableStatusUpdate}
             username={friendItem.username}
             receipient={selectReceipient}
             activeUser={props.activeUser}
             conversations={conversations.data || null}
             updateSelectReceipient={handleReceipientValueReset}
+            relation={relationship}
           />
         );
       });
@@ -181,6 +187,7 @@ export default function Main(props) {
             activeUser={props.activeUser}
             relation={relationship}
             update={handleRerender}
+            disabledStatus={buttonDisabledStatus}
             onUpdateConversations={setConvesations}
             updateNotifications={IncreaseUnreadMessagesCount}
             updateSelectReceipient={setSelectedReceipient}
