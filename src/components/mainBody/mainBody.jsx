@@ -126,6 +126,7 @@ export default function Main(props) {
             handleMessages={handleRelationshipUpdate}
             username={friendItem.username}
             activeUser={props.activeUser}
+            displayNotifications='true'
           />
         );
       })
@@ -145,6 +146,7 @@ export default function Main(props) {
             conversations={conversations.data || null}
             updateSelectReceipient={handleReceipientValueReset}
             relation={relationship}
+            displayNotifications='true'
           />
         );
       });

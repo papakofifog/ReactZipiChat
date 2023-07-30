@@ -88,6 +88,8 @@ export default function ActionCards(props){
             fullName={props.firstname} 
             number={props.number} 
             userPic={props.userPic}
+            displayNotifications={false}
+            relation={{receiver:''}}
             />
             <CustomButton 
             
