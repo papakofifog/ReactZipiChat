@@ -265,12 +265,15 @@ export default function Chat(props) {
   }
 
   function handleReceivedMessage(data) {
-    props.onUpdateConversations((prevConversations) => {
+    
+      props.onUpdateConversations((prevConversations) => {
       return {
         ...prevConversations,
         data: [...prevConversations.data, data],
       };
     });
+    
+    
     props.updateNotifications(data.senderId);
   }
 
