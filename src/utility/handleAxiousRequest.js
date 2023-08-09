@@ -5,7 +5,7 @@ import jwt_decode from "jwt-decode";
 import { ControlCamera } from "@mui/icons-material";
 
 
-const user_access_token=window.sessionStorage.getItem('access-token')
+
 const Headers= {
     headers: {
         authorization: 'Bearer '+window.sessionStorage.getItem('access-token'),
@@ -49,10 +49,9 @@ async function fetchData(baseurl) {
 
 async function SendData(baseurl,Body) {
     try{
-        
-            Headers.headers['Content-Type']='application/json';
-            let results= await axios.post(baseurl, Body, Headers );
-            return results;
+        Headers.headers['Content-Type']='application/json';
+        let results= await axios.post(baseurl, Body, Headers );
+        return results;
         
     }catch(e){
         console.error(e.response.data)
@@ -65,9 +64,9 @@ async function SendData(baseurl,Body) {
 async function UpdateData(baseurl,Body) {
     try{
         
-            Headers.headers['Content-Type']='application/json';
-            let results= await axios.put(baseurl, Body, Headers );
-            return results;
+        Headers.headers['Content-Type']='application/json';
+        let results= await axios.put(baseurl, Body, Headers );
+        return results;
         
     }catch(e){
         console.error(e.response.data)

@@ -130,15 +130,6 @@ export default function SignIn() {
       }
       , [issubmitting] );
 
-      
-
-      
-  
-
-  
-
-  
-
   
   return (
     <ThemeProvider theme={theme}>
@@ -196,10 +187,10 @@ export default function SignIn() {
             >
               Sign In
             </Button>
-            {/*google && <SignInWithGoogle />*/}
+            {<SignInWithGoogle />}
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <Link href="/passwordReset" variant="body2">
                   Forgot password?
                 </Link>
               </Grid>

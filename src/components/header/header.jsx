@@ -13,6 +13,7 @@ import CustomButton from "../buttons";
 import { DarkMode, DarkModeOutlined, LightMode, LightModeOutlined, Logout } from "@mui/icons-material";
 import { ProfileFilled, ProfileOutlined } from "@ant-design/icons";
 import { EditProfile } from "../mainBody/editProfile";
+import AppBrand from "../AppBrand";
 
 
 export default function Header(props){
@@ -193,10 +194,7 @@ export default function Header(props){
 
         <div className={!props.displayMode? 'headerLightMode': 'headerDarkMode'} >
         
-            <div className="app-brand">
-            <Image src={ZipiLogo} />
-            <LabelText class={"brand"} text={"ZipiChat"} />
-            </div>
+            <AppBrand />
 
             <div className="chatAction-section">
             

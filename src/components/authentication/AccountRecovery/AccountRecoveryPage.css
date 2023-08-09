@@ -1,0 +1,56 @@
+.accountRecorveryContainer{
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+
+}
+
+.accountRecoveryInteractionSide{
+    display: flex;
+
+    flex-direction: column;
+    flex: 1;
+    background-color: #d4d7ea;
+    align-items: center;
+
+}
+
+.container{
+    margin-top: 8rem;
+}
+
+.zipiChatLogoArea{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex:1;
+    background-color: #1A5F7A;
+}
+
+.formInputs{
+    display: flex;
+    flex-direction: column;
+}
+
+.formInputs> label{
+    font-size: 1.5rem;
+
+}
+
+.formInputs>input{
+    margin-top: 0.5rem ;
+    height: 2.31rem;
+    width: 20rem;
+}
+
+.submit{
+    background-color: #1A5F7A;
+    color: #d4d7ea;
+    border: none;
+    height: 3rem;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+

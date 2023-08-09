@@ -4,6 +4,7 @@ import App from './App'
 import './index.css'
 import SignIn from './components/authentication/signIn';
 import SignUp from './components/authentication/signUp';
+import AccountRecovery from './components/authentication/AccountRecovery/AccoutRecoveryPage';
 
 
 import {
@@ -27,6 +28,11 @@ const router = createBrowserRouter([
   {
     path: "/home",
     element: <App />,
+    errorElement: <ErrorPage />
+  },
+  {
+    path: "/passwordReset",
+    element: <AccountRecovery firstTime={true} />,
     errorElement: <ErrorPage />
   }
 ])
