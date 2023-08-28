@@ -14,11 +14,12 @@ import { Emoji, FileUpload } from "../emoji";
 import data from "@emoji-mart/data";
 import Modal from "../modal/modal";
 import { FiPaperclip, FiSend, FiSmile, FiMic } from "react-icons/fi";
-import Message from "./message";
+import {Message, DeleteMessage } from "./message";
 import DisplayUploadedFile from "./UploadedFile";
 import { RecordMedia } from "./recordAudio/audioRecord";
 import convertBlobUrlToFile from "../../utility/handlingFileConversion";
 import { connection } from "../../context/socket";
+import { connect } from "socket.io-client";
 
 export default function Chat(props) {
   //const [messageSent, sendMessage] = useState(false);
@@ -46,6 +47,8 @@ export default function Chat(props) {
       name: "",
     },
   });
+
+  const [typingStaus, setTypingStatus]= useState(false);
 
   
 
@@ -163,6 +166,15 @@ export default function Chat(props) {
     });
   }
 
+  function handleClickOnDeleteMessage(messageId){
+    let curActionElement= { title: "", content: (<DeleteMessage  messageId={messageId} close={handleCloseEvent} />), action:""}
+    showModal((prevModalDetails)=>{
+      return {...prevModalDetails, show: true, ...curActionElement };
+    })
+  }
+
+  //function handleClickOn 
+
   function handleCloseEvent() {
     showModal((prevModalDetails) => {
       return { ...prevModalDetails, show: false, title: "", content: [] };
@@ -212,8 +224,10 @@ export default function Chat(props) {
     let messageToSend = {
       message,
       senderId: props.activeUser,
-      recipientId: props.relation.receiver,
+      receipientId: props.relation.receiver,
     };
+
+
 
     await SendData("http://localhost:3000/convo/addmessage", messageToSend);
 
@@ -236,6 +250,8 @@ export default function Chat(props) {
       file: null,
     });
 
+
+
     handleSendMessageEvent(messageToSend);
   }
 
@@ -245,12 +261,16 @@ export default function Chat(props) {
       key={index} 
       class="sender" 
       message={messageloaded.message} 
+      id={messageloaded._id}
+      deleteMessage={handleClickOnDeleteMessage}
       />
     ) : (
       <Message 
       key={index} 
       class="receiver" 
       message={messageloaded.message} 
+      id={messageloaded._id}
+      deleteMessage={handleClickOnDeleteMessage}
       />
     );
   });
@@ -265,7 +285,7 @@ export default function Chat(props) {
   }
 
   function handleReceivedMessage(data) {
-    
+      console.log("kofi manu",data)
       props.onUpdateConversations((prevConversations) => {
       return {
         ...prevConversations,
@@ -286,13 +306,39 @@ export default function Chat(props) {
     });
   }
 
+  function indicateTypingStatus(typingStatus){
+    console.log(typingStatus)
+    setTypingStatus(typingStatus);
+  }
+  
+
+
+  function handleKeyDownEvent(){
+    console.log(props.activeUser)
+    clearTimeout();
+    connection.emit('onTyping',props.activeUser );
+
+      setTimeout(() => {
+        connection.emit('stopedTyping', props.activeUser);
+      }, 1000);
+  }
+
+  function handleKeyUpEvent(){
+    clearTimeout();
+    connection.emit('stopedTyping');
+  }
+
   useEffect(() => {
     // Listen for a custom event from the server
     connection.on("receiveMessage", handleReceivedMessage);
+    connection.on("typingStatus", indicateTypingStatus);
+    
 
-    return () => {
+    return(()=>{
       connection.off("receiveMessage", handleReceivedMessage);
-    };
+      connection.off("typing", indicateTypingStatus);
+    });
+
   }, [props.conversations.data]);
 
   return (
@@ -303,13 +349,13 @@ export default function Chat(props) {
             <Image />
             <LabelText
               class={"chat-profile-text"}
-              text={`${props.relation.usersActualName}`}
+              text={`${typingStaus ? props.relation.usersActualName+ "'s typing": props.relation.usersActualName  }`}
             />
           </>
         ) : (
           <LabelText
             class={"chat-profile-text"}
-            text={`${props.relation.usersActualName}`}
+            text={`${typingStaus ? props.relation.usersActualName+ "'s typing": props.relation.usersActualName }`}
           />
         )}
       </div>
@@ -328,6 +374,9 @@ export default function Chat(props) {
             onChange={handleChatMessageChange}
             value={messageToRead.messageString}
             disabled={props.disabledStatus}
+            /*onKeyDown={handleKeyDownEvent}
+            onKeyUp={handleKeyUpEvent}*/
+
           />
           <div className="displayFile">
             <DisplayUploadedFile

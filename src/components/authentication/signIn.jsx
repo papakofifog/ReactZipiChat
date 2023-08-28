@@ -18,6 +18,7 @@ import {showToast} from '../../utility/showToast';
 import { useState, useEffect, useContext } from 'react';
 import { SignInWithGoogle } from './GoogleAuthentication/continueWithGoogle';
 import { connection } from '../../context/socket';
+import jwt_decode from 'jwt-decode';
 
 
 function Copyright(props) {
@@ -83,12 +84,16 @@ export default function SignIn() {
       
       setRecievedData(()=>json.data);
 
-      
-
       if(response.data.success){
-        showToast(response.data.message,"green", true)
-        window.sessionStorage.setItem('access-token', response.data.token)
-        setTimeout(()=>{location.href='/home'},4000)
+        showToast(response.data.message,"green", true);
+        
+
+        window.sessionStorage.setItem('access-token', response.data.token);
+
+        let userObject= await  jwt_decode(response.data.token);
+        
+        
+        setTimeout(()=>{location.href='/home'},4000);
       }else{
         showToast(response.data.message,"red", false);
         
@@ -187,7 +192,7 @@ export default function SignIn() {
             >
               Sign In
             </Button>
-            {<SignInWithGoogle />}
+            {/*<SignInWithGoogle />*/}
             <Grid container>
               <Grid item xs>
                 <Link href="/passwordReset" variant="body2">

@@ -72,6 +72,12 @@ function App() {
     getActiveUser();
     handleGetActiveUserPicture();
   }, [count]);
+
+
+  
+
+
+
   return (
     <div className="App">
       <Header

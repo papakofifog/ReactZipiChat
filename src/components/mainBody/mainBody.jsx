@@ -64,11 +64,7 @@ export default function Main(props) {
   }
 
   async function getAllConversations(data) {
-    let Response = await SendData(
-      "http://localhost:3000/convo/readAllConvo",
-      data
-    );
-
+    let Response = await SendData(`http://localhost:3000/convo/readAllConvo/`, {receiver: data.receiver});
     setConvesations((prevConversation) => {
       return {
         ...prevConversation,
@@ -113,7 +109,7 @@ export default function Main(props) {
 
   useEffect(() => {
     getAllConversations(relationship);
-  }, []);
+  }, [relationship]);
   let friendListElements = searchQuery.searchCode
     ? searchedContacts.data.map((friendItem, index) => {
         return (
@@ -182,7 +178,7 @@ export default function Main(props) {
           </div>
         </div>
 
-        {conversations.success && (
+        {
           <Chat
             conversations={conversations.data || []}
             activeUser={props.activeUser}
@@ -193,7 +189,7 @@ export default function Main(props) {
             updateNotifications={IncreaseUnreadMessagesCount}
             updateSelectReceipient={setSelectedReceipient}
           />
-        )}
+        }
       </div>
     </main>
   );

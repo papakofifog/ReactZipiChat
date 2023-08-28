@@ -6,14 +6,12 @@ import PasswordReset from "./PasswordReset";
 import EmailRequest from "./EmailRequest";
 
 
-
 function AccountRecovery(props){
     const location = useLocation();
     const queryParams= new URLSearchParams(location.search);
 
     // Access query parameters using the get method.
     const user= queryParams.get("user") || undefined;
-
 
     return(
         <div className="accountRecorveryContainer">
@@ -24,7 +22,6 @@ function AccountRecovery(props){
             </div>
             <div className="zipiChatLogoArea">
                 <AppBrand  style={"newAppBrandStyle"}/>
-
             </div>
         </div>
     );

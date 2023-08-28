@@ -3,6 +3,7 @@ import {showToast} from '../utility/showToast';
 import sampleUsers from "../assets/data/sampleUsers";
 import jwt_decode from "jwt-decode";
 import { ControlCamera } from "@mui/icons-material";
+import Header from "../components/header/header";
 
 
 
@@ -76,6 +77,18 @@ async function UpdateData(baseurl,Body) {
       
 }
 
+async function DeleteData(baseurl, Body) {
+    try{
+        Headers.headers['Content-Type']='application/json';
+        let results= await axios.delete(baseurl, Headers);
+        return results;
+
+    }catch(e){
+        console.error(e)
+        return e.response;
+    }
+}
+
 
 
 async function sendFormData(baseurl,Body){
@@ -123,4 +136,4 @@ async function fetchUserDataLocally(token){
     }
 }
 
-export {fetchData,SendData, UpdateData,sendFormData, sendAndVerifyUserDataLocaly, fetchUserDataLocally}
+export {fetchData,SendData, UpdateData,sendFormData, sendAndVerifyUserDataLocaly, fetchUserDataLocally, DeleteData}
