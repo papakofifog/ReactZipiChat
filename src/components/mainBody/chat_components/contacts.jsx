@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Image from "../../utility_components/image";
 import { BellFilled, BellOutlined } from "@ant-design/icons";
 
+import '../../../assets/css/contacts.css';
+
 export default function Contact(props) {
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
 
