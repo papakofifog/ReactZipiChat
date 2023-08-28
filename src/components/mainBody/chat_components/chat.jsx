@@ -5,20 +5,20 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import Image from "../image";
-import LabelText from "../label";
-import Icon from "../icons";
-import { SendData, sendFormData } from "../../utility/handleAxiousRequest";
-import CustomButton from "../buttons";
-import { Emoji, FileUpload } from "../emoji";
+import Image from "../../utility_components/image";
+import LabelText from "../../utility_components/label";
+import Icon from "../../utility_components/icons";
+import { SendData, sendFormData } from "../../../utility/handleAxiousRequest";
+import CustomButton from "../../utility_components/buttons";
+import { Emoji, FileUpload } from "../../utility_components/emoji";
 import data from "@emoji-mart/data";
-import Modal from "../modal/modal";
+import Modal from "../../utility_components/modal";
 import { FiPaperclip, FiSend, FiSmile, FiMic } from "react-icons/fi";
 import Message from "./message";
 import DisplayUploadedFile from "./UploadedFile";
 import { RecordMedia } from "./recordAudio/audioRecord";
-import convertBlobUrlToFile from "../../utility/handlingFileConversion";
-import { connection } from "../../context/socket";
+import convertBlobUrlToFile from "../../../utility/handlingFileConversion";
+import { connection } from "../../../context/socket";
 
 export default function Chat(props) {
   //const [messageSent, sendMessage] = useState(false);
@@ -46,8 +46,6 @@ export default function Chat(props) {
       name: "",
     },
   });
-
-  
 
   const containRef = useRef(null);
 
@@ -241,17 +239,9 @@ export default function Chat(props) {
 
   let messagesList = props.conversations.map((messageloaded, index) => {
     return messageloaded.senderId == props.activeUser ? (
-      <Message 
-      key={index} 
-      class="sender" 
-      message={messageloaded.message} 
-      />
+      <Message key={index} class="sender" message={messageloaded.message} />
     ) : (
-      <Message 
-      key={index} 
-      class="receiver" 
-      message={messageloaded.message} 
-      />
+      <Message key={index} class="receiver" message={messageloaded.message} />
     );
   });
 
@@ -366,7 +356,7 @@ export default function Chat(props) {
                 class="message-auxilliaries"
                 icon={<Icon icon={<FiSend className="icon gray" />} />}
                 click={handleChatButtonClick}
-                isdisabled={messageToRead.messageString.trim()===""}
+                isdisabled={messageToRead.messageString.trim() === ""}
               />
             </div>
           </div>

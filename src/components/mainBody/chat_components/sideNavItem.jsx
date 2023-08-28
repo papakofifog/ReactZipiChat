@@ -1,7 +1,7 @@
 import React from "react";
 import Icon from "../icons";
 import LabelText from "../label";
-import './sideNavItem.css'
+import '../../../assets/css/sideNavItem.css'
 
 
 export default function SideNavItem(props){

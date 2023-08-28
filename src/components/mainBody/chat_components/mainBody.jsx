@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useReducer } from "react";
-import "./main.css";
-import Search from "../search";
+import React, { useEffect, useState} from "react";
+import "../../../assets/css/main.css";
+import Search from "../../utility_components/search";
 import Contact from "./contacts";
-import { SendData, fetchData } from "../../utility/handleAxiousRequest";
+import { SendData, fetchData } from "../../../utility/handleAxiousRequest";
 import { FiSearch } from "react-icons/fi";
 import Chat from "./chat";
 
@@ -34,7 +34,7 @@ export default function Main(props) {
 
   const [selectReceipient, setSelectedReceipient] = useState("");
 
-  const [buttonDisabledStatus, updateButtonDisabledStatus]= useState(true);
+  const [buttonDisabledStatus, updateButtonDisabledStatus] = useState(true);
 
   async function handleRerender(newState) {
     newState && (await getAllConversations(relationship));
@@ -55,11 +55,11 @@ export default function Main(props) {
     handleDisableStatusUpdate();
   }
 
-  function handleReceipientValueReset(){
-    setSelectedReceipient('');
+  function handleReceipientValueReset() {
+    setSelectedReceipient("");
   }
 
-  function handleDisableStatusUpdate(){
+  function handleDisableStatusUpdate() {
     updateButtonDisabledStatus(false);
   }
 
@@ -126,7 +126,7 @@ export default function Main(props) {
             handleMessages={handleRelationshipUpdate}
             username={friendItem.username}
             activeUser={props.activeUser}
-            displayNotifications='true'
+            displayNotifications="true"
           />
         );
       })
@@ -139,14 +139,14 @@ export default function Main(props) {
             lastMessage="Are you home"
             lastMessageDate="Friday 2023"
             handleMessages={handleRelationshipUpdate}
-            updateDisabledStatus= {handleDisableStatusUpdate}
+            updateDisabledStatus={handleDisableStatusUpdate}
             username={friendItem.username}
             receipient={selectReceipient}
             activeUser={props.activeUser}
             conversations={conversations.data || null}
             updateSelectReceipient={handleReceipientValueReset}
             relation={relationship}
-            displayNotifications='true'
+            displayNotifications="true"
           />
         );
       });
