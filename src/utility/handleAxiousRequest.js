@@ -13,6 +13,8 @@ const Headers= {
     }
 }
 
+const baseurl= "http://localhost:3000";
+
 function checkJWExpiryDate(){
     let data= jwt_decode(sessionStorage.getItem("access-token"));
     console.log(data);
@@ -41,17 +43,17 @@ async function fetchData(baseurl) {
     try{
         let results= await axios.get(baseurl, Headers);
         JWTExpiredRedirect(results.data)
-        return results.data;
+        return results;
     }catch(e){
         console.error(e)
     }
 }
 
-async function SendData(baseurl,Body) {
+async function SendData(path,Body) {
     try{
-        
+            let endpoint= baseurl.concat(path);
             Headers.headers['Content-Type']='application/json';
-            let results= await axios.post(baseurl, Body, Headers );
+            let results= await axios.post(endpoint, Body, Headers );
             return results;
         
     }catch(e){

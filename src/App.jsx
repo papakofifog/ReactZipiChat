@@ -1,11 +1,11 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+
+import ErrorPage from "./components/utility_components/errorpage";
 import "./assets/css/App.css";
 import Homepage from "./components/Pages/Homepage";
 import SignIn from "./components/Pages/signIn";
 import SignUp from "./components/Pages/signUp";
-
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
-import ErrorPage from "./components/utility_components/errorpage";
 
 function App() {
   const router = createBrowserRouter([
@@ -26,9 +26,14 @@ function App() {
     },
   ]);
 
+ 
+
   return (
     <>
-      <RouterProvider router={router} />
+      
+        <RouterProvider router={router} />
+      
+      
     </>
   );
 }

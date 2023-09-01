@@ -15,6 +15,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { SendData } from '../../utility/handleAxiousRequest';
 import {showToast} from '../../utility/showToast';
 import { useState, useEffect } from 'react';
+import { mutateZipiUserData } from '../../hooks/mutateZipiUserData';
+import CircularStatic from '../utility_components/circulatProgress';
 
 
 
@@ -50,7 +52,6 @@ export default function SignUp() {
 
   const [issubmitting, setSubmission] = useState(false);
 
-  const [receivedData, setRecievedData] = useState(null)
 
   function handleChange(event){
     let {name,value}= event.target;
@@ -64,26 +65,31 @@ export default function SignUp() {
     setSubmission(true)
   };
 
+  const sendSignUpRequest= async (data)=>{
+      return await SendData("/api/signUp",data);
+  }
+
+  function handleSuccess(data){
+    showToast(data.data.message,"green", true)
+    setTimeout(()=>{location.href='/'},4000)
+  }
+
+  function handleError(data){
+    showToast(data.data.message,"red", false)
+    setSubmission((prevValue)=> !prevValue);
+  }
+
+  const {mutate, isLoading} = mutateZipiUserData("SignUp", sendSignUpRequest, handleSuccess, handleError);
+
   async function PostData() {
-    const response = await SendData('http://localhost:3000/api/signUp', {
+    mutate({
       firstname:formData.firstname,
       lastname: formData.lastname,
       email:formData.email,
       password: formData.password,
       username: formData.username,
       Dob: formData.Dob
-    } );
-    const json = response;
-    
-    setRecievedData(json.data);
-
-    if(receivedData.success){
-      showToast(receivedData.message,"green", true)
-      setTimeout(()=>{location.href='/'},4000)
-    }else{
-      showToast(receivedData.message,"red", false)
-      setSubmission((prevValue)=> !prevValue);
-    }
+    });
   }
 
   
@@ -93,7 +99,7 @@ export default function SignUp() {
         PostData();
       }
     }
-    , [issubmitting,receivedData]);
+    , [issubmitting]);
 
   
   
@@ -219,7 +225,7 @@ export default function SignUp() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign Up
+              {isLoading? <CircularStatic /> :"Sign Up"}
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>

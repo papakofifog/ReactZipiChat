@@ -17,7 +17,8 @@ import {SendData,} from "../../utility/handleAxiousRequest";
 import { showToast } from "../../utility/showToast";
 import { useState, useEffect } from "react";
 //import { SignInWithGoogle } from "../authorization/continueWithGoogle";
-
+import { mutateZipiUserData } from "../../hooks/mutateZipiUserData";
+import CircularStatic from "../utility_components/circulatProgress";
 
 function Copyright(props) {
   return (
@@ -50,7 +51,6 @@ export default function SignIn() {
 
   const [isdisabled, setisdisabled] = useState(true);
 
-  const [receivedData, setRecievedData] = useState(null);
 
   function handleChange(event) {
     let { name, value } = event.target;
@@ -76,28 +76,37 @@ export default function SignIn() {
     setSubmission((prevValue) => !prevValue);
   };
 
-  async function PostData() {
-    const response = await SendData("http://localhost:3000/api/login", {
-      email: formdata.email,
-      password: formdata.password,
-    });
-    const json = response;
-
-    setRecievedData(() => json.data);
-
-    if (response.data.success) {
-      showToast(response.data.message, "green", true);
-      window.sessionStorage.setItem("access-token", response.data.token);
+  
+  function handleSuccessEvent(data){
+      showToast(data.data.message, "green", true);
+      window.sessionStorage.setItem("access-token", data.data.token);
       setTimeout(() => {
         location.href = "/home";
       }, 4000);
-    } else {
-      showToast(response.data.message, "red", false);
+  }
 
-      setSubmission((prevValue) => !prevValue);
+  function handleFailureEvent(data){
+    showToast(data.data.message, "red", false);
 
-      resetForm();
+    setSubmission((prevValue) => !prevValue);
+
+    resetForm();
+  }
+
+  const sendSignInRequest = async(data) =>{
+    let result= await SendData("/api/login",data);
+    return result;
+  }
+
+  const { mutate, isLoading }=mutateZipiUserData("SignIn", sendSignInRequest, handleSuccessEvent, handleFailureEvent);
+
+  async function PostData() {
+    let userData={
+      email: formdata.email,
+      password: formdata.password,
     }
+
+    mutate(userData);
   }
 
   function inputNotEmpty(inputState) {
@@ -196,7 +205,7 @@ export default function SignIn() {
               sx={{ mt: 3, mb: 2 }}
               disabled={isdisabled}
             >
-              Sign In
+              { isLoading ? <CircularStatic />:"Sign In"}
             </Button>
             {/*google && <SignInWithGoogle />*/}
             <Grid container>
