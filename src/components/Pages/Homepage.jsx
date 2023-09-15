@@ -2,8 +2,11 @@ import "@fontsource/roboto/300.css";
 import { useEffect, useState} from "react";
 import {fetchData,} from "../../utility/handleAxiousRequest";
 import { connection } from "../../context/socket";
+import { fetchZipiUserData } from "../../hooks/useZipiUserData";
+
 import Header from "../header/header";
 import Main from "../mainBody/chat_components/mainBody";
+
 
 export default function Homepage() {
   const [response, setResponse] = useState({
@@ -24,64 +27,75 @@ export default function Homepage() {
     setDisplayMode((prevValue) => !prevValue);
   }
 
-  async function getActiveUser() {
-    let Response = await fetchData("http://localhost:3000/users/activeUser");
-
-    sessionStorage.setItem("activeUserName", Response.data.username);
-
-    setResponse((prevResponse) => {
-      return {
-        ...prevResponse,
-        success: Response.success,
-        userFullname: Response.data.firstname + " " + Response.data.lastname,
-        firstname: Response.data.firstname,
-        lastname: Response.data.lastname,
-        userId: Response.data.username,
-        number: Response.data.friendCount,
-        Dob: Response.data.Dob,
-        picture: Response.data.pictures,
-      };
-    });
-
-    connection.emit("setUserId", Response.data.username);
+  const fetchActiveUser = async (data) =>{
+    return await fetchData("/users/activeUser", data);
   }
 
-  async function handleGetActiveUserPicture() {
-    try {
-      let Response = await fetchData(
-        "http://localhost:3000/users/getUserPicture"
-      );
-      setResponse((prevResponse) => {
-        return {
-          ...prevResponse,
-          picture: Response.data.userPicUrl,
-        };
-      });
-    } catch (e) {
-      console.error(e);
+  
+
+  function handleActiveDataTransformation(data){
+    return {
+      success: data?.data.success,
+      userFullname: data?.data.firstname + " " + data?.data.lastname,
+      firstname: data?.data.firstname,
+      lastname: data?.data.lastname,
+      userId: data?.data.username,
+      number: data?.data.friendCount,
+      Dob: data?.data.Dob,
+      picture: data?.data.picture
     }
   }
 
-  function reRender() {
-    updateCount((prevCount) => prevCount + 1);
+  
+
+    const fetchActiveUseBasicData = async ()=>{
+      return await fetchData("/users/activeUser");
+    }
+
+    
+
+    const {
+      data,
+      isLoading,
+      isError,
+      error,
+      isFetching,
+      refetch}= fetchZipiUserData("getActiveUserData", fetchActiveUseBasicData, handleActiveDataTransformation)
+
+      
+   
+  async function getActiveUser() {
+    if( isError){
+      console.log(error)
+    }else if(isLoading){
+      console.log("Content Loading")
+    }else{
+      sessionStorage.setItem("activeUserName", data?.data.username);
+      connection.emit("setUserId", data?.data.username);
+    }
+
+    
   }
 
-  useEffect(() => {
-    getActiveUser();
-    handleGetActiveUserPicture();
-  }, [count]);
+  getActiveUser();
 
   return (
     <div className="App">
-      <Header
-        firstName={response.firstname}
-        number={response.number}
-        rerunMainpage={reRender}
-        activeUserData={response}
+      {isError && <p>{error.message}</p>}
+
+      {isLoading || isFetching && <p>Loading ...</p>}
+
+      {/* <Header
+
+        firstName={data?.data.firstname}
+        number={data?.data.number}
+        rerunMainpage={refetch}
+        activeUserData={data || ''}
         displayMode={displayMode}
         handleDarkMode={handleDisplaySwitch}
-      />
-      <Main activeUser={response.userId} count={count} />
+      /> */}
+      {/* <Main activeUser={data?.data.userId} count={count} /> */}
+      
     </div>
   );
 }

@@ -6,6 +6,9 @@ import "./assets/css/App.css";
 import Homepage from "./components/Pages/Homepage";
 import SignIn from "./components/Pages/signIn";
 import SignUp from "./components/Pages/signUp";
+import { QueryClient, QueryClientProvider } from "react-query";
+import {ReactQueryDevtools} from 'react-query/devtools';
+
 
 function App() {
   const router = createBrowserRouter([
@@ -26,15 +29,13 @@ function App() {
     },
   ]);
 
- 
+  const queryClient= new QueryClient();
 
   return (
-    <>
-      
+    <QueryClientProvider client={queryClient}>  
         <RouterProvider router={router} />
-      
-      
-    </>
+        <ReactQueryDevtools initialIsOpen={false} position='bottom-right'/>
+    </QueryClientProvider>
   );
 }
 

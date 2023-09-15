@@ -1,10 +1,13 @@
-import {  useQuery } from "react-query";
+import {  useQueries, useQuery } from "react-query";
 
 
 
-export const useFetchZipiUserData = (onSuccess, onError, secreteKey, callBackFunction) =>{
+export const fetchZipiUserData = (secreteKey, callBackFunction,handlDataTransformation) =>{
     return useQuery(secreteKey, callBackFunction,{
-        onSuccess,
-        onError
+        select: handlDataTransformation
     })
+}
+
+export const fetchZipiUserDataFormMultipleSources=  ( queries, handleDataTransformation ) => { 
+    return useQueries({queries: queries})
 }

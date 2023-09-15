@@ -41,7 +41,8 @@ function JWTExpiredRedirect(data){
 
 async function fetchData(baseurl) {
     try{
-        let results= await axios.get(baseurl, Headers);
+        let endpoint= baseurl.concat(path);
+        let results= await axios.get(endpoint, Headers);
         JWTExpiredRedirect(results.data)
         return results;
     }catch(e){
@@ -51,17 +52,17 @@ async function fetchData(baseurl) {
 
 async function SendData(path,Body) {
     try{
-            let endpoint= baseurl.concat(path);
-            Headers.headers['Content-Type']='application/json';
-            let results= await axios.post(endpoint, Body, Headers );
-            return results;
-        
-    }catch(e){
-        console.error(e.response.data)
-        return e.response;
+        let endpoint= baseurl.concat(path);
+        Headers.headers['Content-Type']='application/json';
+        let results= await axios.post(endpoint, Body, Headers );
+        return results;
+    }catch(error){
+        console.error("Hello",error);
+        return error;
     }
+
+       
     
-      
 }
 
 async function UpdateData(baseurl,Body) {

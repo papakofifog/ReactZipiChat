@@ -1,44 +1,10 @@
 import * as React from "react";
 
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import {SendData,} from "../../utility/handleAxiousRequest";
+import {SendData} from "../../utility/handleAxiousRequest";
 import { showToast } from "../../utility/showToast";
 import { useState, useEffect } from "react";
-//import { SignInWithGoogle } from "../authorization/continueWithGoogle";
 import { mutateZipiUserData } from "../../hooks/mutateZipiUserData";
-import CircularStatic from "../utility_components/circulatProgress";
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
-const theme = createTheme();
 
 export default function SignIn() {
   const [formdata, setFormData] = useState({
@@ -78,15 +44,20 @@ export default function SignIn() {
 
   
   function handleSuccessEvent(data){
+      console.log(data)
       showToast(data.data.message, "green", true);
       window.sessionStorage.setItem("access-token", data.data.token);
       setTimeout(() => {
         location.href = "/home";
       }, 4000);
+      console.log("success");
   }
 
   function handleFailureEvent(data){
+    console.log(data.data.message)
     showToast(data.data.message, "red", false);
+
+    console.log("failed")
 
     setSubmission((prevValue) => !prevValue);
 
@@ -94,11 +65,16 @@ export default function SignIn() {
   }
 
   const sendSignInRequest = async(data) =>{
-    let result= await SendData("/api/login",data);
-    return result;
+    
+      let result= await SendData("/api/login",data);
+      
+      return result;
+      
+    }
+   
   }
 
-  const { mutate, isLoading }=mutateZipiUserData("SignIn", sendSignInRequest, handleSuccessEvent, handleFailureEvent);
+  const { mutate, isLoading, error }=mutateZipiUserData("sendSignInRequest",sendSignInRequest,handleSuccessEvent, handleFailureEvent);
 
   async function PostData() {
     let userData={
@@ -108,6 +84,11 @@ export default function SignIn() {
 
     mutate(userData);
   }
+
+  /*if(isError){
+    console.log(error)
+    handleFailureEvent(error)
+  }*/
 
   function inputNotEmpty(inputState) {
     return inputState.trim().length === 0 ? false : true;
@@ -145,7 +126,7 @@ export default function SignIn() {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            //marginTop: 8,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
