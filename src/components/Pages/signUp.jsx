@@ -17,6 +17,8 @@ import {showToast} from '../../utility/showToast';
 import { useState, useEffect } from 'react';
 import { mutateZipiUserData } from '../../hooks/mutateZipiUserData';
 import CircularStatic from '../utility_components/circulatProgress';
+import CustomButton from '../utility_components/buttons';
+import { EmailOutlined, Password, PasswordOutlined } from '@mui/icons-material';
 
 
 
@@ -104,52 +106,47 @@ export default function SignUp() {
   
   
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign up
-          </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="given-name"
-                  name="firstname"
-                  required
-                  fullWidth
-                  id="firstname"
-                  label="First Name"
-                  autoFocus
-                  onChange={handleChange}
-                  value={formData.firstname}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastname"
-                  label="Last Name"
-                  name="lastname"
-                  autoComplete="family-name"
-                  onChange={handleChange}
-                  value={formData.lastname}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
+          <form className='formContainer' onSubmit={handleSubmit}>
+          
+              <div className='formInput'>
+                <label htmlFor="firsname">First Name</label>
+                <span>
+                  <input
+                    autoComplete="given-name"
+                    name="firstname"
+                    required
+                    fullWidth
+                    id="firstname"
+                    label="First Name"
+                    autoFocus
+                    onChange={handleChange}
+                    value={formData.firstname}
+                  />
+                </span>
+                
+
+              </div>
+              <div  className='formInput'>
+                <label htmlFor="lastname">Last Name</label>
+                <span>
+                  <input
+                    required
+                    fullWidth
+                    id="lastname"
+                    label="Last Name"
+                    name="lastname"
+                    autoComplete="family-name"
+                    onChange={handleChange}
+                    value={formData.lastname}
+                  />
+                </span>
+                
+              </div>
+              <div className='formInput'>
+                <label htmlFor="email">Email</label>
+                <span>
+                  <EmailOutlined className='authIcons' />
+                  <input
                   required
                   fullWidth
                   id="email"
@@ -159,85 +156,89 @@ export default function SignUp() {
                   onChange={handleChange}
                   value={formData.email}
                 />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  onChange={handleChange}
-                  value={formData.password}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="confirmPassword"
-                  label="Confirm password"
-                  type="password"
-                  id="confirmPassword"
-                  autoComplete="confirm-password"
-                  onChange={handleChange}
-                  value={formData.confirmPassword}
-                />
-              </Grid>
-              <Grid item xs={12} >
-                <TextField
-                  required
-                  fullWidth
-                  name="username"
-                  label="Username"
-                  type="text"
-                  id="username"
-                  autoComplete="username"
-                  onChange={handleChange}
-                  value={formData.username}
-                />
-              </Grid>
-              <Grid item xs={12} >
-                <TextField
-                  required
-                  fullWidth
-                  name="Dob"
-                  label="Date Of Birth"
-                  type="date"
-                  id="Dob"
-                  autoComplete="DOB"
-                  onChange={handleChange}
-                  value={formData.Dob}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              {isLoading? <CircularStatic /> :"Sign Up"}
-            </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href={"/"} variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
-            </Grid>
-          </Box>
-        </Box>
-        <Copyright sx={{ mt: 5 }} />
-      </Container>
-    </ThemeProvider>
+                </span>
+                
+              </div>
+              <div className='formInput'>
+                <label htmlFor="password">Password</label>
+                <span>
+                  <PasswordOutlined  className='authIcons'/>
+                  <input
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    onChange={handleChange}
+                    value={formData.email}
+                  />
+                </span>
+              </div>
+              <div className='formInput'>
+                <label htmlFor="confirmPassword">Confirm Password</label>
+                <span>
+                  <PasswordOutlined className='authIcons'/>
+                  <input
+                    required
+                    fullWidth
+                    name="confirmPassword"
+                    label="Confirm password"
+                    type="password"
+                    id="confirmPassword"
+                    autoComplete="confirm-password"
+                    onChange={handleChange}
+                    value={formData.confirmPassword}
+                  />
+                </span>
+                
+              </div>
+              <div className='formInput'>
+                <label htmlFor="username">Username</label>
+                <span>
+                  <input
+                    required
+                    fullWidth
+                    name="username"
+                    label="Username"
+                    type="text"
+                    id="username"
+                    autoComplete="username"
+                    onChange={handleChange}
+                    value={formData.username}
+                  />
+                </span>
+                
+              </div>
+              <div className='formInput'>
+                <label htmlFor="Dob">Date of birth</label>
+                <span>
+                  <input
+                    required
+                    fullWidth
+                    name="Dob"
+                    label="Date Of Birth"
+                    type="date"
+                    id="Dob"
+                    autoComplete="DOB"
+                    onChange={handleChange}
+                    value={formData.Dob}
+                  />
+                </span>
+                
+              </div>
+            
+            <CustomButton
+              style="button"
+              buttonName={isLoading?<CircularStatic /> : "Sign Up"}
+              click={()=>{
+                setSubmitStatus(true);
+              }}
+              isdisabled={isLoading}
+            />
+          </form>
+       
+      
+    
   );
 }

@@ -62,7 +62,7 @@ export function SignInWithGoogle() {
 
   return (
     <>
-      <div id="signInDiv"></div>
+      <div className="googleButton"></div>
     </>
   );
 }

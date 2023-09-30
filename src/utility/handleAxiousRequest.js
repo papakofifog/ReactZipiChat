@@ -2,7 +2,7 @@ import axios from "axios";
 import {showToast} from '../utility/showToast';
 import sampleUsers from "../assets/data/sampleUsers";
 import jwt_decode from "jwt-decode";
-import { ControlCamera } from "@mui/icons-material";
+
 
 
 const user_access_token=window.sessionStorage.getItem('access-token')
@@ -53,8 +53,13 @@ async function fetchData(baseurl) {
 async function SendData(path,Body) {
     try{
         let endpoint= baseurl.concat(path);
-        Headers.headers['Content-Type']='application/json';
-        let results= await axios.post(endpoint, Body, Headers );
+        console.log(Body)
+        const config = {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          };
+        let results= await axios.post(endpoint, Body, config );
         return results;
     }catch(error){
         console.error("Hello",error);
@@ -68,9 +73,14 @@ async function SendData(path,Body) {
 async function UpdateData(baseurl,Body) {
     try{
         
-            Headers.headers['Content-Type']='application/json';
-            let results= await axios.put(baseurl, Body, Headers );
-            return results;
+        const config = {
+            headers: {
+              ...Headers.headers,
+              'Content-Type': 'application/json',
+            },
+          }
+        let results= await axios.put(baseurl, Body, config );
+        return results;
         
     }catch(e){
         console.error(e.response.data)
@@ -92,7 +102,7 @@ async function sendFormData(baseurl,Body){
     }
 }
 
-async function sendAndVerifyUserDataLocaly(data){
+/*async function sendAndVerifyUserDataLocaly(data){
     let existingUser=sampleUsers.filter((x)=> {
         if(x.email === data.email && x.password === data.password){
             return x;
@@ -125,6 +135,6 @@ async function fetchUserDataLocally(token){
             message:"User does not exists"
         }
     }
-}
+}*/
 
-export {fetchData,SendData, UpdateData,sendFormData, sendAndVerifyUserDataLocaly, fetchUserDataLocally}
+export {fetchData,SendData, UpdateData,sendFormData}
