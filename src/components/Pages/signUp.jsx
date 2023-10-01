@@ -18,7 +18,7 @@ import { useState, useEffect } from 'react';
 import { mutateZipiUserData } from '../../hooks/mutateZipiUserData';
 import CircularStatic from '../utility_components/circulatProgress';
 import CustomButton from '../utility_components/buttons';
-import { EmailOutlined, Password, PasswordOutlined } from '@mui/icons-material';
+import { DateRangeOutlined, EmailOutlined, Password, PasswordOutlined, PersonOffOutlined, PersonPin } from '@mui/icons-material';
 
 
 
@@ -76,8 +76,9 @@ export default function SignUp() {
     setTimeout(()=>{location.href='/'},4000)
   }
 
-  function handleError(data){
-    showToast(data.data.message,"red", false)
+  function handleError(error){
+    console.error(error);
+    showToast(error.data.message,"red", false)
     setSubmission((prevValue)=> !prevValue);
   }
 
@@ -111,6 +112,7 @@ export default function SignUp() {
               <div className='formInput'>
                 <label htmlFor="firsname">First Name</label>
                 <span>
+                  <PersonPin className='authIcons' />
                   <input
                     autoComplete="given-name"
                     name="firstname"
@@ -129,6 +131,7 @@ export default function SignUp() {
               <div  className='formInput'>
                 <label htmlFor="lastname">Last Name</label>
                 <span>
+                  <PersonPin className='authIcons' />
                   <input
                     required
                     fullWidth
@@ -166,12 +169,13 @@ export default function SignUp() {
                   <input
                     required
                     fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="confirm-password"
                     onChange={handleChange}
-                    value={formData.email}
+                    value={formData.password}
                   />
                 </span>
               </div>
@@ -196,6 +200,7 @@ export default function SignUp() {
               <div className='formInput'>
                 <label htmlFor="username">Username</label>
                 <span>
+                  <PersonPin className='authIcons' />
                   <input
                     required
                     fullWidth
@@ -213,6 +218,7 @@ export default function SignUp() {
               <div className='formInput'>
                 <label htmlFor="Dob">Date of birth</label>
                 <span>
+                  <DateRangeOutlined className='authIcons' />
                   <input
                     required
                     fullWidth

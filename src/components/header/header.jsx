@@ -1,26 +1,24 @@
 import { React, useEffect, useState } from "react";
+
 import "../../assets/css/header.css";
+import ZipiLogo from "../../assets/zipiLogo/1024.png";
+
 import Tabs from "./sectionTabs";
 import Icon from "../utility_components/icons";
 import Image from "../utility_components/image";
 import LabelText from "../utility_components/label";
-import ZipiLogo from "../../assets/zipiLogo/1024.png";
 import Modal from "../utility_components/modal";
-import {
-  MdPersonPin,
-  MdSettings,
-  MdCall,
-  MdPersonAdd,
-} from "react-icons/md";
-import { SendData, fetchData } from "../../utility/handleAxiousRequest";
 import ActionCards from "../utility_components/actionCards";
-import {
-  DarkModeOutlined,
-  LightModeOutlined,
-  Logout,
-} from "@mui/icons-material";
-import {  ProfileOutlined } from "@ant-design/icons";
 import { EditProfile } from "../mainBody/chat_components/editProfile";
+
+import {MdPersonPin,MdSettings,MdCall,MdPersonAdd} from "react-icons/md";
+
+
+import { SendData, fetchData } from "../../utility/handleAxiousRequest";
+
+import {DarkModeOutlined,LightModeOutlined,Logout,} from "@mui/icons-material";
+import {  ProfileOutlined } from "@ant-design/icons";
+
 
 export default function Header(props) {
   let [nonFriendsResponse, setnonFriendsResponse] = useState({
@@ -105,9 +103,7 @@ export default function Header(props) {
 
   async function handleGetActiveUserPicture() {
     try {
-      let Response = await fetchData(
-        "http://localhost:3000/users/getUserPicture"
-      );
+      let Response = await fetchData("/users/getUserPicture");
       return Response.data.userPicUrl;
     } catch (e) {
       console.error(e);
@@ -124,15 +120,15 @@ export default function Header(props) {
           activeUserData={props.activeUserData}
           close={handleCloseEvent}
           activeUserPicture={UserPicture}
-          rerun={handleUpdateMainPage}
+          rerun={handleActiveUserRefetch}
         />,
       ],
     };
     showModal({ show: true, ...curDetails });
   }
 
-  function handleUpdateMainPage() {
-    props.rerunMainpage();
+  function handleActiveUserRefetch() {
+    props.refetchActiveUser();
   }
 
   async function handleCloseEvent(actualState) {
@@ -267,10 +263,10 @@ export default function Header(props) {
       <div className="profile" onClick={handleDropDownDisplay}>
         <div className="details">
           <p style={{ color: "#ccc", fontSize: "1.2rem" }}>
-            {props.firstName}{" "}
+            {props.activeUserData?.firstname}{" "}
           </p>
         </div>
-        <Image src={props.activeUserData.picture} />
+        <Image src={props.activeUserData?.picture} />
         <div className={isListDisplayed ? "dropDownList" : "hideDropdownlist"}>
           <div className="options" role="button" onClick={handleProfileDisplay}>
             <ProfileOutlined className="logOut" />

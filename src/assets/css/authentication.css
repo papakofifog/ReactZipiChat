@@ -57,7 +57,8 @@
   list-style: none;
   border-radius: 5px;
   width: 20rem;
-  align-self: center;  
+  align-self: center; 
+  align-items: center; 
 }
 
 
@@ -69,6 +70,7 @@
   border: none;
   text-align: center;
   font-size: var(--fontSize);
+  cursor: pointer; ;
 
 }
 

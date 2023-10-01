@@ -28,23 +28,27 @@ export default function SignIn() {
         return {...prevValue,[name]:value}})
   }
 
-  function handleSignInRequest(){
-    try{
-      let result= SendData("/api/login");
+  async function handleSignInRequest(){
+      let result= await SendData("/api/login", userCredentials);
       return result;
-    }catch(e){
-      console.error(e)
-      return e;
-    }
   }
 
-  function handSuccessEvent(data){
-    showToast(data?.message, 'green', true);
-    //setTimeout(window.location.href="/home",3000);
+  function handleSuccessEvent(data){
+    try{
+      showToast(data?.data.message,"green", true)
+      sessionStorage.setItem("access-token", data?.data.token);
+      setTimeout(history.pushState("/home"),4000);
+    }catch(e){
+      console.error(e)
+    }
+    
   }
 
   function handleFailedEvent(data){
-    showToast(data?.message);
+    //console.log(data?.response.data.message)
+    showToast(data?.response.data.message, "red", false);
+    setSubmitStatus(false);
+   
   }
 
   function handleMutation(mutateFunction){
@@ -54,27 +58,26 @@ export default function SignIn() {
         "password": userCredentials.password
       }
     )
+
+    
   }
 
-  console.log(userCredentials)
-
   function handleFormReset(){
-    setUserCredentials({
-      email:'',
-      password:''
+    setUserCredentials((prevValue)=>{
+      return {...prevValue, email:"", password:""}
     })
   }
 
   
 
-  const {mutate, isLoading, }= mutateZipiUserData("signIn", handleSignInRequest, handSuccessEvent, handleFailedEvent);
+  const {mutate, isLoading }= mutateZipiUserData("signIn", handleSignInRequest, handleSuccessEvent, handleFailedEvent);
 
   React.useEffect(()=>{
     if(isSubmitting){
       handleMutation(mutate);
     }
     setSubmitStatus(false);
-  }, [isSubmitting, mutate])
+  }, [isSubmitting])
 
   return (
     
@@ -119,12 +122,12 @@ export default function SignIn() {
 
         <CustomButton 
         style="button"
-        buttonName={isLoading?<CircularStatic /> : "forgot Password"}
+        buttonName="forgot Password"
         click={()=>{
-          setSubmitStatus(true);
+          window.location.href=""
         }}
         isdisabled={isLoading}
-        />
+      />
 
         {/*<SignInWithGoogle className="googleButton" />*/}
       </div>

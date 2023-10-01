@@ -1,6 +1,6 @@
 import "@fontsource/roboto/300.css";
 import { useEffect, useState} from "react";
-import {fetchData,} from "../../utility/handleAxiousRequest";
+import {fetchData} from "../../utility/handleAxiousRequest";
 import { connection } from "../../context/socket";
 import { fetchZipiUserData } from "../../hooks/useZipiUserData";
 
@@ -34,50 +34,65 @@ export default function Homepage() {
   
 
   function handleActiveDataTransformation(data){
-    return {
-      success: data?.data.success,
-      userFullname: data?.data.firstname + " " + data?.data.lastname,
-      firstname: data?.data.firstname,
-      lastname: data?.data.lastname,
-      userId: data?.data.username,
-      number: data?.data.friendCount,
-      Dob: data?.data.Dob,
-      picture: data?.data.picture
+    try{
+      let actualData=data?.data.data;
+      return {
+        success: actualData.success,
+        userFullname: actualData.firstname + " " + actualData.lastname,
+        firstname: actualData.firstname,
+        lastname: actualData.lastname,
+        userId: actualData.username,
+        number: actualData.friendCount,
+        Dob: actualData.Dob,
+        picture: actualData.picture
+      }
+    }catch(e){
+      console.error(e)
     }
+    
   }
 
   
 
-    const fetchActiveUseBasicData = async ()=>{
-      return await fetchData("/users/activeUser");
+    const fetchActiveUserBasicData = async ()=>{
+      try{
+        let data=await fetchData("/users/activeUser");
+        return data;
+      }catch(e){
+        console.error(e)
+      }
+      
+
     }
-
-    
-
     const {
       data,
       isLoading,
       isError,
       error,
       isFetching,
-      refetch}= fetchZipiUserData("getActiveUserData", fetchActiveUseBasicData, handleActiveDataTransformation)
+      refetch}= fetchZipiUserData("getActiveUserData", fetchActiveUserBasicData)
 
       
    
-  async function getActiveUser() {
+  function getActiveUser() {
     if( isError){
       console.log(error)
     }else if(isLoading){
       console.log("Content Loading")
     }else{
-      sessionStorage.setItem("activeUserName", data?.data.username);
-      connection.emit("setUserId", data?.data.username);
+      console.log(data?.data.data);
+      sessionStorage.setItem("activeUserName", data?.data.data.username);
+      connection.emit("setUserId", data?.data.data.username);
     }
 
     
   }
 
-  getActiveUser();
+  
+
+  useEffect(()=>{
+    getActiveUser();
+  }, [])
 
   return (
     <div className="App">
@@ -85,16 +100,17 @@ export default function Homepage() {
 
       {isLoading || isFetching && <p>Loading ...</p>}
 
-      {/* <Header
-
-        firstName={data?.data.firstname}
-        number={data?.data.number}
-        rerunMainpage={refetch}
-        activeUserData={data || ''}
+      <Header
+        refetchActiveUser={refetch}
+        activeUserData={data?.data.data}
         displayMode={displayMode}
         handleDarkMode={handleDisplaySwitch}
+      /> 
+      {/*<Main 
+
+      activeUser={data?.data.userId} 
+      count={count} 
       /> */}
-      {/* <Main activeUser={data?.data.userId} count={count} /> */}
       
     </div>
   );
