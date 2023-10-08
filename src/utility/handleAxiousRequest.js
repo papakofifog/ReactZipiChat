@@ -83,13 +83,15 @@ async function UpdateData(path,Body) {
 
 
 
-async function sendFormData(baseurl,Body){
+async function sendFormData(path,Body){
     try{
         Headers.headers['Content-Type']='multipart/form-data';
-        let response= await axios.post(baseurl,Body,Headers)
+        let endpoint=baseurl.concat(path);
+        let response= await axios.post(endpoint,Body,Headers)
         return response;
     }catch(e){
         console.error(e)
+        throw e;
     }
 }
 

@@ -5,6 +5,7 @@ import { showToast } from "../../../utility/showToast";
 import { CallToAction, EditOutlined} from "@mui/icons-material";
 import { FileUpload } from "../../utility_components/emoji";
 import { mutateZipiUserData } from "../../../hooks/mutateZipiUserData";
+import { CircularProgress } from "@mui/material";
 
 
 export function EditProfile(props) {
@@ -20,7 +21,8 @@ export function EditProfile(props) {
 
   function onSuccess(data){
      try{
-      showToast(data?.Response.data.message, "green", true);
+      
+      showToast(data?.data.message, "green", true);
       props.close("editProfile");
      }catch(e){
       console.error(e)
@@ -30,26 +32,25 @@ export function EditProfile(props) {
 
   function onError(error){
     try{
-      showToast(error?.Response.data.message, "red", false);
+      showToast(error?.data?.message, "red", false);
       setReadyForSubmission((prevValue) => !prevValue);
     }catch(e){
       console.error(e);
     }
   }
 
-  const {mutate, isLoading} = mutateZipiUserData("updateActiveUserData", handleUpdateProfileData, onSuccess,onError);
+  const {mutate, isLoading, data} = mutateZipiUserData("updateActiveUserData", handleUpdateProfileData, onSuccess,onError);
 
 
-  async function handleUpdateProfileData() {
-    let data = {
-      firstname: userProfile.firstname,
-      lastname: userProfile.lastname,
-      Dob: userProfile.Dob,
-    };
-
-    let Response = await UpdateData("/users/editProfile",data);
-
-    return Response;
+  console.log(data)
+  async function handleUpdateProfileData(data) {
+    try{
+      let Response = await UpdateData("/users/editProfile",data);
+      return Response;
+    }catch(e){
+      console.error(e);
+    }
+    
   }
 
   function handleEditProfileDataUpdate(event) {
@@ -62,44 +63,19 @@ export function EditProfile(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    setReadyForSubmission(true);
-  }
-
-  async function uploadFunctionCloudinary(value) {
-    try {
-      let formData = new FormData();
-      formData.append("file", value);
-      let uploadedFileData = await sendFormData(
-        "http://localhost:3000/users/upload",
-        formData
-      );
-      let CloudinaryFileData = uploadedFileData.data;
-      if (CloudinaryFileData.success) {
-        let { url, original_filename, fileType } = CloudinaryFileData.data;
-
-        return { url, original_filename, fileType };
+    mutate(
+      {
+        firstname: userProfile.firstname,
+        lastname: userProfile.lastname,
+        Dob: userProfile.Dob,
       }
-      return null;
-    } catch (e) {
-      console.error(e);
-    }
+    );
   }
 
-  async function handleInputFileChangeEvent(event) {
-    let { files } = event.target;
-    let { url, original_filename, fileType } = await uploadFunctionCloudinary(
-      files[0]
-    );
-    let Response = await UpdateData(
-      "http://localhost:3000/users/updatePicture",
-      { picURL: url }
-    );
-    if (Response.data.success) {
-      showToast(Response.data.message, "green", true);
-      props.rerun();
-    } else {
-      showToast(Response.data.message, "red", false);
-    }
+  function uploadToCloudSuccess(data){
+    console.log(data)
+    let { url, original_filename, fileType }=data?.data.data || null;
+    updateProfilePictureData({ picURL: url })
     setFileToUpload(() => {
       return {
         name: original_filename,
@@ -109,11 +85,68 @@ export function EditProfile(props) {
     });
   }
 
-  useEffect(() => {
-    if (isReadyForSubmission) {
-      handleUpdateProfileData();
+  function uploadToCloudFailure(data){
+    console.log(data)
+
+  }
+
+  const {mutate:mutatePictureToCloud, isLoading:uploadPictureToCloudIsLoading}= mutateZipiUserData("uploodPictureToCloud",handleUpdloadPictureToCloudinary,uploadToCloudSuccess,uploadToCloudFailure )
+
+
+  async function handleUpdloadPictureToCloudinary(formData){
+    try{
+      let response= await sendFormData("/users/upload",formData);
+      return response;
+    }catch(e){
+      console.error(e)
     }
-  }, [isReadyForSubmission]);
+  }
+
+  async function uploadFunctionCloudinary(value) {
+    try {
+      let formData = new FormData();
+      formData.append("file", value);
+      mutatePictureToCloud(
+        formData
+      )
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+
+  function onUpdateProfilePicture(data){
+    console.log(data)
+    showToast(data?.data.message, "green", true);
+    props.rerun();
+  }
+
+  function onUpdateProfilePictureFailure(data){
+    console.log(data)
+    showToast(data?.data.message, "red", false);
+  }
+
+  const {mutate:mutateProfilePicture}=mutateZipiUserData("profileUpdate", handleProfileUpdateRequest, onUpdateProfilePicture,onUpdateProfilePictureFailure)
+
+  async function handleProfileUpdateRequest(data){
+    try{
+      let response=await UpdateData("/users/updatePicture",data);
+      return response;
+    }catch(e){
+      console.error(e)
+    }
+  }
+
+  function updateProfilePictureData(data){
+    mutateProfilePicture(
+      data
+    )
+  }
+
+  async function handleInputFileChangeEvent(event) {
+    let { files } = event.target;
+    await uploadFunctionCloudinary(files[0]);
+  }
 
   return (
     <div className="form-container">
@@ -176,9 +209,10 @@ export function EditProfile(props) {
         <div className="form-input-section">
           <input
             type="submit"
-            name="Submit"
+            name={isLoading ? <CircularProgress /> : "Submit"}
             onClick={handleSubmit}
             className="acceptRequest"
+            disabled={isLoading}
           />
         </div>
       </form>
