@@ -9,50 +9,12 @@ import Main from "../mainBody/chat_components/mainBody";
 
 
 export default function Homepage() {
-  const [response, setResponse] = useState({
-    success: false,
-    userFullname: "",
-    userId: "",
-    number: "",
-    firstname: "",
-    lastname: "",
-    Dob: "",
-    pictures: "",
-  });
-
-  const [count, updateCount] = useState(0);
+  
   let [displayMode, setDisplayMode] = useState(false);
 
-  function handleDisplaySwitch(event) {
+  function handleDisplaySwitch() {
     setDisplayMode((prevValue) => !prevValue);
   }
-
-  const fetchActiveUser = async (data) =>{
-    return await fetchData("/users/activeUser", data);
-  }
-
-  
-
-  function handleActiveDataTransformation(data){
-    try{
-      let actualData=data?.data.data;
-      return {
-        success: actualData.success,
-        userFullname: actualData.firstname + " " + actualData.lastname,
-        firstname: actualData.firstname,
-        lastname: actualData.lastname,
-        userId: actualData.username,
-        number: actualData.friendCount,
-        Dob: actualData.Dob,
-        picture: actualData.picture
-      }
-    }catch(e){
-      console.error(e)
-    }
-    
-  }
-
-  
 
     const fetchActiveUserBasicData = async ()=>{
       try{
@@ -74,13 +36,12 @@ export default function Homepage() {
 
       
    
-  function getActiveUser() {
+  function saveActiveUsername() {
     if( isError){
       console.log(error)
     }else if(isLoading){
       console.log("Content Loading")
     }else{
-      console.log(data?.data.data);
       sessionStorage.setItem("activeUserName", data?.data.data.username);
       connection.emit("setUserId", data?.data.data.username);
     }
@@ -88,10 +49,8 @@ export default function Homepage() {
     
   }
 
-  
-
   useEffect(()=>{
-    getActiveUser();
+    saveActiveUsername();
   }, [])
 
   return (

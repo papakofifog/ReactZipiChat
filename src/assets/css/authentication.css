@@ -111,19 +111,19 @@
 
 .formInput>label{
   font-size: var(--fontSize);
-  flex: 1;
+  flex-basis: 200px;
   align-self: center;
 
 }
 
-.formInput >span{
+.formInput >div{
   flex:2;
   width: 350px;
   height: 40px;
   border-radius: 5px;
   font-size: var(--fontSize);
   border: 1px inset #e7e6e7;
-
+  margin-bottom: 10px;
   display: flex;
 }
 

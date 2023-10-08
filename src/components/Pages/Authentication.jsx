@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import SignIn from "./signIn";
-import SignUp from "./signUp";
+import SignIn from "../authentication/signIn";
+import SignUp from "../authentication/signUp";
 import Image from "../utility_components/image";
 
 

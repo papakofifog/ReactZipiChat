@@ -16,21 +16,16 @@ import {MdPersonPin,MdSettings,MdCall,MdPersonAdd} from "react-icons/md";
 
 import { SendData, fetchData } from "../../utility/handleAxiousRequest";
 
+
 import {DarkModeOutlined,LightModeOutlined,Logout,} from "@mui/icons-material";
 import {  ProfileOutlined } from "@ant-design/icons";
+import { fetchZipiUserData, fetchZipiUserDataFromMultipleSources } from "../../hooks/useZipiUserData";
 
+import { generateFriendRequestCardElementsList, generateNewFriendsActionCardElementArray } from "../utility_components/reactArrayElements";
+import { handleGetActiveUserPicture, getAllFriendRequest, getAllNonFriends, isLoggedOut } from "./headerRequests";
 
 export default function Header(props) {
-  let [nonFriendsResponse, setnonFriendsResponse] = useState({
-    success: false,
-    data: [],
-  });
-
-  let [friendRequestResponse, updateFriendRequestResponse] = useState({
-    success: false,
-    data: [],
-  });
-
+  
   let [ModalDetails, showModal] = useState({
     show: false,
     title: "",
@@ -38,42 +33,22 @@ export default function Header(props) {
     setting: {},
   });
 
-  
+  let [isListDisplayed, setdisplayListStatus] = useState(false);
 
-  let nonFriendElements = nonFriendsResponse.data.map((nonFriend, index) => {
-    return (
-      <ActionCards
-        key={index}
-        firstname={nonFriend.firstname}
-        number="+233552661939"
-        buttonsName={
-          nonFriend.isRequestSent ? "Cancel Request" : "Send Request"
-        }
-        friendId={nonFriend.username}
-        requestSent={nonFriend.isRequestSent}
-        close={handleCloseEvent}
-        buttonClass={nonFriend.isRequestSent ? "cancelRequest" : "sendRequest"}
-        //userPic={nonFriend.userPic.userPicUrl}
-      />
-    );
-  });
+  const {
+    data:nonFriends,
+    isLoading:nonFriendsLoading,
+    refetch:refetchNonFriends}= fetchZipiUserData("getNonFriends", getAllNonFriends);
 
-  let userRequestElements = friendRequestResponse.data.map(
-    (friendRequest, index) => {
-      return (
-        <ActionCards
-          key={index}
-          firstname={friendRequest.firstname}
-          number="+233552661939"
-          buttonsName="Accept Request"
-          close={handleCloseEvent}
-          friendId={friendRequest.username}
-          buttonClass="acceptRequest"
-          userPic={friendRequest.userPic.userPicUrl}
-        />
-      );
-    }
-  );
+  const {
+    data:friendRequests,
+    isLoading:friendRequetIsLoading,
+    refetch:refetchFriendRequest
+  }= fetchZipiUserData("getFriendRequest", getAllFriendRequest);
+
+  let nonFriendElements = generateNewFriendsActionCardElementArray(nonFriends?.data?.data);
+
+  let userRequestElements = generateFriendRequestCardElementsList(friendRequests?.data?.data);
 
   function handleTabClickEvent(id) {
     let curDetails = "";
@@ -101,15 +76,6 @@ export default function Header(props) {
     showModal({ show: true, ...curDetails });
   }
 
-  async function handleGetActiveUserPicture() {
-    try {
-      let Response = await fetchData("/users/getUserPicture");
-      return Response.data.userPicUrl;
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
   async function handleProfileDisplay() {
     let UserPicture = await handleGetActiveUserPicture();
     let curDetails = {
@@ -134,13 +100,13 @@ export default function Header(props) {
   async function handleCloseEvent(actualState) {
     switch (actualState) {
       case "Accept Request":
-        await getAllFriendRequest();
-        await getAllNonFriends();
+        await refetchFriendRequest();
+        await refetchNonFriends();
         props.rerunMainpage();
         break;
       case "Send Request":
       case "Cancel Request":
-        await getAllNonFriends();
+        await refetchNonFriends();
         break;
       case "editProfile":
         props.rerunMainpage();
@@ -152,31 +118,8 @@ export default function Header(props) {
     });
   }
 
-  async function getAllNonFriends() {
-    let Response = await fetchData(
-      "http://localhost:3000/friend/allnonFriends"
-    );
-    setnonFriendsResponse((prevNonFriends) => {
-      return {
-        ...prevNonFriends,
-        success: Response.success,
-        data: Response.data,
-      };
-    });
-  }
-
-  async function getAllFriendRequest() {
-    let Response = await fetchData(
-      "http://localhost:3000/friend/getAllFriendRequest"
-    );
-    updateFriendRequestResponse({
-      success: Response.success,
-      data: Response.data,
-    });
-  }
-
   useEffect(() => {
-    getAllNonFriends();
+    //getAllNonFriends();
     getAllFriendRequest();
   }, []);
 
@@ -184,25 +127,24 @@ export default function Header(props) {
     <Modal
       close={handleCloseEvent}
       title={ModalDetails.title}
-      content={ModalDetails.content.map((contact) => contact)}
+      content={ModalDetails.content?.map((contact) => contact)}
     />
   ) : (
     ""
   );
-
-
-
-  let [isListDisplayed, setdisplayListStatus] = useState(false);
 
   function handleDropDownDisplay() {
     setdisplayListStatus((prevStatus) => !prevStatus);
   }
 
   async function handleLogOut() {
-    await SendData(`${import.meta.env.BASEURL}/api/logout`);
+    let result=await isLoggedOut();
+    if(!result?.data){
+      alert("Your request to logout of your account, is being processed!");
+    }
     window.sessionStorage.setItem("access-token", "");
     setTimeout(() => {
-      location.href = "/";
+      location.href="/"
     }, 1000);
   }
 
@@ -248,12 +190,14 @@ export default function Header(props) {
             props.displayMode ? (
               <LightModeOutlined
                 style={{ color: "white" }}
-                onClick={() => props.handleDarkMode}
+                onClick={() => props.handleDarkMode()}
+                className="icon"
               />
             ) : (
               <DarkModeOutlined
                 style={{ color: "white" }}
-                onClick={() => props.handleDarkMode}
+                onClick={() => props.handleDarkMode()}
+                className="icon"
               />
             )
           }
