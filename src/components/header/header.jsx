@@ -14,9 +14,6 @@ import { EditProfile } from "../mainBody/chat_components/editProfile";
 import {MdPersonPin,MdSettings,MdCall,MdPersonAdd} from "react-icons/md";
 
 
-import { SendData, fetchData } from "../../utility/handleAxiousRequest";
-
-
 import {DarkModeOutlined,LightModeOutlined,Logout,} from "@mui/icons-material";
 import {  ProfileOutlined } from "@ant-design/icons";
 import { fetchZipiUserData, fetchZipiUserDataFromMultipleSources } from "../../hooks/useZipiUserData";

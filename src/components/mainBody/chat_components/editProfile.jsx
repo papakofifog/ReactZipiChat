@@ -41,8 +41,6 @@ export function EditProfile(props) {
 
   const {mutate, isLoading, data} = mutateZipiUserData("updateActiveUserData", handleUpdateProfileData, onSuccess,onError);
 
-
-  console.log(data)
   async function handleUpdateProfileData(data) {
     try{
       let Response = await UpdateData("/users/editProfile",data);
@@ -151,9 +149,10 @@ export function EditProfile(props) {
   return (
     <div className="form-container">
       <div className="editProfile">
-        <Image
+        {uploadPictureToCloudIsLoading?<CircularProgress
+              />:<Image
           style="editImage"
-          src={fileToUpload.url}
+          src={fileToUpload.url||props.activeUserData?.picture}
           children={
             <div className="editProfileImageUploadButton">
               {" "}
@@ -165,7 +164,7 @@ export function EditProfile(props) {
               />
             </div>
           }
-        />
+        />}
 
         <p>Upload Files below 5MB</p>
       </div>
