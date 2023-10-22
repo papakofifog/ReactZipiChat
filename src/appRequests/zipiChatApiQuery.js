@@ -1,5 +1,20 @@
-import { SendData, fetchData } from "../../utility/handleAxiousRequest";
+import { SendData, fetchData, sendFormData, UpdateData } from "../utility/handleAxiousRequest";
 
+
+/** Homepage component request */
+export const fetchActiveUserBasicData = async ()=>{
+  try{
+    let data=await fetchData("/users/activeUser");
+    return data;
+  }catch(e){
+    console.error(e)
+  }
+  
+
+}
+
+
+//** Header component requests */
 export async function handleGetActiveUserPicture() {
     try {
       let Response = await fetchData("/users/getUserPicture");
@@ -35,4 +50,20 @@ export async function isLoggedOut(){
     }catch(e){
         console.error(e)
     }
+}
+
+
+
+
+//** Main body component Requests */
+
+
+export async function getAllContacts() {
+  try{
+    let response = await fetchData("/friend/getUsersFriends");
+    return response;
+  }catch(e){
+    console.error(e);
+  }
+  
 }

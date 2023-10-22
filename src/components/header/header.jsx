@@ -2,27 +2,33 @@ import { React, useEffect, useState } from "react";
 
 import "../../assets/css/header.css";
 import ZipiLogo from "../../assets/zipiLogo/1024.png";
+import { fetchZipiUserData } from "../../hooks/useZipiUserData";
+import {
+  generateFriendRequestCardElementsList,
+  generateNewFriendsActionCardElementArray,
+} from "../utility_components/reactArrayElements";
+import {
+  handleGetActiveUserPicture,
+  getAllFriendRequest,
+  getAllNonFriends,
+  isLoggedOut,
+} from "../../appRequests/zipiChatApiQuery";
 
 import Tabs from "./sectionTabs";
 import Icon from "../utility_components/icons";
 import Image from "../utility_components/image";
 import LabelText from "../utility_components/label";
 import Modal from "../utility_components/modal";
-import ActionCards from "../utility_components/actionCards";
 import { EditProfile } from "../mainBody/chat_components/editProfile";
 
-import {MdPersonPin,MdSettings,MdCall,MdPersonAdd} from "react-icons/md";
+import { MdPersonPin, MdSettings, MdCall, MdPersonAdd } from "react-icons/md";
+import {DarkModeOutlined,LightModeOutlined,Logout} from "@mui/icons-material";
+import { ProfileOutlined } from "@ant-design/icons";
 
 
-import {DarkModeOutlined,LightModeOutlined,Logout,} from "@mui/icons-material";
-import {  ProfileOutlined } from "@ant-design/icons";
-import { fetchZipiUserData, fetchZipiUserDataFromMultipleSources } from "../../hooks/useZipiUserData";
 
-import { generateFriendRequestCardElementsList, generateNewFriendsActionCardElementArray } from "../utility_components/reactArrayElements";
-import { handleGetActiveUserPicture, getAllFriendRequest, getAllNonFriends, isLoggedOut } from "./headerRequests";
 
 export default function Header(props) {
-  
   let [ModalDetails, showModal] = useState({
     show: false,
     title: "",
@@ -33,19 +39,24 @@ export default function Header(props) {
   let [isListDisplayed, setdisplayListStatus] = useState(false);
 
   const {
-    data:nonFriends,
-    isLoading:nonFriendsLoading,
-    refetch:refetchNonFriends}= fetchZipiUserData("getNonFriends", getAllNonFriends);
+    data: nonFriends,
+    isLoading: nonFriendsLoading,
+    refetch: refetchNonFriends,
+  } = fetchZipiUserData("getNonFriends", getAllNonFriends);
 
   const {
-    data:friendRequests,
-    isLoading:friendRequetIsLoading,
-    refetch:refetchFriendRequest
-  }= fetchZipiUserData("getFriendRequest", getAllFriendRequest);
+    data: friendRequests,
+    isLoading: friendRequetIsLoading,
+    refetch: refetchFriendRequest,
+  } = fetchZipiUserData("getFriendRequest", getAllFriendRequest);
 
-  let nonFriendElements = generateNewFriendsActionCardElementArray(nonFriends?.data?.data);
+  let nonFriendElements = generateNewFriendsActionCardElementArray(
+    nonFriends?.data?.data
+  );
 
-  let userRequestElements = generateFriendRequestCardElementsList(friendRequests?.data?.data);
+  let userRequestElements = generateFriendRequestCardElementsList(
+    friendRequests?.data?.data
+  );
 
   function handleTabClickEvent(id) {
     let curDetails = "";
@@ -135,13 +146,13 @@ export default function Header(props) {
   }
 
   async function handleLogOut() {
-    let result=await isLoggedOut();
-    if(!result?.data){
+    let result = await isLoggedOut();
+    if (!result?.data) {
       alert("Your request to logout of your account, is being processed!");
     }
     window.sessionStorage.setItem("access-token", "");
     setTimeout(() => {
-      location.href="/"
+      location.href = "/";
     }, 1000);
   }
 

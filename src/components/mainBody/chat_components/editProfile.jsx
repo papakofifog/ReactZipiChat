@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Image from "../../utility_components/image";
-import {UpdateData,sendFormData} from "../../../utility/handleAxiousRequest";
+import { UpdateData, sendFormData } from "../../../utility/handleAxiousRequest";
 import { showToast } from "../../../utility/showToast";
-import { CallToAction, EditOutlined} from "@mui/icons-material";
+import { CallToAction, EditOutlined } from "@mui/icons-material";
 import { FileUpload } from "../../utility_components/emoji";
 import { mutateZipiUserData } from "../../../hooks/mutateZipiUserData";
 import { CircularProgress } from "@mui/material";
-
+import {
+  handleUpdloadPictureToCloud,
+  handleUpdateProfileData,
+} from "../../../appRequests/zipiChatApiMutions";
 
 export function EditProfile(props) {
   const [userProfile, updateProfileData] = useState(props.activeUserData);
@@ -18,38 +21,30 @@ export function EditProfile(props) {
     url: props.activeUserPicture,
   });
 
-
-  function onSuccess(data){
-     try{
-      
+  function onSuccess(data) {
+    try {
       showToast(data?.data.message, "green", true);
       props.close("editProfile");
-     }catch(e){
-      console.error(e)
-     }
-      
+    } catch (e) {
+      console.error(e);
+    }
   }
 
-  function onError(error){
-    try{
+  function onError(error) {
+    try {
       showToast(error?.data?.message, "red", false);
       setReadyForSubmission((prevValue) => !prevValue);
-    }catch(e){
+    } catch (e) {
       console.error(e);
     }
   }
 
-  const {mutate, isLoading, data} = mutateZipiUserData("updateActiveUserData", handleUpdateProfileData, onSuccess,onError);
-
-  async function handleUpdateProfileData(data) {
-    try{
-      let Response = await UpdateData("/users/editProfile",data);
-      return Response;
-    }catch(e){
-      console.error(e);
-    }
-    
-  }
+  const { mutate, isLoading, data } = mutateZipiUserData(
+    "updateActiveUserData",
+    handleUpdateProfileData,
+    onSuccess,
+    onError
+  );
 
   function handleEditProfileDataUpdate(event) {
     let { name, value } = event.target;
@@ -61,19 +56,17 @@ export function EditProfile(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    mutate(
-      {
-        firstname: userProfile.firstname,
-        lastname: userProfile.lastname,
-        Dob: userProfile.Dob,
-      }
-    );
+    mutate({
+      firstname: userProfile.firstname,
+      lastname: userProfile.lastname,
+      Dob: userProfile.Dob,
+    });
   }
 
-  function uploadToCloudSuccess(data){
-    console.log(data)
-    let { url, original_filename, fileType }=data?.data.data || null;
-    updateProfilePictureData({ picURL: url })
+  function uploadToCloudSuccess(data) {
+    console.log(data);
+    let { url, original_filename, fileType } = data?.data.data || null;
+    updateProfilePictureData({ picURL: url });
     setFileToUpload(() => {
       return {
         name: original_filename,
@@ -83,62 +76,59 @@ export function EditProfile(props) {
     });
   }
 
-  function uploadToCloudFailure(data){
-    console.log(data)
-
+  function uploadToCloudFailure(data) {
+    console.log(data);
   }
 
-  const {mutate:mutatePictureToCloud, isLoading:uploadPictureToCloudIsLoading}= mutateZipiUserData("uploodPictureToCloud",handleUpdloadPictureToCloudinary,uploadToCloudSuccess,uploadToCloudFailure )
-
-
-  async function handleUpdloadPictureToCloudinary(formData){
-    try{
-      let response= await sendFormData("/users/upload",formData);
-      return response;
-    }catch(e){
-      console.error(e)
-    }
-  }
+  const {
+    mutate: mutatePictureToCloud,
+    isLoading: uploadPictureToCloudIsLoading,
+  } = mutateZipiUserData(
+    "uploodPictureToCloud",
+    handleUpdloadPictureToCloud,
+    uploadToCloudSuccess,
+    uploadToCloudFailure
+  );
 
   async function uploadFunctionCloudinary(value) {
     try {
       let formData = new FormData();
       formData.append("file", value);
-      mutatePictureToCloud(
-        formData
-      )
+      mutatePictureToCloud(formData);
     } catch (e) {
       console.error(e);
     }
   }
 
-
-  function onUpdateProfilePicture(data){
-    console.log(data)
+  function onUpdateProfilePicture(data) {
+    console.log(data);
     showToast(data?.data.message, "green", true);
     props.rerun();
   }
 
-  function onUpdateProfilePictureFailure(data){
-    console.log(data)
+  function onUpdateProfilePictureFailure(data) {
+    console.log(data);
     showToast(data?.data.message, "red", false);
   }
 
-  const {mutate:mutateProfilePicture}=mutateZipiUserData("profileUpdate", handleProfileUpdateRequest, onUpdateProfilePicture,onUpdateProfilePictureFailure)
+  const { mutate: mutateProfilePicture } = mutateZipiUserData(
+    "profileUpdate",
+    handleProfileUpdateRequest,
+    onUpdateProfilePicture,
+    onUpdateProfilePictureFailure
+  );
 
-  async function handleProfileUpdateRequest(data){
-    try{
-      let response=await UpdateData("/users/updatePicture",data);
+  async function handleProfileUpdateRequest(data) {
+    try {
+      let response = await UpdateData("/users/updatePicture", data);
       return response;
-    }catch(e){
-      console.error(e)
+    } catch (e) {
+      console.error(e);
     }
   }
 
-  function updateProfilePictureData(data){
-    mutateProfilePicture(
-      data
-    )
+  function updateProfilePictureData(data) {
+    mutateProfilePicture(data);
   }
 
   async function handleInputFileChangeEvent(event) {
@@ -149,22 +139,25 @@ export function EditProfile(props) {
   return (
     <div className="form-container">
       <div className="editProfile">
-        {uploadPictureToCloudIsLoading?<CircularProgress
-              />:<Image
-          style="editImage"
-          src={fileToUpload.url||props.activeUserData?.picture}
-          children={
-            <div className="editProfileImageUploadButton">
-              {" "}
-              <FileUpload
-                id="attatchFile"
-                style={{ borderRadius: "50%" }}
-                icon={<EditOutlined style={{ color: "black" }} />}
-                change={handleInputFileChangeEvent}
-              />
-            </div>
-          }
-        />}
+        {uploadPictureToCloudIsLoading ? (
+          <CircularProgress />
+        ) : (
+          <Image
+            style="editImage"
+            src={fileToUpload.url || props.activeUserData?.picture}
+            children={
+              <div className="editProfileImageUploadButton">
+                {" "}
+                <FileUpload
+                  id="attatchFile"
+                  style={{ borderRadius: "50%" }}
+                  icon={<EditOutlined style={{ color: "black" }} />}
+                  change={handleInputFileChangeEvent}
+                />
+              </div>
+            }
+          />
+        )}
 
         <p>Upload Files below 5MB</p>
       </div>

@@ -1,23 +1,20 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
+
 import "../../../assets/css/main.css";
+import { FiSearch } from "react-icons/fi";
+
+import { fetchZipiUserData } from "../../../hooks/useZipiUserData";
+import { mutateZipiUserData } from "../../../hooks/mutateZipiUserData";
+import {getAllContacts,} from "../../../appRequests/zipiChatApiQuery";
+import {getAllConversations } from "../../../appRequests/zipiChatApiMutions";
+
 import Search from "../../utility_components/search";
 import Contact from "./contacts";
-import { SendData, fetchData } from "../../../utility/handleAxiousRequest";
-import { FiSearch } from "react-icons/fi";
 import Chat from "./chat";
 
+
 export default function Main(props) {
-  const [response, setResponse] = useState({
-    success: false,
-    data: [],
-  });
-
   const [conversations, setConvesations] = useState({
-    success: false,
-    data: [],
-  });
-
-  const [searchedContacts, setSearchedContacts] = useState({
     success: false,
     data: [],
   });
@@ -40,6 +37,19 @@ export default function Main(props) {
     newState && (await getAllConversations(relationship));
   }
 
+  const {
+    data: UserContactList,
+    isLoading: userContactListLoading,
+    isError,
+    Error,
+  } = fetchZipiUserData("UserContacts", getAllContacts);
+
+  const {
+    mutate: generateUserConversation,
+    data: UserConversations,
+    isLoading: useConversationsLoading,
+  } = mutateZipiUserData("userConversations", getAllConversations);
+
   async function handleRelationshipUpdate(friendUsername, usersActualName) {
     setRelationship({
       sender: props.activeUser,
@@ -47,8 +57,7 @@ export default function Main(props) {
       usersActualName: usersActualName,
     });
 
-    await getAllConversations({
-      sender: props.activeUser,
+    await generateUserConversation({
       receiver: friendUsername,
     });
 
@@ -63,48 +72,12 @@ export default function Main(props) {
     updateButtonDisabledStatus(false);
   }
 
-  async function getAllConversations(data) {
-    let Response = await SendData(
-      "http://localhost:3000/convo/readAllConvo",
-      data
-    );
-
-    setConvesations((prevConversation) => {
-      return {
-        ...prevConversation,
-        success: Response.data.success,
-        data: Response.data.data,
-      };
-    });
-  }
-
   async function handleSearchForFriendByName(event) {
     let { name, value } = event.target;
 
     updateSearchQuery((prevValue) => {
       return { ...prevValue, [name]: value };
     });
-
-    returnSearchResults();
-  }
-
-  async function returnSearchResults() {
-    try {
-      let Response = await SendData(
-        "http://localhost:3000/friend/searchUserFriendByName",
-        { firstName: searchQuery.searchCode }
-      );
-
-      setSearchedContacts((prevResponse) => {
-        return {
-          ...prevResponse,
-          success: Response.data.success,
-          data: Response.data.data,
-        };
-      });
-    } catch (e) {
-      console.error(e);
-    }
   }
 
   function IncreaseUnreadMessagesCount(receiver) {
@@ -112,38 +85,49 @@ export default function Main(props) {
   }
 
   useEffect(() => {
-    getAllConversations(relationship);
-  }, []);
-  let friendListElements = searchQuery.searchCode
-    ? searchedContacts.data.map((friendItem, index) => {
-        return (
-          <Contact
-            key={index}
-            fullName={friendItem.firstname + " " + friendItem.lastname}
-            userPic={friendItem.userPic.userPicUrl}
-            lastMessage="Are you home"
-            lastMessageDate="Friday 2023"
-            handleMessages={handleRelationshipUpdate}
-            username={friendItem.username}
-            activeUser={props.activeUser}
-            displayNotifications="true"
-          />
-        );
+    //getAllConversations(relationship);
+  }, [conversations, searchQuery]);
+
+  const zipiUserContacts = UserContactList?.data?.data || [];
+
+  let friendListElements = searchQuery.searchCode.length
+    ? zipiUserContacts.map((friendItem, index) => {
+        if (
+          (friendItem?.firstname + " " + friendItem?.lastname)
+            .toString()
+            .toLocaleLowerCase()
+            .includes(searchQuery.searchCode.toLowerCase())
+        ) {
+          return (
+            <Contact
+              key={index}
+              fullName={friendItem.firstname + " " + friendItem.lastname}
+              userPic={friendItem.userPic.userPicUrl || ""}
+              handleMessages={handleRelationshipUpdate}
+              updateDisabledStatus={handleDisableStatusUpdate}
+              username={friendItem.username}
+              receipient={selectReceipient}
+              activeUser={props.activeUser}
+              conversations={conversations.data || null}
+              updateSelectReceipient={handleReceipientValueReset}
+              relation={relationship}
+              displayNotifications="true"
+            />
+          );
+        }
       })
-    : response.data.map((friendItem, index) => {
+    : zipiUserContacts.map((friendItem, index) => {
         return (
           <Contact
             key={index}
             fullName={friendItem.firstname + " " + friendItem.lastname}
-            userPic={friendItem.userPic.userPicUrl}
-            lastMessage="Are you home"
-            lastMessageDate="Friday 2023"
+            userPic={friendItem.userPic.userPicUrl || ""}
             handleMessages={handleRelationshipUpdate}
             updateDisabledStatus={handleDisableStatusUpdate}
             username={friendItem.username}
             receipient={selectReceipient}
             activeUser={props.activeUser}
-            conversations={conversations.data || null}
+            conversations={UserConversations?.data?.data || []}
             updateSelectReceipient={handleReceipientValueReset}
             relation={relationship}
             displayNotifications="true"
@@ -151,18 +135,6 @@ export default function Main(props) {
         );
       });
 
-  async function getAllContacts() {
-    let Response = await fetchData(
-      "http://localhost:3000/friend/getUsersFriends"
-    );
-    setResponse((prevResponse) => {
-      return {
-        ...prevResponse,
-        success: Response.success,
-        data: Response.data,
-      };
-    });
-  }
   useEffect(() => {
     getAllContacts();
   }, [props.count]);
@@ -178,22 +150,24 @@ export default function Main(props) {
           />
 
           <div className="contacts-container contact-list">
-            {friendListElements.length ? friendListElements : ""}
+            {userContactListLoading
+              ? "Contacts Loading ..."
+              : friendListElements}
           </div>
         </div>
 
-        {conversations.success && (
+        {
           <Chat
-            conversations={conversations.data || []}
+            conversations={UserConversations?.data?.data || []}
             activeUser={props.activeUser}
             relation={relationship}
             update={handleRerender}
             disabledStatus={buttonDisabledStatus}
-            onUpdateConversations={setConvesations}
+            onUpdateConversations={generateUserConversation}
             updateNotifications={IncreaseUnreadMessagesCount}
             updateSelectReceipient={setSelectedReceipient}
           />
-        )}
+        }
       </div>
     </main>
   );

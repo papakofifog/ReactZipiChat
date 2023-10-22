@@ -53,12 +53,8 @@ async function fetchData(path) {
 async function SendData(path,Body) {
     try{
         let endpoint= baseurl.concat(path);
-        const config = {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          };
-        let results= await axios.post(endpoint, Body, config );
+        Headers.headers['Content-Type']='application/json';
+        let results= await axios.post(endpoint, Body, Headers );
         return results;
     }catch(e){
         throw e;

@@ -52,7 +52,7 @@ export default function Contact(props) {
       <div>
         <div className="contact-name">{props.fullName}</div>
         <div className="contact-email">{props.number}</div>
-        <div className="contact-email">{props.lastMessage}</div>
+        <div className="contact-email">{"hi"}</div>
       </div>
     </div>
   );

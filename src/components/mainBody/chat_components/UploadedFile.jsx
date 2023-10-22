@@ -1,36 +1,46 @@
 import React from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import CircularStatic from "../../utility_components/circulatProgress";
+import { CircularProgress } from "@mui/material";
+import Image from "../../utility_components/image";
+import mswordIcon from "../../../assets/svg/wordIcon.svg";
+import pdfIcon from "../../../assets/svg/pdfIcon.svg";
+import notePad from "../../../assets/svg/notepad.svg";
 
 export default function DisplayUploadedFile(props) {
   
   let [fileloaded, setfileloading] = React.useState(true);
 
   let chosenCode;
-
-  if (
-    props.fileType == "application/pdf" ||
-    props.fileType == "application/msword"
-  ) {
-    chosenCode = (
-      <a href={props.fileUrl} type={props.fileType}>
-        Download PDF
+  switch(props.fileType){
+    case "application/pdf":
+      chosenCode= <a target="_blank" href={props.fileUrl} type={props.fileType}>
+        <Image src= {pdfIcon}/>
       </a>
-    );
-  } else if (props.fileType == "video/webm") {
-    chosenCode = (
-      <video controls>
+    case "application/msword":
+     chosenCode= <a target="_blank" href={props.fileUrl} type={props.fileType}>
+        <Image src= {mswordIcon}/>
+      </a>
+      break;
+    case "video/webm":
+      chosenCode= <video controls>
         <source src={props.fileUrl} type="video/mp4" />
       </video>
-    );
-  } else if (props.fileType === "audio" || props.fileType === "audio/wav") {
-    chosenCode = <audio src={props.fileUrl} controls />;
-  } else {
-    chosenCode = <img src={props.fileUrl} alt={props.fileName} />;
-  }
+      break;
+    case "audio/wav":
+    case "audio":
+     chosenCode= <audio src={props.fileUrl} controls />;
+      break;
+    case "text/plain":
+      chosenCode= <a target="_blank" href={props.fileUrl} type={props.fileType}>
+          <Image src= {notePad}/>
+        </a>;
+      break;
+    default:
+      chosenCode= <img src={props.fileUrl} alt={props.fileName} />
+      break;
 
-  function useProgress(fileloaded) {
-    setfileloading(fileloaded);
+
   }
   return (
     <div className="uploadState">
@@ -38,7 +48,8 @@ export default function DisplayUploadedFile(props) {
         {fileloaded && (
           <div className="fileLoadingOverlay">
             {" "}
-            <CircularStatic emitProgress={useProgress} />{" "}
+              {props.fileIsBeingUploaded && <CircularProgress />}
+            {" "}
           </div>
         )}
         {chosenCode}
@@ -48,9 +59,10 @@ export default function DisplayUploadedFile(props) {
           <button
             className="uploadPreviewCloseButton"
             onClick={(event) => props.cancelUplaod(event)}
+            disabled={props.fileIsBeingUploaded}
           >
             <span>
-              <CloseIcon />
+              <CloseIcon  />
             </span>
           </button>
         )}
