@@ -22,6 +22,7 @@ import { connection } from "../../../context/socket";
 import { mutateZipiUserData } from "../../../hooks/mutateZipiUserData";
 import { handleUpdloadPictureToCloud } from "../../../appRequests/zipiChatApiMutions";
 import { CircularProgress } from "@mui/material";
+import { showToast } from "../../../utility/showToast";
 
 export default function Chat(props) {
 
@@ -78,6 +79,7 @@ export default function Chat(props) {
     };
 
     connection.emit("sendMessage", messageToSend);
+
     mutateSendingMessage(messageToSend);
   }
 
@@ -98,10 +100,24 @@ export default function Chat(props) {
       url: "",
       file: null,
     }
+
+    let messageToSend = {
+      message:{
+        messageString: messageToRead.messageString,
+        fileSent:{
+          url: data?.data?.data.url,
+          type: data?.data?.data.fileType,
+          name: data?.data?.data.original_filename,
+        }
+      }
+      ,
+      senderId: props.activeUser,
+      recipientId: props.relation.receiver,
+    };
     updateMessage(emptyMessageState);
 
     setFileToUpload(emptyFileToUploadState);
-
+    connection.emit("sendMessage", messageToSend);
     handleSendMessageEvent();
   }
 
@@ -258,10 +274,36 @@ export default function Chat(props) {
   }
 
   let messagesList = props.conversations.map((messageloaded, index) => {
+    //console.log(messageloaded.recipientId)
     return messageloaded.senderId === props.activeUser ? (
-      <Message key={index} class="sender" message={messageloaded.message} />
+      <Message 
+      key={index} 
+      class="sender" 
+      message={messageloaded.message} 
+      createdAt={messageloaded.createdAt} 
+      messageId={messageloaded._id} 
+      refetchData={()=>props.onUpdateConversations({
+        receiver:props.relation.receiver
+      })}
+      sender={true}
+      senderId={messageloaded.senderId}
+      recipientId={messageloaded.recipientId}
+
+      />
     ) : (
-      <Message key={index} class="receiver" message={messageloaded.message} />
+      <Message 
+      key={index} 
+      class="receiver" 
+      message={messageloaded.message} 
+      createdAt={messageloaded.createdAt}
+      messageId={messageloaded._id} 
+      refetchData={()=>props.onUpdateConversations({
+        receiver:props.relation.receiver
+      })}
+      sender={false}
+      senderId={messageloaded.senderId}
+      recipientId={messageloaded.recipientId}
+      />
     );
   });
   //console.log(props.conversations);
@@ -282,6 +324,13 @@ export default function Chat(props) {
     props.updateNotifications(data.senderId);
   }
 
+  function handleMessagedEditedEvent(data){
+    showToast(`${data.recipient} edited his last message`, "green", true);
+    props.onUpdateConversations({
+      receiver:data.sender
+    })
+  }
+
   function handleSendMessageEvent() {
     props.onUpdateConversations({
       receiver:props.relation.receiver
@@ -293,9 +342,11 @@ export default function Chat(props) {
   useEffect(() => {
     // Listen for a custom event from the server
     connection.on("receiveMessage", handleReceivedMessage);
+    connection.on("messageEdited", handleMessagedEditedEvent);
 
     return () => {
       connection.off("receiveMessage", handleReceivedMessage);
+      connection.off("messageEdited", handleMessagedEditedEvent);
     };
   }, []);
 

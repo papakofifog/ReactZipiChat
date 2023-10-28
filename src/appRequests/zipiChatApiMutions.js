@@ -37,3 +37,15 @@ export async function getAllConversations(data) {
   
 
 }
+
+/** Message component request */
+export async function editRecentlySentMessage(data) {
+  try{
+    let Response = await UpdateData(`/convo/editMessage/${data.messageId}`, data );
+    return Response;
+  }catch(e){
+    console.error(e)
+  }
+  
+
+}

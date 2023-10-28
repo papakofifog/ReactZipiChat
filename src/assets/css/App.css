@@ -193,4 +193,28 @@
   border-radius: 1.5rem;
 }
 
+.row{
+  display: flex;
+}
 
+.actionMenu{
+  display: flex;
+  position: relative;
+  justify-content: end;
+}
+
+.actionMenuOptions{
+  display: flex;
+  gap: 0.5rem;
+  position: absolute;
+}
+
+.row{
+  display: flex;
+  gap: 0.2rem;
+}
+
+.rowEnd{
+  display: flex;
+  justify-content: flex-end;
+}
