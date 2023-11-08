@@ -48,7 +48,7 @@ export function TextBox(props){
                 />
                 <CustomButton
                     buttonName="cancel"
-                    click={()=>props.click()}
+                    click={()=>props.cancel()}
                 />
             </div>
         </div>

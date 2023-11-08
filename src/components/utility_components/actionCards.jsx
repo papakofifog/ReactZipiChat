@@ -3,91 +3,86 @@ import CustomButton from "./buttons";
 import Contact from "../mainBody/chat_components/contacts";
 import { SendData } from "../../utility/handleAxiousRequest";
 import { showToast } from "../../utility/showToast";
+import {mutateZipiUserData, } from "../../hooks/mutateZipiUserData";
+import { refreshFetchedZipiUserData } from "../../hooks/useZipiUserData";
+import { CircularProgress } from "@mui/material";
+import { useQueryClient } from "../../App";
 
 export default function ActionCards(props) {
-  let [dataResponse, updateDataResponse] = useState(null);
-  let [isSubmitting, setIsSubmitting] = useState(false);
+  const {mutate, isLoading}= mutateZipiUserData("acceptFriendRequest", handleRequest, handleSuccess, handleFailure);
+  const queryClient= useQueryClient();
 
-  async function handleAddfriend() {
-    let receivedData = await SendData(
-      "http://localhost:3000/friend/addFriend",
-      { friend: props.friendId }
-    );
-
-    updateDataResponse(receivedData.data);
-    handleDisplayToast(
-      receivedData.data.message,
-      receivedData.data.success,
-      "Accept Request"
-    );
-    setIsSubmitting(false);
-  }
-
-  async function handleSendRequest() {
-    let friend = { friend: props.friendId };
-    let receivedData = await SendData(
-      "http://localhost:3000/friend/sendFriendRequest",
-      friend
-    );
-    updateDataResponse(receivedData.data);
-    handleDisplayToast(
-      receivedData.data.message,
-      receivedData.data.success,
-      "Send Request"
-    );
-    setIsSubmitting(false);
-  }
-
-  async function handleCancelFriendRequest() {
-    let friend = { friend: props.friendId };
-    let receivedData = await SendData(
-      "http://localhost:3000/friend/cancelFriendRequest",
-      friend
-    );
-    updateDataResponse(receivedData.data);
-    handleDisplayToast(
-      receivedData.data.message,
-      receivedData.data.success,
-      "Send Request"
-    );
-    setIsSubmitting(false);
-  }
-
-  function handleDisplayToast(responseMessage, status, state) {
-    //return showToast(dataResponse.message,"green", true)
-    if (status) {
-      showToast(responseMessage, "green", true);
-      props.close(state);
-    } else {
-      showToast(responseMessage, "red", true);
+  async function handleRequest(data){
+    try{
+      let receivedData = await SendData( data.path,data.data);
+      return receivedData;
+    }catch(e){
+      throw e;
     }
   }
 
-  async function handleButtonClick() {
-    setIsSubmitting(true);
+  function handleMutation(expectedPath){
+    mutate({
+      data:{
+        friend: props.friendId
+      },
+      path:expectedPath
+      
+    })
   }
 
-  useEffect(() => {
-    const handleCallBack = async () => {
-      if (isSubmitting) {
-        switch (props.buttonsName) {
-          case "Accept Request":
-            await handleAddfriend();
-            break;
-          case "Send Request":
-            await handleSendRequest();
-            break;
-          case "Cancel Request":
-            await handleCancelFriendRequest();
-            break;
-        }
-      }
-    };
-    handleCallBack();
-  }, [isSubmitting]);
+  function handleSuccess(data){
+    showToast(data?.data?.message, "green", true);
+    let dataToInvalidate=[];
+    switch (props.buttonsName) {
+      case "Accept Request":
+        dataToInvalidate.push(...["UserContacts","getAllFriendRequest"]);
+        break;
+      case "Send Request":
+        dataToInvalidate.push("getNonFriends");
+        break;
+      case "Cancel Request":
+        dataToInvalidate.push("getNonFriends");
+        break;
+    }
+    queryClient.invalidateQueries(dataToInvalidate)
+    props.close();
+    
+  }
+
+  function handleFailure(data){
+    showToast(data?.response?.data?.message, "red", false);
+  }
+
+
+
+  
+
+  function handleButtonClick() {
+    let path="";
+
+    switch(props.buttonsName){
+      case "Send Request":
+        path= "/friend/sendFriendRequest";
+        break;
+      
+      case "Cancel Request":
+        path= "/friend/cancelFriendRequest";
+        break;
+      
+      default:
+        path= "/friend/addFriend";
+        break;
+    }
+
+    handleMutation(path);
+  }
+
+  
 
   return (
     <div className="actionCard">
+      
       <Contact
         key={props.count}
         fullName={props.firstname}
@@ -96,8 +91,11 @@ export default function ActionCards(props) {
         displayNotifications={false}
         relation={{ receiver: "" }}
       />
+
+      
+    
       <CustomButton
-        buttonName={props.buttonsName}
+        buttonName={isLoading ? <CircularProgress />: props.buttonsName}
         style={props.buttonClass}
         click={handleButtonClick}
         isdisabled={props.isdisabled}

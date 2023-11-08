@@ -3,7 +3,7 @@ import DisplayUploadedFile from "./UploadedFile";
 import { EditFilled, DeleteFilled } from "@ant-design/icons";
 import { EditNoteOutlined, DeleteOutline } from "@mui/icons-material";
 import { TextBox } from "./textBox";
-import { editRecentlySentMessage } from "../../../appRequests/zipiChatApiMutions";
+import { deleteRecentlySentMessage, editRecentlySentMessage } from "../../../appRequests/zipiChatApiMutions";
 import { mutateZipiUserData } from "../../../hooks/mutateZipiUserData";
 import { showToast } from "../../../utility/showToast";
 import { connection } from "../../../context/socket";
@@ -34,16 +34,37 @@ export default function Message(props) {
     showToast("Edit message failed","red", false);
   }
 
+  function handleDeleteMessageSuccess(){
+    connection.emit("messageHasBeenDeleted", {sender: props.senderId,recipient:props.recipientId })
+    showToast("Message deleted","green", true);
+    props.refetchData();
+  }
+
+  function handleDeleteMessageFailure(){
+    showToast("Delete message failed","red", false);
+  }
+
   
 
   const {mutate: updateMessage, isLoading:updateMessageLoading }= mutateZipiUserData("updatesenderMessage", editRecentlySentMessage, handleEditMessageSuccess, handleEditMessageFailure )
-  
+  const {mutate: deleteMessage, isLoading:deleteMessageLoading}= mutateZipiUserData("deleteMessage", deleteRecentlySentMessage, handleDeleteMessageSuccess, handleDeleteMessageFailure )
+
+
+
   function handleUpdateMessageMutation(){
     updateMessage({
       "message":newMessage.message,
       "messageId": props.messageId
     }) 
   }
+
+  function handleDeleteMessageMutation(){
+    deleteMessage({
+      "messageId": props.messageId
+    }) 
+  }
+
+
   
   
   function handleActionsMenuDisplay(event){
@@ -59,7 +80,10 @@ export default function Message(props) {
 
   function handleEditMessage(){
     updateMessageCanBeEditedStatus(false);
-    
+  }
+
+  function handleCancelEditMessageAction(){
+    updateMessageCanBeEditedStatus(true);
   }
 
   function handleChange(event){
@@ -78,7 +102,6 @@ export default function Message(props) {
         } )
   }
 
-  console.log(newMessage)
 
 
 
@@ -89,7 +112,7 @@ export default function Message(props) {
       
       <div>
         {show && <div className="actionMenu">
-          <div className="actionMenuOptions"><EditNoteOutlined onClick={handleEditMessage}/> <DeleteOutline /></div>
+          <div className="actionMenuOptions"><EditNoteOutlined onClick={handleEditMessage}/> <DeleteOutline onClick={handleDeleteMessageMutation} /></div>
         </div>}
         {props.message.fileSent.url && (
           <DisplayUploadedFile
@@ -101,7 +124,7 @@ export default function Message(props) {
           />
         )}
 
-        {cannotEditMessage?<h4>{props.message.messageString}</h4>: <TextBox message={newMessage.message.messageString} click={handleUpdateMessageMutation} change={handleChange}/>}
+        {cannotEditMessage?<h4>{props.message.messageString}</h4>: <TextBox message={newMessage.message.messageString} click={handleUpdateMessageMutation} cancel={handleCancelEditMessageAction} change={handleChange}/>}
       </div>
     </div>
   );

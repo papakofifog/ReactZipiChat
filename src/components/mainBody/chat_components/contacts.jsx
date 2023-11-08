@@ -15,6 +15,8 @@ export default function Contact(props) {
       setUnreadMessageCount((prevValue) => prevValue + 1);
     }
     if (props.receipient) props.updateSelectReceipient();
+
+    
   }, [props.conversations]);
 
   return (

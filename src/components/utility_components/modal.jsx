@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import "../../assets/css/modal.css";
 import CustomButton from "./buttons";
 import { CloseCircleOutlined } from "@ant-design/icons";

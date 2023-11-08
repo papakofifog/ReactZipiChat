@@ -1,4 +1,4 @@
-import { SendData, fetchData, sendFormData, UpdateData } from "../utility/handleAxiousRequest";
+import { SendData, fetchData, sendFormData, UpdateData, deleteData } from "../utility/handleAxiousRequest";
 
 //** Header component queries */
 
@@ -42,6 +42,17 @@ export async function getAllConversations(data) {
 export async function editRecentlySentMessage(data) {
   try{
     let Response = await UpdateData(`/convo/editMessage/${data.messageId}`, data );
+    return Response;
+  }catch(e){
+    console.error(e)
+  }
+  
+
+}
+
+export async function deleteRecentlySentMessage(data) {
+  try{
+    let Response = await deleteData(`/convo/deleteMessage/${data.messageId}`);
     return Response;
   }catch(e){
     console.error(e)

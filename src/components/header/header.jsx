@@ -28,7 +28,10 @@ import { ProfileOutlined } from "@ant-design/icons";
 
 
 
+
 export default function Header(props) {
+  const [resetStatus,setReset]= useState(false);
+
   let [ModalDetails, showModal] = useState({
     show: false,
     title: "",
@@ -51,7 +54,7 @@ export default function Header(props) {
   } = fetchZipiUserData("getFriendRequest", getAllFriendRequest);
 
   let nonFriendElements = generateNewFriendsActionCardElementArray(
-    nonFriends?.data?.data
+    nonFriends?.data?.data, handleCloseEvent
   );
 
   let userRequestElements = generateFriendRequestCardElementsList(
@@ -114,7 +117,7 @@ export default function Header(props) {
         break;
       case "Send Request":
       case "Cancel Request":
-        await refetchNonFriends();
+        //await refetchNonFriends();
         break;
       case "editProfile":
         props.rerunMainpage();
@@ -129,13 +132,14 @@ export default function Header(props) {
   useEffect(() => {
     //getAllNonFriends();
     getAllFriendRequest();
-  }, []);
+  }, [resetStatus]);
 
   let modal = ModalDetails.show ? (
     <Modal
       close={handleCloseEvent}
       title={ModalDetails.title}
       content={ModalDetails.content?.map((contact) => contact)}
+      reset= {setReset}
     />
   ) : (
     ""
@@ -155,6 +159,10 @@ export default function Header(props) {
       location.href = "/";
     }, 1000);
   }
+
+  useEffect(()=>{
+
+  }, [resetStatus])
 
   return (
     <div className={!props.displayMode ? "headerLightMode" : "headerDarkMode"}>

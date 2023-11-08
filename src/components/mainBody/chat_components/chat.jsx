@@ -329,7 +329,18 @@ export default function Chat(props) {
     props.onUpdateConversations({
       receiver:data.sender
     })
+
+    props.updateNotifications(data.senderId);
   }
+
+  function handleMessageDeletedEvent(data){
+    showToast(`${data.recipient} deleted his last message`, "green", true);
+    props.onUpdateConversations({
+      receiver:data.sender
+    })
+  }
+
+
 
   function handleSendMessageEvent() {
     props.onUpdateConversations({
@@ -343,10 +354,12 @@ export default function Chat(props) {
     // Listen for a custom event from the server
     connection.on("receiveMessage", handleReceivedMessage);
     connection.on("messageEdited", handleMessagedEditedEvent);
+    connection.on("messageDeleted", handleMessageDeletedEvent);
 
     return () => {
       connection.off("receiveMessage", handleReceivedMessage);
       connection.off("messageEdited", handleMessagedEditedEvent);
+      connection.off("messageDeleted", handleMessageDeletedEvent);
     };
   }, []);
 

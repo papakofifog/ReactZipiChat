@@ -77,6 +77,21 @@ async function UpdateData(path,Body) {
       
 }
 
+async function deleteData(path) {
+    try{
+        let endpoint= baseurl.concat(path);
+        Headers.headers['Content-Type']='application/json';
+        let results= await axios.delete(endpoint,Headers );
+        return results;
+        
+    }catch(e){
+        console.error(e.response.data)
+        throw e;
+    }
+    
+      
+}
+
 
 
 async function sendFormData(path,Body){
@@ -126,4 +141,4 @@ async function fetchUserDataLocally(token){
     }
 }*/
 
-export {fetchData,SendData, UpdateData,sendFormData}
+export {fetchData,SendData, UpdateData,sendFormData, deleteData}
