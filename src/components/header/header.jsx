@@ -14,7 +14,7 @@ import Image from "../utility_components/image";
 import LabelText from "../utility_components/label";
 import Modal from "../utility_components/modal";
 import { EditProfile } from "../mainBody/chat_components/editProfile";
-import { NonFriends, FriendRequest } from "../utility_components/newFriends";
+import NewFriends from "../utility_components/newFriends";
 
 import { MdPersonPin, MdSettings, MdCall, MdPersonAdd } from "react-icons/md";
 import {DarkModeOutlined,LightModeOutlined,Logout} from "@mui/icons-material";
@@ -46,12 +46,12 @@ export default function Header(props) {
       case "contacts":
         curDetails = {
           title: "Send friend Request",
-          content: <NonFriends close={handleCloseEvent} />,
+          content: <NewFriends close={handleCloseEvent} type="nonFriend" />,
         };
         break;
 
       case "requests":
-        curDetails = { title: "Accept Requests", content: <FriendRequest /> };
+        curDetails = { title: "Accept Requests", content: <NewFriends close={handleCloseEvent} type="friendRequest" />  };
         break;
 
       case "editProfile":

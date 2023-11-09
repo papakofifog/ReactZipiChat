@@ -13,9 +13,8 @@ export function generateNewFriendsActionCardElementArray(data){
           }
           friendId={nonFriend.username}
           requestSent={nonFriend.isRequestSent}
-          //close={data.callBack}
           buttonClass={nonFriend.isRequestSent ? "cancelRequest" : "sendRequest"}
-          //userPic={nonFriend.userPic.userPicUrl}
+          userPic={nonFriend?.userPic?.userPicUrl}
           
         />
        )
@@ -29,13 +28,12 @@ export function generateFriendRequestCardElementsList(data){
           return (
             <ActionCards
               key={index}
-              firstname={friendRequest.firstname}
+              firstname={friendRequest?.firstname}
               number="+233552661939"
               buttonsName="Accept Request"
-              //close={handleCloseEvent}
-              friendId={friendRequest.username}
+              friendId={friendRequest?.username}
               buttonClass="acceptRequest"
-              userPic={friendRequest.userPic.userPicUrl}
+              userPic={friendRequest?.userPic?.userPicUrl}
               
             />
           );

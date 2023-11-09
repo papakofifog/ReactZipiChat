@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import Search from "./search";
-import { generateNewFriendsActionCardElementArray } from "./reactArrayElements";
+import { generateNewFriendsActionCardElementArray, generateFriendRequestCardElementsList } from "./reactArrayElements";
 import {
     getAllFriendRequest,
     getAllNonFriends,
@@ -8,7 +8,7 @@ import {
 import { fetchZipiUserData } from "../../hooks/useZipiUserData";
 import { FiSearch } from "react-icons/fi";
 
-export function NonFriends(props){
+export default function NewFriends(props){
     const [searchQuery, setSearchQuery]= useState({
         searchCode:""
        })
@@ -25,12 +25,21 @@ export function NonFriends(props){
         isLoading: nonFriendsLoading,
         refetch: refetchNonFriends,
       } = fetchZipiUserData("getNonFriends", getAllNonFriends);
+
+      const {
+        data: friendRequests,
+        isLoading: friendRequetIsLoading,
+        refetch: refetchFriendRequest,
+      } = fetchZipiUserData("getFriendRequest", getAllFriendRequest);
     
     let usersNewFriends=searchQuery.searchCode.length?nonFriends?.data?.data.filter((friend)=> (friend?.firstname + " " + friend?.lastname).toString().toLowerCase().includes(searchQuery.searchCode)): nonFriends?.data?.data;
+    let usersFriendRequests=searchQuery.searchCode.length?friendRequests?.data?.data.filter((friendRequest)=> (friendRequest?.firstname + " " + friendRequest?.lastname).toString().toLowerCase().includes(searchQuery.searchCode)): nonFriends?.data?.data;
+    
     
     let nonFriendElements = generateNewFriendsActionCardElementArray(usersNewFriends);
+    let userRequestElements = generateFriendRequestCardElementsList(usersFriendRequests);
 
-    //console.log(nonFriendElements)
+    
     return (
         <>
             <Search 
@@ -39,32 +48,11 @@ export function NonFriends(props){
              change={handleChange} 
              />
              <div className="newFriendContainer">
-             {nonFriendElements}
+             {props.type=== "nonFriend"?nonFriendElements:userRequestElements}
              </div>
             
         </>
         
 
     )
-}
-
-export function FriendRequest(){
-    const {
-        data: friendRequests,
-        isLoading: friendRequetIsLoading,
-        refetch: refetchFriendRequest,
-      } = fetchZipiUserData("getFriendRequest", getAllFriendRequest);
-    
-      
-    
-      let userRequestElements = generateFriendRequestCardElementsList(
-        friendRequests?.data?.data
-      );
-
-      return (
-        <>
-            <Search />
-            {userRequestElements}
-        </>
-      )
 }
