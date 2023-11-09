@@ -12,8 +12,8 @@
 }
 
 .modal-content{
-    max-width: 50rem;
-    min-width: 45rem;
+    width: 45rem;
+    height: 30rem;
     background-color: #fff;
     border-radius: 10px;
     
@@ -51,6 +51,12 @@
     flex-direction: column;
     flex: 1;
     align-items: center;
-    height: 20rem;
-    overflow-y: scroll;
 }
+
+.modal-bodyFixedHeight{
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    align-items: center;
+}
+

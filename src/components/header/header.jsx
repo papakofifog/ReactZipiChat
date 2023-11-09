@@ -2,15 +2,9 @@ import { React, useEffect, useState } from "react";
 
 import "../../assets/css/header.css";
 import ZipiLogo from "../../assets/zipiLogo/1024.png";
-import { fetchZipiUserData } from "../../hooks/useZipiUserData";
-import {
-  generateFriendRequestCardElementsList,
-  generateNewFriendsActionCardElementArray,
-} from "../utility_components/reactArrayElements";
+
 import {
   handleGetActiveUserPicture,
-  getAllFriendRequest,
-  getAllNonFriends,
   isLoggedOut,
 } from "../../appRequests/zipiChatApiQuery";
 
@@ -20,6 +14,7 @@ import Image from "../utility_components/image";
 import LabelText from "../utility_components/label";
 import Modal from "../utility_components/modal";
 import { EditProfile } from "../mainBody/chat_components/editProfile";
+import { NonFriends, FriendRequest } from "../utility_components/newFriends";
 
 import { MdPersonPin, MdSettings, MdCall, MdPersonAdd } from "react-icons/md";
 import {DarkModeOutlined,LightModeOutlined,Logout} from "@mui/icons-material";
@@ -41,25 +36,9 @@ export default function Header(props) {
 
   let [isListDisplayed, setdisplayListStatus] = useState(false);
 
-  const {
-    data: nonFriends,
-    isLoading: nonFriendsLoading,
-    refetch: refetchNonFriends,
-  } = fetchZipiUserData("getNonFriends", getAllNonFriends);
+ 
 
-  const {
-    data: friendRequests,
-    isLoading: friendRequetIsLoading,
-    refetch: refetchFriendRequest,
-  } = fetchZipiUserData("getFriendRequest", getAllFriendRequest);
-
-  let nonFriendElements = generateNewFriendsActionCardElementArray(
-    nonFriends?.data?.data, handleCloseEvent
-  );
-
-  let userRequestElements = generateFriendRequestCardElementsList(
-    friendRequests?.data?.data
-  );
+  
 
   function handleTabClickEvent(id) {
     let curDetails = "";
@@ -67,12 +46,12 @@ export default function Header(props) {
       case "contacts":
         curDetails = {
           title: "Send friend Request",
-          content: nonFriendElements,
+          content: <NonFriends close={handleCloseEvent} />,
         };
         break;
 
       case "requests":
-        curDetails = { title: "Accept Requests", content: userRequestElements };
+        curDetails = { title: "Accept Requests", content: <FriendRequest /> };
         break;
 
       case "editProfile":
@@ -131,15 +110,16 @@ export default function Header(props) {
 
   useEffect(() => {
     //getAllNonFriends();
-    getAllFriendRequest();
+    //getAllFriendRequest();
   }, [resetStatus]);
 
   let modal = ModalDetails.show ? (
     <Modal
       close={handleCloseEvent}
       title={ModalDetails.title}
-      content={ModalDetails.content?.map((contact) => contact)}
+      content={ModalDetails.content}
       reset= {setReset}
+      //modalBodyStyle={"modal-bodyFixedHeight"}
     />
   ) : (
     ""

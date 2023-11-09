@@ -1,23 +1,10 @@
-import { useState } from "react";
 import ActionCards from "./actionCards";
-import Search from "./search";
 
-import { FiSearch } from "react-icons/fi";
-
-
-export function generateNewFriendsActionCardElementArray(data, handleCloseEvent){
-   const [searchQuery, setSearchQuery]= useState({
-    searchCode:""
-   })
-
-   function handleChange(event){
-      let {name,value}=event.target;
-      setSearchQuery((prevValue)=>{
-        return {...prevValue, [name]:value}
-      })
-   }
-   let nonFriends=data?.map((nonFriend, index) => {
-        <ActionCards
+export function generateNewFriendsActionCardElementArray(data){
+   
+   return data?.map(
+    (nonFriend, index) => {
+       return ( <ActionCards
           key={index}
           firstname={nonFriend.firstname}
           number="+233552661939"
@@ -26,23 +13,14 @@ export function generateNewFriendsActionCardElementArray(data, handleCloseEvent)
           }
           friendId={nonFriend.username}
           requestSent={nonFriend.isRequestSent}
-          close={handleCloseEvent}
+          //close={data.callBack}
           buttonClass={nonFriend.isRequestSent ? "cancelRequest" : "sendRequest"}
           //userPic={nonFriend.userPic.userPicUrl}
           
         />
-      
+       )
   }); 
-  let resultatArray=[];
-  resultatArray.push(<Search
-    icon={<FiSearch className="icon white-color" />}
-    searchQuery={searchQuery.searchCode}
-    change={handleChange}
-  />)
-  resultatArray.push(nonFriends)
-  return (
-    {resultatArray}
-  )
+
 }
 
 export function generateFriendRequestCardElementsList(data){
