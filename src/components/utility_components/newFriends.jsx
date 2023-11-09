@@ -1,17 +1,15 @@
 import React, {useState} from "react";
 import Search from "./search";
 import { generateNewFriendsActionCardElementArray, generateFriendRequestCardElementsList } from "./reactArrayElements";
-import {
-    getAllFriendRequest,
-    getAllNonFriends,
-  } from "../../appRequests/zipiChatApiQuery";
+import {getAllFriendRequest, getAllNonFriends } from "../../appRequests/zipiChatApiQuery";
 import { fetchZipiUserData } from "../../hooks/useZipiUserData";
 import { FiSearch } from "react-icons/fi";
+import { CircularProgress } from "@mui/material";
 
 export default function NewFriends(props){
     const [searchQuery, setSearchQuery]= useState({
         searchCode:""
-       })
+    })
 
        function handleChange(event){
         let {name,value}=event.target;
@@ -24,21 +22,10 @@ export default function NewFriends(props){
         data: nonFriends,
         isLoading: nonFriendsLoading,
         refetch: refetchNonFriends,
-      } = fetchZipiUserData("getNonFriends", getAllNonFriends);
-
-      const {
-        data: friendRequests,
-        isLoading: friendRequetIsLoading,
-        refetch: refetchFriendRequest,
-      } = fetchZipiUserData("getFriendRequest", getAllFriendRequest);
+      } = fetchZipiUserData(props.type==="nonFriend"?"getNonFriends":"getFriendRequest",props.type==="nonFriend"? getAllNonFriends:getAllFriendRequest);
     
-    let usersNewFriends=searchQuery.searchCode.length?nonFriends?.data?.data.filter((friend)=> (friend?.firstname + " " + friend?.lastname).toString().toLowerCase().includes(searchQuery.searchCode)): nonFriends?.data?.data;
-    let usersFriendRequests=searchQuery.searchCode.length?friendRequests?.data?.data.filter((friendRequest)=> (friendRequest?.firstname + " " + friendRequest?.lastname).toString().toLowerCase().includes(searchQuery.searchCode)): nonFriends?.data?.data;
-    
-    
-    let nonFriendElements = generateNewFriendsActionCardElementArray(usersNewFriends);
-    let userRequestElements = generateFriendRequestCardElementsList(usersFriendRequests);
-
+      let usersNewFriends=searchQuery.searchCode.length?nonFriends?.data?.data.filter((friend)=> (friend?.firstname + " " + friend?.lastname).toString().toLowerCase().includes(searchQuery.searchCode.toLowerCase())): nonFriends?.data?.data;
+      let nonFriendElements = props.type==="nonFriend"?generateNewFriendsActionCardElementArray(usersNewFriends): generateFriendRequestCardElementsList(usersNewFriends);
     
     return (
         <>
@@ -48,11 +35,12 @@ export default function NewFriends(props){
              change={handleChange} 
              />
              <div className="newFriendContainer">
-             {props.type=== "nonFriend"?nonFriendElements:userRequestElements}
+    
+             {nonFriendsLoading?<CircularProgress />:nonFriendElements}
+            
              </div>
             
         </>
-        
-
+      
     )
 }
