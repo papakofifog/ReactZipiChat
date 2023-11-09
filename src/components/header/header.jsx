@@ -25,7 +25,7 @@ import { ProfileOutlined } from "@ant-design/icons";
 
 
 export default function Header(props) {
-  const [resetStatus,setReset]= useState(false);
+  //const [resetStatus,setReset]= useState(false);
 
   let [ModalDetails, showModal] = useState({
     show: false,
@@ -108,17 +108,17 @@ export default function Header(props) {
     });
   }
 
-  useEffect(() => {
+  /*useEffect(() => {
     //getAllNonFriends();
     //getAllFriendRequest();
-  }, [resetStatus]);
+  }, [resetStatus]);*/
 
   let modal = ModalDetails.show ? (
     <Modal
       close={handleCloseEvent}
       title={ModalDetails.title}
       content={ModalDetails.content}
-      reset= {setReset}
+      //reset= {setReset}
       //modalBodyStyle={"modal-bodyFixedHeight"}
     />
   ) : (
@@ -140,9 +140,9 @@ export default function Header(props) {
     }, 1000);
   }
 
-  useEffect(()=>{
+  /*useEffect(()=>{
 
-  }, [resetStatus])
+  }, [resetStatus])*/
 
   return (
     <div className={!props.displayMode ? "headerLightMode" : "headerDarkMode"}>

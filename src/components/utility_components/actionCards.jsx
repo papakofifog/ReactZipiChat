@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import CustomButton from "./buttons";
 import Contact from "../mainBody/chat_components/contacts";
 import { SendData } from "../../utility/handleAxiousRequest";
 import { showToast } from "../../utility/showToast";
 import {mutateZipiUserData, } from "../../hooks/mutateZipiUserData";
-import { refreshFetchedZipiUserData } from "../../hooks/useZipiUserData";
 import { CircularProgress } from "@mui/material";
 import { useQueryClient } from "../../App";
 
@@ -31,23 +30,26 @@ export default function ActionCards(props) {
     })
   }
 
-  function handleSuccess(data){
+  async function handleSuccess(data){
     showToast(data?.data?.message, "green", true);
     let dataToInvalidate=[];
     switch (props.buttonsName) {
-      case "Accept Request":
-        dataToInvalidate.push("UserContacts");
-        dataToInvalidate.push("getAllFriendRequest");
-        break;
+      
       case "Send Request":
         dataToInvalidate.push("getNonFriends");
         break;
       case "Cancel Request":
         dataToInvalidate.push("getNonFriends");
         break;
+      default:
+        dataToInvalidate.push("getFriendRequest");
+        dataToInvalidate.push("UserContacts");
+        break;
     }
-    queryClient.invalidateQueries(dataToInvalidate)
-    //props.close();
+
+    dataToInvalidate.forEach((secreteKey)=>{
+      queryClient.invalidateQueries([secreteKey])
+    })
     
   }
 

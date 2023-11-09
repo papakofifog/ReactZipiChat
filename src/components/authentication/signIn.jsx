@@ -113,7 +113,7 @@ export default function SignIn() {
         }}
         />
 
-        {/*<SignInWithGoogle className="googleButton" />*/}
+        {/*<SignInWithGoogle />*/}
       </div>
 
     </form>
