@@ -9,7 +9,7 @@ import { CircularProgress } from "@mui/material";
 import { useQueryClient } from "../../App";
 
 export default function ActionCards(props) {
-  const {mutate, isLoading}= mutateZipiUserData("acceptFriendRequest", handleRequest, handleSuccess, handleFailure);
+  const {mutate, isLoading}= mutateZipiUserData("handleNewFriend", handleRequest, handleSuccess, handleFailure);
   const queryClient= useQueryClient();
 
   async function handleRequest(data){
@@ -36,7 +36,8 @@ export default function ActionCards(props) {
     let dataToInvalidate=[];
     switch (props.buttonsName) {
       case "Accept Request":
-        dataToInvalidate.push(...["UserContacts","getAllFriendRequest"]);
+        dataToInvalidate.push("UserContacts");
+        dataToInvalidate.push("getAllFriendRequest");
         break;
       case "Send Request":
         dataToInvalidate.push("getNonFriends");
@@ -46,7 +47,7 @@ export default function ActionCards(props) {
         break;
     }
     queryClient.invalidateQueries(dataToInvalidate)
-    props.close();
+    //props.close();
     
   }
 

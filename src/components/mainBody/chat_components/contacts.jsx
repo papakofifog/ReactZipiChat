@@ -27,29 +27,33 @@ export default function Contact(props) {
         props.handleMessages(props.username, props.fullName);
       }}
     >
-      <Image src={props.userPic} />
-      {props.displayNotifications && (
-        <div className="unread-messages">
-          <span style={{ display: "flex" }}>
-            {unreadMessageCount == 0 ? (
-              <BellOutlined className="unread-message" />
-            ) : (
-              <BellFilled
-                className="unread-message"
-                style={{ color: "red" }}
-                value={unreadMessageCount}
-              />
-            )}
-            {unreadMessageCount > 0 ? (
-              <div style={{ alignSelf: "top", fontSize: "10px", color: "red" }}>
-                {unreadMessageCount}
-              </div>
-            ) : (
-              ""
-            )}
-          </span>
-        </div>
-      )}
+      <div style={{position:"relative"}}>
+        
+        {props.displayNotifications && (
+          <div className="unread-messages">
+            <span style={{ display: "flex" }}>
+              {unreadMessageCount == 0 ? (
+                <BellOutlined className="unread-message" />
+              ) : (
+                <BellFilled
+                  className="unread-message"
+                  style={{ color: "red" }}
+                  value={unreadMessageCount}
+                />
+              )}
+              {unreadMessageCount > 0 ? (
+                <div style={{ alignSelf: "top", fontSize: "10px", color: "red" }}>
+                  {unreadMessageCount}
+                </div>
+              ) : (
+                ""
+              )}
+            </span>
+          </div>
+        )}
+        <Image src={props.userPic} />
+      </div>
+      
 
       <div>
         <div className="contact-name">{props.fullName}</div>
