@@ -16,13 +16,10 @@ import Modal from "../utility_components/modal";
 import { EditProfile } from "../mainBody/chat_components/editProfile";
 import NewFriends from "../utility_components/newFriends";
 
-import { MdPersonPin, MdSettings, MdCall, MdPersonAdd } from "react-icons/md";
-import {DarkModeOutlined,LightModeOutlined,Logout} from "@mui/icons-material";
+import { MdPersonPin, MdSettings, MdCall, MdPersonAdd, MdNotificationsActive } from "react-icons/md";
+import {DarkModeOutlined,LightModeOutlined,Logout, NotificationAdd} from "@mui/icons-material";
 import { ProfileOutlined } from "@ant-design/icons";
-
-
-
-
+import UserNotifications from "./notifications";
 
 export default function Header(props) {
   //const [resetStatus,setReset]= useState(false);
@@ -35,10 +32,9 @@ export default function Header(props) {
   });
 
   let [isListDisplayed, setdisplayListStatus] = useState(false);
+  let [showNotification, updateShowNotificationStatus]= useState(false);
 
- 
 
-  
 
   function handleTabClickEvent(id) {
     let curDetails = "";
@@ -46,12 +42,12 @@ export default function Header(props) {
       case "contacts":
         curDetails = {
           title: "Send friend Request",
-          content: <NewFriends close={handleCloseEvent} type="nonFriend" />,
+          content: <NewFriends  type="nonFriend" />,
         };
         break;
 
       case "requests":
-        curDetails = { title: "Accept Requests", content: <NewFriends close={handleCloseEvent} type="friendRequest" />  };
+        curDetails = { title: "Accept Requests", content: <NewFriends type="friendRequest" />  };
         break;
 
       case "editProfile":
@@ -88,19 +84,9 @@ export default function Header(props) {
   }
 
   async function handleCloseEvent(actualState) {
-    switch (actualState) {
-      case "Accept Request":
-        await refetchFriendRequest();
-        await refetchNonFriends();
+    
+    if(actualState=== "editProfile") {
         props.rerunMainpage();
-        break;
-      case "Send Request":
-      case "Cancel Request":
-        //await refetchNonFriends();
-        break;
-      case "editProfile":
-        props.rerunMainpage();
-        break;
     }
 
     showModal((prevModalDetails) => {
@@ -108,18 +94,12 @@ export default function Header(props) {
     });
   }
 
-  /*useEffect(() => {
-    //getAllNonFriends();
-    //getAllFriendRequest();
-  }, [resetStatus]);*/
 
   let modal = ModalDetails.show ? (
     <Modal
       close={handleCloseEvent}
       title={ModalDetails.title}
       content={ModalDetails.content}
-      //reset= {setReset}
-      //modalBodyStyle={"modal-bodyFixedHeight"}
     />
   ) : (
     ""
@@ -127,6 +107,10 @@ export default function Header(props) {
 
   function handleDropDownDisplay() {
     setdisplayListStatus((prevStatus) => !prevStatus);
+  }
+
+  function handleShowNotification(){
+    updateShowNotificationStatus((prevStatus)=> !prevStatus)
   }
 
   async function handleLogOut() {
@@ -140,9 +124,7 @@ export default function Header(props) {
     }, 1000);
   }
 
-  /*useEffect(()=>{
-
-  }, [resetStatus])*/
+  
 
   return (
     <div className={!props.displayMode ? "headerLightMode" : "headerDarkMode"}>
@@ -191,7 +173,7 @@ export default function Header(props) {
               />
             ) : (
               <DarkModeOutlined
-                style={{ color: "white" }}
+                style={{ color: "#CCC" }}
                 onClick={() => props.handleDarkMode()}
                 className="icon"
               />
@@ -199,6 +181,13 @@ export default function Header(props) {
           }
         />
         <Icon icon={<MdCall className="icon" id="myCall" />} />
+        <div style={{position:"relative"}}>
+        <Icon icon= {<MdNotificationsActive fill="whiteSmoke" className="icon" id="notification" onClick={handleShowNotification} />} />
+        <UserNotifications style={showNotification ? "notificationDropDownList" : "hideDropdownlist"} />
+        </div>
+        
+
+
       </div>
       <div className="profile" onClick={handleDropDownDisplay}>
         <div className="details">

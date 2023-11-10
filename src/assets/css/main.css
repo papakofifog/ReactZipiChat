@@ -641,6 +641,18 @@ li{
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.notificationDropDownList{
+    display: block;
+    width: 10rem;
+    padding: 0.2rem;
+    position: absolute;
+    top: 5rem;
+    right: 0;
+    background-color: #fff;
+    z-index: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 .options{
     display: flex;
     gap: 2rem;

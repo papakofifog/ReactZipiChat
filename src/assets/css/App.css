@@ -192,9 +192,16 @@
   border-radius: 1.5rem;
 }
 
-.row{
+
+
+.row-justifyContentSpaceBetween{
   display: flex;
+  justify-content: space-between;
+  padding: 0.2rem;
 }
+
+
+
 
 .actionMenu{
   display: flex;
@@ -218,7 +225,7 @@
   justify-content: flex-end;
 }
 
-.newFriendContainer
+.listContainer
 {
   height: 20rem;
   overflow-y: scroll;

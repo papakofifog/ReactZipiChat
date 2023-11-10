@@ -34,7 +34,7 @@ export default function NewFriends(props){
              searchQuery={searchQuery.searchCode}
              change={handleChange} 
              />
-             <div className="newFriendContainer">
+             <div className="listContainer">
     
              {nonFriendsLoading?<CircularProgress />:nonFriendElements}
             
