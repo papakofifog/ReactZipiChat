@@ -643,7 +643,7 @@ li{
 
 .notificationDropDownList{
     display: block;
-    width: 10rem;
+    width: 20rem;
     padding: 0.2rem;
     position: absolute;
     top: 5rem;
@@ -669,7 +669,8 @@ li{
     color: red;
 }
 
-.cancelRequest {
+
+.cancelRequest  {
     display: inline-block;
     padding: 10px 20px;
     background-color: #D9534F;
@@ -681,11 +682,11 @@ li{
     transition: background-color 0.3s ease;
   }
   
-  .cancelRequest:hover {
+  .cancelRequest:hover  {
     background-color: #B33B39;
   }
   
-  .cancelRequest:focus {
+  .cancelRequest:focus  {
     outline: none;
   }
 
@@ -728,6 +729,8 @@ li{
   .acceptRequest:focus {
     outline: none;
   }
+
+  
 
 .edit-form{
     display:  flex;
@@ -782,6 +785,16 @@ li{
     flex-direction: column;
     gap: 20px;
     flex: 2;
+}
+
+.circle-notification{
+    padding: 0.1rem;
+    border-radius: 0.8rem;
+    background-color: #6CAB88;
+    color: white;
+    display: flex;
+    justify-content: center;
+
 }
 
 

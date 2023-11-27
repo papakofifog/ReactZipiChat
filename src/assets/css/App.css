@@ -194,10 +194,11 @@
 
 
 
-.row-justifyContentSpaceBetween{
+.row-justifyContentCenter{
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0.2rem;
+  gap: 0.5rem;
 }
 
 
@@ -227,10 +228,48 @@
 
 .listContainer
 {
-  height: 20rem;
+  height: 15rem;
   overflow-y: scroll;
   width: 100%;
   display: flex;
   flex-direction: column;
-  
+  border-radius: 8px;
+  background-color: #fff;
 }
+
+.listContainer-item{
+  padding: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  gap: 0.2rem;
+  align-items: center;
+}
+
+.listContainer-item:last-child{
+  border-bottom: none; /* Remove border from the last item */
+}
+
+.listContainer-item .content{
+  flex: 1;
+  margin-right: 10px;
+}
+
+.listContainer-item .timeStamp{
+  background-color: #e6f7ff;
+  font-weight: bold;
+}
+
+.notification-action-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.notification-action-button:hover {
+  background-color: #0056b3;
+}
+

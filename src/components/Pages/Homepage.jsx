@@ -20,7 +20,7 @@ export default function Homepage() {
     }else if(isLoading){
       console.log("Content Loading")
     }else{
-      console.log("hello papa")
+      //console.log("hello papa")
       connection.emit("setUserId", data?.data.data?.username);
       sessionStorage.setItem("activeUserName", data?.data.data.username);
     }

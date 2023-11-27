@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import { React, useEffect, useReducer, useState } from "react";
 
 import "../../assets/css/header.css";
 import ZipiLogo from "../../assets/zipiLogo/1024.png";
@@ -16,13 +16,33 @@ import Modal from "../utility_components/modal";
 import { EditProfile } from "../mainBody/chat_components/editProfile";
 import NewFriends from "../utility_components/newFriends";
 
-import { MdPersonPin, MdSettings, MdCall, MdPersonAdd, MdNotificationsActive } from "react-icons/md";
+import { MdPersonPin, MdSettings, MdCall, MdPersonAdd, MdNotificationsActive, MdOutlineNotificationsNone } from "react-icons/md";
 import {DarkModeOutlined,LightModeOutlined,Logout, NotificationAdd} from "@mui/icons-material";
 import { ProfileOutlined } from "@ant-design/icons";
 import UserNotifications from "./notifications";
+import { QueryClient } from "react-query";
+import { useQueryClient } from "../../App";
+import ChatSetting from "../mainBody/settings";
+
+function reducer(state, action){
+  console.log(action, state)
+  if(action.type === "notification_count_increment"){
+    return {
+      ...state,
+      notificationCount: state.notificationCount+1
+    }
+  }else if (action.type === "reset"){
+    return {
+      ...state,
+      notificationCount: 0
+    }
+  }
+}
 
 export default function Header(props) {
-  //const [resetStatus,setReset]= useState(false);
+  const [state, dispatch]= useReducer(reducer, {notificationCount: 0});
+
+ 
 
   let [ModalDetails, showModal] = useState({
     show: false,
@@ -33,7 +53,7 @@ export default function Header(props) {
 
   let [isListDisplayed, setdisplayListStatus] = useState(false);
   let [showNotification, updateShowNotificationStatus]= useState(false);
-
+  const queryClient= useQueryClient();
 
 
   function handleTabClickEvent(id) {
@@ -55,7 +75,7 @@ export default function Header(props) {
         break;
 
       default:
-        curDetails = { title: "Change your settings", content: [] };
+        curDetails = { title: "Change your settings", content: <ChatSetting /> };
         break;
     }
 
@@ -110,7 +130,10 @@ export default function Header(props) {
   }
 
   function handleShowNotification(){
+    queryClient.invalidateQueries(["notifications"]);
+    dispatch({type:"reset"});
     updateShowNotificationStatus((prevStatus)=> !prevStatus)
+    
   }
 
   async function handleLogOut() {
@@ -181,9 +204,31 @@ export default function Header(props) {
           }
         />
         <Icon icon={<MdCall className="icon" id="myCall" />} />
-        <div style={{position:"relative"}}>
-        <Icon icon= {<MdNotificationsActive fill="whiteSmoke" className="icon" id="notification" onClick={handleShowNotification} />} />
-        <UserNotifications style={showNotification ? "notificationDropDownList" : "hideDropdownlist"} />
+        <div style={{
+          position:"relative",
+          width:"2rem"
+      
+        }}>
+        
+        <div style={{
+          position: "absolute",
+          right:"0",
+          top:"0",
+          fontSize:"13px"
+          
+        }}>
+          <span className={state?.notificationCount?"circle-notification":"hide"}>{state?.notificationCount}</span>
+          
+        </div>
+        {state?.notificationCount?<Icon icon= {<MdNotificationsActive fill="red" className="icon" id="notification" onClick={handleShowNotification} />} />:<Icon icon= {<MdOutlineNotificationsNone fill="whiteSmoke" className="icon" id="notification" onClick={handleShowNotification} />} />}
+        <UserNotifications 
+        style={showNotification ? "notificationDropDownList" : "hideDropdownlist"}
+        updateNotificationCount={(action)=>{
+          console.log(action)
+          dispatch({type:action});
+        }}
+        
+        />
         </div>
         
 

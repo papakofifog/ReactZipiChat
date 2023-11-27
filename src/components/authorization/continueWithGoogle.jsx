@@ -3,7 +3,7 @@ let client_id = import.meta.env.CLIENTID;
 import jwt_decode from "jwt-decode";
 import { SendData } from "../../utility/handleAxiousRequest";
 import customPassword from "../../utility/handleRandomPasswordGeneration";
-import generateRandomNumber from "../../utility/generalFunctios";
+import {generateRandomNumber} from "../../utility/generalFunctios";
 import { showToast } from "../../utility/showToast";
 
 export function SignInWithGoogle() {

@@ -1,5 +1,5 @@
-import generatePassword from 'generate-password';
-import generateRandomNumber from './generalFunctios';
+//import generatePassword from 'generate-password';
+import {generateRandomNumber} from './generalFunctios';
 
 // Generate a random password with default options
 const randomPassword = "600@Yolanda"+generateRandomNumber(0,1000);

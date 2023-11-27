@@ -50,6 +50,8 @@ export default function Chat(props) {
     },
   });
 
+  const [show, updateShowStatus]= useState(false);
+
   const containRef = useRef(null);
 
 
@@ -350,16 +352,38 @@ export default function Chat(props) {
 
   }
 
+  function handleTypingStatusNotification(){
+    connection.emit("isTyping", {sender:props.activeUser, recipient:props.relation.receiver});
+  }
+
+  function handleSendStoppedTypingNotification(){
+    connection.emit("stopedTyping", {sender:props.activeUser, recipient:props.relation.receiver});
+  }
+
+  function showTypingStatus(data){
+    (data.recipient === props.activeUser) && updateShowStatus(true);
+  }
+
+  function hideTypingStatus(data){
+    (data.recipient === props.activeUser) && updateShowStatus(false);
+  }
+
+
+
   useEffect(() => {
     // Listen for a custom event from the server
     connection.on("receiveMessage", handleReceivedMessage);
     connection.on("messageEdited", handleMessagedEditedEvent);
     connection.on("messageDeleted", handleMessageDeletedEvent);
+    connection.on("typingStatus", showTypingStatus);
+    connection.on("stopedTypingStatus", hideTypingStatus);
 
     return () => {
       connection.off("receiveMessage", handleReceivedMessage);
       connection.off("messageEdited", handleMessagedEditedEvent);
       connection.off("messageDeleted", handleMessageDeletedEvent);
+      connection.off("typingStatus", showTypingStatus);
+      connection.off("stoppedTypingStatus", hideTypingStatus);
     };
   }, []);
 
@@ -371,14 +395,19 @@ export default function Chat(props) {
             <Image />
             <LabelText
               class={"chat-profile-text"}
-              text={`${props.relation.usersActualName}`}
+              text={props.relation.usersActualName}
             />
+            <span style={{color:"red"}}  className={show?"show":"hide"}>typing ...</span>
           </>
         ) : (
-          <LabelText
+          <>
+            <LabelText
             class={"chat-profile-text"}
             text={`${props.relation.usersActualName}`}
           />
+          <span style={{color:"red"}}className={show?"show":"hide"}>typing ...</span>
+          </>
+          
         )}
       </div>
       <ul className="chat-messages" ref={containRef}>
@@ -396,6 +425,8 @@ export default function Chat(props) {
             onChange={handleChatMessageChange}
             value={messageToRead.messageString}
             disabled={props.disabledStatus}
+            onInput={handleTypingStatusNotification}
+            onBlur={handleSendStoppedTypingNotification}
           />
           <div className="displayFile">
             <DisplayUploadedFile

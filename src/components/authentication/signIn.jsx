@@ -36,7 +36,8 @@ export default function SignIn() {
   function handleSuccessEvent(data){
     try{
       showToast(data?.data.message,"green", true)
-      sessionStorage.setItem("access-token", data?.data.token);
+      sessionStorage.setItem("access-token", data?.data?.token?.accessToken);
+      sessionStorage.setItem("refresh-token", data?.data?.token?.refreshToken);
       setTimeout(location.href="/home",4000);
     }catch(e){
       console.error(e)

@@ -1,11 +1,11 @@
 import React, { useState,useEffect } from "react";
-import userProfileOutline from "../../assets/svg/userProfileOutlined.svg";
+import { Avatar } from "@mui/material";
 
 export default function Image(props){
 
     return (
     <>
-        <img className={props.style||"images"} src={props.src || userProfileOutline} />
+        {props?.src?<img className={props.style||"images"} src={props.src} />: <Avatar className={props.style||"images"} /> }
         {props.children}
         
     </>);
