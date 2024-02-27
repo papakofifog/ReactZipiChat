@@ -1,7 +1,7 @@
 import ActionCards from "./actionCards";
 
 
-export function generateNewFriendsActionCardElementArray(data){
+export function generateNewFriendsActionCardElementArray(data,refetch){
    return data?.map((nonFriend, index) => {
     return (
       <ActionCards
@@ -13,7 +13,8 @@ export function generateNewFriendsActionCardElementArray(data){
         }
         friendId={nonFriend.username}
         requestSent={nonFriend.isRequestSent}
-        //close={handleCloseEvent}
+        refresh={refetch}
+        //close={closeEvent}
         buttonClass={nonFriend.isRequestSent ? "cancelRequest" : "sendRequest"}
         //userPic={nonFriend.userPic.userPicUrl}
       />
@@ -21,7 +22,7 @@ export function generateNewFriendsActionCardElementArray(data){
   }); 
 }
 
-export function generateFriendRequestCardElementsList(data){
+export function generateFriendRequestCardElementsList(data,refetch){
     return data?.map(
         (friendRequest, index) => {
           return (
@@ -30,7 +31,8 @@ export function generateFriendRequestCardElementsList(data){
               firstname={friendRequest.firstname}
               number="+233552661939"
               buttonsName="Accept Request"
-              //close={handleCloseEvent}
+              refresh={refetch}
+              //close={closeEvent}
               friendId={friendRequest.username}
               buttonClass="acceptRequest"
               userPic={friendRequest.userPic.userPicUrl}

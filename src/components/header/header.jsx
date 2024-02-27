@@ -51,11 +51,11 @@ export default function Header(props) {
   } = fetchZipiUserData("getFriendRequest", getAllFriendRequest);
 
   let nonFriendElements = generateNewFriendsActionCardElementArray(
-    nonFriends?.data?.data
+    nonFriends?.data?.data,refetchNonFriends
   );
 
   let userRequestElements = generateFriendRequestCardElementsList(
-    friendRequests?.data?.data
+    friendRequests?.data?.data,refetchFriendRequest
   );
 
   function handleTabClickEvent(id) {
@@ -65,15 +65,20 @@ export default function Header(props) {
         curDetails = {
           title: "Send friend Request",
           content: nonFriendElements,
+          
         };
         break;
 
       case "requests":
-        curDetails = { title: "Accept Requests", content: userRequestElements };
+        curDetails = {
+           title: "Accept Requests", 
+           content: userRequestElements,
+      
+          };
         break;
 
       case "editProfile":
-        curDetails = { title: "Edit Profile", content: [] };
+        curDetails = { title: "Edit Profile", content: []  };
         break;
 
       default:

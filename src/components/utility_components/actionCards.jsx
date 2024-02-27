@@ -10,7 +10,7 @@ export default function ActionCards(props) {
 
   async function handleAddfriend() {
     let receivedData = await SendData(
-      "http://localhost:3000/friend/addFriend",
+      "/friend/addFriend",
       { friend: props.friendId }
     );
 
@@ -25,10 +25,12 @@ export default function ActionCards(props) {
 
   async function handleSendRequest() {
     let friend = { friend: props.friendId };
+    
     let receivedData = await SendData(
-      "http://localhost:3000/friend/sendFriendRequest",
+      "/friend/sendFriendRequest",
       friend
     );
+    console.log(receivedData)
     updateDataResponse(receivedData.data);
     handleDisplayToast(
       receivedData.data.message,
@@ -41,7 +43,7 @@ export default function ActionCards(props) {
   async function handleCancelFriendRequest() {
     let friend = { friend: props.friendId };
     let receivedData = await SendData(
-      "http://localhost:3000/friend/cancelFriendRequest",
+      "/friend/cancelFriendRequest",
       friend
     );
     updateDataResponse(receivedData.data);
@@ -57,7 +59,8 @@ export default function ActionCards(props) {
     //return showToast(dataResponse.message,"green", true)
     if (status) {
       showToast(responseMessage, "green", true);
-      props.close(state);
+      //props.close(state);
+      props.refresh();
     } else {
       showToast(responseMessage, "red", true);
     }
