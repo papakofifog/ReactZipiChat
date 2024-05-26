@@ -516,9 +516,9 @@ li{
     border-bottom: 1px solid black;
 }
 
-li:nth-child(2){
+/*li:nth-child(2){
     background-color: #eee;
-}
+}*/
 
 .none{
     display: none;

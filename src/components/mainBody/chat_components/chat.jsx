@@ -5,23 +5,25 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import Image from "../image";
-import LabelText from "../label";
-import Icon from "../icons";
-import { SendData, sendFormData } from "../../utility/handleAxiousRequest";
-import CustomButton from "../buttons";
-import { Emoji, FileUpload } from "../emoji";
+import Image from "../../utility_components/image";
+import LabelText from "../../utility_components/label";
+import Icon from "../../utility_components/icons";
+import { SendData, sendFormData } from "../../../utility/handleAxiousRequest";
+import CustomButton from "../../utility_components/buttons";
+import { Emoji, FileUpload } from "../../utility_components/emoji";
 import data from "@emoji-mart/data";
-import Modal from "../modal/modal";
+import Modal from "../../utility_components/modal";
 import { FiPaperclip, FiSend, FiSmile, FiMic } from "react-icons/fi";
 import Message from "./message";
 import DisplayUploadedFile from "./UploadedFile";
 import { RecordMedia } from "./recordAudio/audioRecord";
-import convertBlobUrlToFile from "../../utility/handlingFileConversion";
-import { connection } from "../../context/socket";
+import convertBlobUrlToFile from "../../../utility/handlingFileConversion";
+import { connection } from "../../../context/socket";
+import { mutateZipiUserData } from "../../../hooks/mutateZipiUserData";
+import { handleUpdloadPictureToCloud } from "../../../appRequests/zipiChatApiMutions";
+import { CircularProgress } from "@mui/material";
 
 export default function Chat(props) {
-  //const [messageSent, sendMessage] = useState(false);
 
   const [ModalDetails, showModal] = useState({
     show: false,
@@ -47,9 +49,9 @@ export default function Chat(props) {
     },
   });
 
-  
-
   const containRef = useRef(null);
+
+
 
   function handleScrollToBottom() {
     if (containRef.current) {
@@ -58,25 +60,70 @@ export default function Chat(props) {
     }
   }
 
-  async function uploadFunctionCloudinary(value) {
-    try {
-      let formData = new FormData();
-      formData.append("file", value);
-      let uploadedFileData = await sendFormData(
-        "http://localhost:3000/users/upload",
-        formData
-      );
-      let CloudinaryFileData = uploadedFileData.data;
-      if (CloudinaryFileData.success) {
-        let { url, original_filename, fileType } = CloudinaryFileData.data;
 
-        return { url, original_filename, fileType };
+  function handleUploadToCloudSucess(data){
+    console.log(data?.data?.data);
+    let messageToSend = {
+        message:{
+          messageString: messageToRead.messageString,
+          fileSent:{
+            url: data?.data?.data.url,
+            type: data?.data?.data.fileType,
+            name: data?.data?.data.original_filename,
+          }
+        }
+        ,
+        senderId: props.activeUser,
+        recipientId: props.relation.receiver,
+    };
+
+    connection.emit("sendMessage", messageToSend);
+    mutateSendingMessage(messageToSend);
+  }
+
+  function handleSaveMessageSuccess(data){
+    let emptyMessageState={
+      messageString: "",
+      fileSent: {
+        url: "",
+        type: "",
+        name: "",
       }
-      return null;
-    } catch (e) {
-      console.error(e);
+    }
+
+    let emptyFileToUploadState={
+      name: "",
+      size: "",
+      type: "",
+      url: "",
+      file: null,
+    }
+    updateMessage(emptyMessageState);
+
+    setFileToUpload(emptyFileToUploadState);
+
+    handleSendMessageEvent();
+  }
+
+  function handleFailureEvent(error){
+    console.error(error)
+  }
+
+  async function saveChatMessage(data){
+    try{
+      let response=await SendData("/convo/addmessage", data);
+      return response;
+    }catch(e){
+      console.error(e)
     }
   }
+
+  
+
+
+  const {mutate:mutateUploadFileToCloud, isLoading:isFileUploadToCloudLoading, error:fileUploadError}= mutateZipiUserData("uploadConvoFile", handleUpdloadPictureToCloud, handleUploadToCloudSucess,handleFailureEvent );
+  const {mutate:mutateSendingMessage, isLoading:isMessageSending}= mutateZipiUserData("sendMessage", saveChatMessage, handleSaveMessageSuccess, handleFailureEvent )
+ 
 
   function handleInputFileChangeEvent(event) {
     let { files } = event.target;
@@ -189,71 +236,35 @@ export default function Chat(props) {
   }
 
   async function handleSendMessage() {
-    let uploadedFile;
-    let message;
-
     if (fileToUpload.file) {
-      let data = await uploadFunctionCloudinary(fileToUpload.file);
-
-      uploadedFile = {
-        url: data.url,
-        type: data.fileType,
-        name: data.original_filename,
-      };
-
-      message = {
-        messageString: messageToRead.messageString,
-        fileSent: uploadedFile,
-      };
-    } else {
-      message = messageToRead;
+      let formData = new FormData();
+      formData.append("file", fileToUpload.file);
+      mutateUploadFileToCloud(formData);
+    }else{
+      mutateSendingMessage({
+        message:{
+          messageString: messageToRead.messageString,
+          fileSent:{
+            url: "",
+            type: "",
+            name: "",
+          }
+        }
+        ,
+        senderId: props.activeUser,
+        recipientId: props.relation.receiver,
+      })
     }
-
-    let messageToSend = {
-      message,
-      senderId: props.activeUser,
-      recipientId: props.relation.receiver,
-    };
-
-    await SendData("http://localhost:3000/convo/addmessage", messageToSend);
-
-    connection.emit("sendMessage", messageToSend);
-
-    updateMessage({
-      messageString: "",
-      fileSent: {
-        url: "",
-        type: "",
-        name: "",
-      },
-    });
-
-    setFileToUpload({
-      name: "",
-      size: "",
-      type: "",
-      url: "",
-      file: null,
-    });
-
-    handleSendMessageEvent(messageToSend);
   }
 
   let messagesList = props.conversations.map((messageloaded, index) => {
-    return messageloaded.senderId == props.activeUser ? (
-      <Message 
-      key={index} 
-      class="sender" 
-      message={messageloaded.message} 
-      />
+    return messageloaded.senderId === props.activeUser ? (
+      <Message key={index} class="sender" message={messageloaded.message} />
     ) : (
-      <Message 
-      key={index} 
-      class="receiver" 
-      message={messageloaded.message} 
-      />
+      <Message key={index} class="receiver" message={messageloaded.message} />
     );
   });
+  //console.log(props.conversations);
 
   function handleCancelUpload(event) {
     setFileToUpload({
@@ -265,22 +276,18 @@ export default function Chat(props) {
   }
 
   function handleReceivedMessage(data) {
-    props.onUpdateConversations((prevConversations) => {
-      return {
-        ...prevConversations,
-        data: [...prevConversations.data, data],
-      };
-    });
+    props.onUpdateConversations({
+      receiver:data.senderId
+    })
     props.updateNotifications(data.senderId);
   }
 
-  function handleSendMessageEvent(data) {
-    props.onUpdateConversations((prevConversations) => {
-      return {
-        ...prevConversations,
-        data: [...prevConversations.data, data],
-      };
-    });
+  function handleSendMessageEvent() {
+    props.onUpdateConversations({
+      receiver:props.relation.receiver
+    })
+    props.updateNotifications(props.activeUser);
+
   }
 
   useEffect(() => {
@@ -290,7 +297,7 @@ export default function Chat(props) {
     return () => {
       connection.off("receiveMessage", handleReceivedMessage);
     };
-  }, [props.conversations.data]);
+  }, []);
 
   return (
     <div className="chats-view">
@@ -333,6 +340,7 @@ export default function Chat(props) {
               fileUrl={fileToUpload.url}
               close={true}
               cancelUplaod={handleCancelUpload}
+              fileIsBeingUploaded={isFileUploadToCloudLoading}
             />
           </div>
 
@@ -364,9 +372,9 @@ export default function Chat(props) {
               <CustomButton
                 id="sendMessage"
                 class="message-auxilliaries"
-                icon={<Icon icon={<FiSend className="icon gray" />} />}
+                icon={isFileUploadToCloudLoading || isMessageSending ?<CircularProgress />:<Icon icon={<FiSend className="icon gray" />} />}
                 click={handleChatButtonClick}
-                isdisabled={messageToRead.messageString.trim()===""}
+                isdisabled={(messageToRead.messageString.trim() === "" && fileToUpload.name==="") || isFileUploadToCloudLoading || isMessageSending }
               />
             </div>
           </div>

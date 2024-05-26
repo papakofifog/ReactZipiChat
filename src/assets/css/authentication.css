@@ -1,91 +1,214 @@
-body{
-    background-image: url('../pictures/pexels-ovan-62693.jpg');
+/*Authentication Page */
+
+:root{
+  --buttonColor: #6e66fb;
+  --fontSize: 16px;
+
 }
-.formContainer{
-    border: 1px outset black;
-    border-radius: 10px;
-    box-shadow: 2px 2px 0 0 silver;
-    width: fit-content;
-    padding: 30px;
-    line-height: 30px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 80px;
-    background-color: #fff;
+
+
+
+
+
+.sideIlustrationSection{
+  display: flex;
+  background-color: #6e66fb;
+  padding: 10px;
+  box-shadow: 4px 8px 6px silver;
+}
+
+.illustration{
+  align-self: center;
+  justify-self: center;
+  width: 100%;
+  height: 100%;
+
+}
+
+
+.authenticationContainer{
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+.authenticationContainer>div{
+  flex: 1;
+  display: flex;
+}
+.authenticationFormContainer{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+}
+
+
+.appTradeMark{
+  display: flex;
+  align-self: center;
+  gap: 10px;
+}
+
+.authenticationSwitch{
+  display:  flex;
+  list-style: none;
+  border-radius: 5px;
+  width: 20rem;
+  align-self: center; 
+  align-items: center; 
+}
+
+
+
+
+.authenticationSwitch>li{
+  flex: 1;
+  text-decoration: none;
+  border: none;
+  text-align: center;
+  font-size: var(--fontSize);
+  cursor: pointer; ;
+
+}
+
+.selected{
+  background-color: var(--buttonColor);
+  border-radius: 5px;
+  padding: 10px;
+  color: #fff;
+}
+
+
+
+/*End of Styles Authentication Page */
+
+
+
+
+/* Sign in/ up Page */
+
+.formContainer {
+  width: 80%;
+  height: 90%;
+  border-radius: 5px;
+  align-self: center;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .formInput{
-    margin: 10px;
-    display: block;
-
-}
-.formInput>input{
-    height: 40px;
-    width: 250px;
+  display: flex;
+  flex-direction: row;
+  
 }
 
-.formInput:hover{
-    border-color: blue;
+
+.formInput>label{
+  font-size: var(--fontSize);
+  flex-basis: 200px;
+  align-self: center;
+
 }
 
-input[type=button]{
-    padding: 10px;
-    border-style: none;
-    margin-top: 10px;
-    background-color: #fff;
-    border: 1px outset cornflowerblue
+.formInput >div{
+  flex:2;
+  width: 350px;
+  height: 40px;
+  border-radius: 5px;
+  font-size: var(--fontSize);
+  border: 1px inset #e7e6e7;
+  margin-bottom: 10px;
+  display: flex;
 }
 
-input[type=button]:hover{
-    border-radius: 10px;
-    background-color: cornflowerblue;
+span >input{
+  width: 100%;
+  height: 35px;
+  border: none;
+}
+
+.authIcons{
+  align-self: center;
+  fill: #e7e6e7;
+}
+
+
+.authActions{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+
+
+
+
+
+
+
+
+
+/* End of Sign Page */
+  
+  
+  
+  /* Sign In button style */
+  .button {
+    background-color: var(--buttonColor); /* Blue color */
+    color: #fff;
+    padding: 10px 20px;
     border: none;
-
-}
-
-.error{
-    color: red;
-    display: none;
-}
-
-.toastContainer{
-    height: auto;
-    width: 200px;
-    background-color: #fff;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 150px;
-    border-radius: 10px;
-    box-shadow: 0 0 50px #ccc;
-    padding: 10px;
-}
-
-.toastText{
-    height: auto;
-    width:auto;
-    text-align: center;
-    font-size: 16px;
-    margin: 5px;
-}
-
-.toastButtons{
-    height: 150px;
-    width:100%;
-    display: flex;
-    gap: 25px;
-}
-
-.opaqueBody{
-    background-image: none;
-    background-color: rgba(0,0,255,0.1);
-}
-.successImage{
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-}
-.spNote{
-    margin-left: auto;
-    margin-right: auto;
-    width: 50px;
-}
+    border-radius: 4px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .button:disabled {
+    background-color: #ccc; /* Grayed out when disabled */
+    cursor: not-allowed;
+  }
+  
+  .button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  
+  /* Google Sign In button style (assuming it's a separate component) */
+  .googleButton {
+    background-color: #4285f4; /* Google Blue */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+  }
+  
+  .googleButton:hover {
+    background-color: #357ae8; /* Darker Google Blue on hover */
+  }
+  
+  /* Circular progress spinner style (if used) */
+  .circularProgress {
+    display: inline-block;
+    border: 4px solid #ccc;
+    border-top: 4px solid #007bff; /* Match Sign In button color */
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  

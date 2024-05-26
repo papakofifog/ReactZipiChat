@@ -1,255 +1,240 @@
-import {React, useEffect, useState} from "react";
-import './header.css'
-import Tabs from "./sectionTabs";
-import Icon from "../icons";
-import Image from "../image";
-import LabelText from "../label";
+import { React, useEffect, useState } from "react";
+
+import "../../assets/css/header.css";
 import ZipiLogo from "../../assets/zipiLogo/1024.png";
-import Modal from "../modal/modal";
-import { MdPersonPin, MdSettings, MdShieldMoon, MdCall, MdPersonAdd } from "react-icons/md"
-import { SendData, fetchData } from "../../utility/handleAxiousRequest";
-import ActionCards from "../actionCards";
-import CustomButton from "../buttons";
-import { DarkMode, DarkModeOutlined, LightMode, LightModeOutlined, Logout } from "@mui/icons-material";
-import { ProfileFilled, ProfileOutlined } from "@ant-design/icons";
-import { EditProfile } from "../mainBody/editProfile";
+import { fetchZipiUserData } from "../../hooks/useZipiUserData";
+import {
+  generateFriendRequestCardElementsList,
+  generateNewFriendsActionCardElementArray,
+} from "../utility_components/reactArrayElements";
+import {
+  handleGetActiveUserPicture,
+  getAllFriendRequest,
+  getAllNonFriends,
+  isLoggedOut,
+} from "../../appRequests/zipiChatApiQuery";
+
+import Tabs from "./sectionTabs";
+import Icon from "../utility_components/icons";
+import Image from "../utility_components/image";
+import LabelText from "../utility_components/label";
+import Modal from "../utility_components/modal";
+import { EditProfile } from "../mainBody/chat_components/editProfile";
+
+import { MdPersonPin, MdSettings, MdCall, MdPersonAdd } from "react-icons/md";
+import {DarkModeOutlined,LightModeOutlined,Logout} from "@mui/icons-material";
+import { ProfileOutlined } from "@ant-design/icons";
 
 
-export default function Header(props){
-
-    let [nonFriendsResponse, setnonFriendsResponse]= useState({
-        success:false,
-        data:[]
-    })
-
-    let [friendRequestResponse, updateFriendRequestResponse]= useState({
-        success: false,
-        data:[]
-    })
-
-    let [ModalDetails, showModal ] = useState({
-        show: false,
-        title: "",
-        content: [],
-        setting: {}
-    });
 
 
-    let [isTimeToRefresh, updateRefreshStatus]= useState(false)
+export default function Header(props) {
+  let [ModalDetails, showModal] = useState({
+    show: false,
+    title: "",
+    content: [],
+    setting: {},
+  });
 
-    
+  let [isListDisplayed, setdisplayListStatus] = useState(false);
 
-    let nonFriendElements= nonFriendsResponse.data.map((nonFriend,index)=>{
-        return  <ActionCards 
-        key={index}  
-        firstname={nonFriend.firstname} 
-        number="+233552661939"
-        buttonsName={nonFriend.isRequestSent?"Cancel Request":"Send Request"}
-        friendId={nonFriend.username}
-        requestSent={nonFriend.isRequestSent}
-        close={handleCloseEvent}
-        buttonClass={nonFriend.isRequestSent?"cancelRequest":"sendRequest"}
-        //userPic={nonFriend.userPic.userPicUrl}
-        />
-        
-    });
+  const {
+    data: nonFriends,
+    isLoading: nonFriendsLoading,
+    refetch: refetchNonFriends,
+  } = fetchZipiUserData("getNonFriends", getAllNonFriends);
 
-    let userRequestElements= friendRequestResponse.data.map((friendRequest, index)=>{
-        return <ActionCards 
-        key={index}  
-        firstname={friendRequest.firstname} 
-        number="+233552661939"
-        buttonsName="Accept Request"
-        close={handleCloseEvent}
-        friendId={friendRequest.username}
-        buttonClass="acceptRequest"
-        userPic={friendRequest.userPic.userPicUrl}
-        />
-    })
+  const {
+    data: friendRequests,
+    isLoading: friendRequetIsLoading,
+    refetch: refetchFriendRequest,
+  } = fetchZipiUserData("getFriendRequest", getAllFriendRequest);
 
+  let nonFriendElements = generateNewFriendsActionCardElementArray(
+    nonFriends?.data?.data,refetchNonFriends
+  );
 
-    function handleTabClickEvent(id){
-        let curDetails= ""
-        switch (id) {
-            case "contacts":
-                curDetails={   title:"Send friend Request",
-                    content: nonFriendElements
-                } 
-                break;
-            
-            case "requests":
-                curDetails={ title:"Accept Requests",
-                content:userRequestElements
-                }
-                break;
+  let userRequestElements = generateFriendRequestCardElementsList(
+    friendRequests?.data?.data,refetchFriendRequest
+  );
 
-            case "editProfile":
-                curDetails= {title:"Edit Profile",
-                content:[]
+  function handleTabClickEvent(id) {
+    let curDetails = "";
+    switch (id) {
+      case "contacts":
+        curDetails = {
+          title: "Send friend Request",
+          content: nonFriendElements,
+          
+        };
+        break;
 
-                }
-                break;
-        
-            default:
-                curDetails={ title:"Change your settings",
-                content:[]}
-                break;
-        }
+      case "requests":
+        curDetails = {
+           title: "Accept Requests", 
+           content: userRequestElements,
+      
+          };
+        break;
 
-        showModal({show: true,...curDetails});
-        
+      case "editProfile":
+        curDetails = { title: "Edit Profile", content: []  };
+        break;
+
+      default:
+        curDetails = { title: "Change your settings", content: [] };
+        break;
     }
 
-    async function handleGetActiveUserPicture(){
-        try{
-            let Response= await fetchData("http://localhost:3000/users/getUserPicture");
-            return Response.data.userPicUrl;
-        }catch(e){
-            console.error(e)
-        }
-    }
+    showModal({ show: true, ...curDetails });
+  }
 
-    
+  async function handleProfileDisplay() {
+    let UserPicture = await handleGetActiveUserPicture();
+    let curDetails = {
+      title: "Edit Profile",
+      content: [
+        <EditProfile
+          key={0}
+          activeUserData={props.activeUserData}
+          close={handleCloseEvent}
+          activeUserPicture={UserPicture}
+          rerun={handleActiveUserRefetch}
+        />,
+      ],
+    };
+    showModal({ show: true, ...curDetails });
+  }
 
-    async function handleProfileDisplay(){
-        let UserPicture=await handleGetActiveUserPicture();
-        let curDetails={title:"Edit Profile",
-        content:[<EditProfile key={0} activeUserData={props.activeUserData} close={handleCloseEvent} activeUserPicture={UserPicture}  rerun={handleUpdateMainPage}/>]
-        }
-        showModal({show:true,...curDetails})
-    }
+  function handleActiveUserRefetch() {
+    props.refetchActiveUser();
+  }
 
-    function handleUpdateMainPage(){
+  async function handleCloseEvent(actualState) {
+    switch (actualState) {
+      case "Accept Request":
+        await refetchFriendRequest();
+        await refetchNonFriends();
         props.rerunMainpage();
+        break;
+      case "Send Request":
+      case "Cancel Request":
+        await refetchNonFriends();
+        break;
+      case "editProfile":
+        props.rerunMainpage();
+        break;
     }
 
-    async function handleCloseEvent(actualState){
-            switch(actualState){
-                case "Accept Request":
-                   await getAllFriendRequest();
-                   await getAllNonFriends();
-                   props.rerunMainpage();
-                    break;
-                case "Send Request":
-                case "Cancel Request":
-                    await getAllNonFriends();
-                    break;
-                case "editProfile":
-                    props.rerunMainpage();
-                    break;
-                
-            }
+    showModal((prevModalDetails) => {
+      return { ...prevModalDetails, show: false, title: "", content: [] };
+    });
+  }
 
-        showModal((prevModalDetails)=>{
-            return {... prevModalDetails, show: false, title:"", content:[]} 
-        });
+  useEffect(() => {
+    //getAllNonFriends();
+    getAllFriendRequest();
+  }, []);
 
+  let modal = ModalDetails.show ? (
+    <Modal
+      close={handleCloseEvent}
+      title={ModalDetails.title}
+      content={ModalDetails.content?.map((contact) => contact)}
+    />
+  ) : (
+    ""
+  );
+
+  function handleDropDownDisplay() {
+    setdisplayListStatus((prevStatus) => !prevStatus);
+  }
+
+  async function handleLogOut() {
+    let result = await isLoggedOut();
+    if (!result?.data) {
+      alert("Your request to logout of your account, is being processed!");
     }
+    window.sessionStorage.setItem("access-token", "");
+    setTimeout(() => {
+      location.href = "/";
+    }, 1000);
+  }
 
-    async function getAllNonFriends(){
-        let Response = await fetchData('http://localhost:3000/friend/allnonFriends');
-        setnonFriendsResponse((prevNonFriends)=>{
-            return {...prevNonFriends,success: Response.success,data: Response.data}
-        })
-        
-    }
+  return (
+    <div className={!props.displayMode ? "headerLightMode" : "headerDarkMode"}>
+      <div className="app-brand">
+        <Image src={ZipiLogo} />
+        <LabelText class={"brand"} text={"ZipiChat"} />
+      </div>
 
-    async function getAllFriendRequest(){
-        let Response = await fetchData('http://localhost:3000/friend/getAllFriendRequest');
-        updateFriendRequestResponse({success: Response.success,data: Response.data})
-    }
+      <div className="chatAction-section">
+        <Tabs
+          id="contacts"
+          modal={ModalDetails}
+          click={handleTabClickEvent}
+          icon={<MdPersonAdd className="icon" />}
+          class={"section-name"}
+          text={"New Friends"}
+        />
 
-    useEffect(()=>{
-        getAllNonFriends();
-        getAllFriendRequest();
-    },[])
+        <Tabs
+          id="requests"
+          modal={ModalDetails}
+          click={handleTabClickEvent}
+          icon={<MdPersonPin className="icon" />}
+          class={"section-name"}
+          text={"Requests"}
+        />
 
-    let modal=ModalDetails.show ?
-    <Modal 
-    close={handleCloseEvent}
-    title={ModalDetails.title} 
-    content={ModalDetails.content.map(contact=> contact)} 
-    /> : "";
-
-    let DateNow= new Date();
-
-    let greeting= DateNow.getHours()<12?"morning": DateNow.getHours()>12 && DateNow.getHours()< 18 ? "Afternoon": "Evening";
-    let [isListDisplayed, setdisplayListStatus]= useState(false);
-
-
-    function handleDropDownDisplay(){
-        setdisplayListStatus((prevStatus)=> !prevStatus)
-    }
-
-    async function handleLogOut(){
-        await SendData(`${import.meta.env.BASEURL}/api/logout`);
-        window.sessionStorage.setItem('access-token', '')
-        setTimeout(()=>{location.href='/'},1000)
-    }
-
-   
-    
-    return (
-
-        <div className={!props.displayMode? 'headerLightMode': 'headerDarkMode'} >
-        
-            <div className="app-brand">
-            <Image src={ZipiLogo} />
-            <LabelText class={"brand"} text={"ZipiChat"} />
-            </div>
-
-            <div className="chatAction-section">
-            
-                <Tabs 
-                id="contacts" 
-                modal={ModalDetails} 
-                click={handleTabClickEvent} 
-                icon={<MdPersonAdd className="icon"/>} 
-                class={"section-name"}  
-                text={"New Friends"} 
-                />
-
-                <Tabs 
-                id="requests" 
-                modal={ModalDetails} 
-                click={handleTabClickEvent} 
-                icon= {<MdPersonPin  className="icon"/>} 
-                class={"section-name"}  
-                text={"Requests"}  
-                />
-
-                 <Tabs 
-                id="settings" 
-                modal={ModalDetails} 
-                click={handleTabClickEvent} 
-                icon= {<MdSettings  className="icon"/>} 
-                class={"section-name"}  
-                text={"Settings"}  
-                />
-                {modal}
-            </div>
-            <div className="simpleActions-section">
-                <Icon
-                icon={props.displayMode?<LightModeOutlined style={{color:"white"}} onClick={()=>props.handleDarkMode} />: <DarkModeOutlined style={{color:"white"}} onClick={()=>props.handleDarkMode} />}
-                />
-                <Icon icon={<MdCall  className="icon" id="myCall"/>} />
-            </div>
-            <div className="profile" onClick={handleDropDownDisplay} >
-                <div className="details">
-                    <p style={{color:"#ccc", fontSize:"1.2rem" }}>{props.firstName} </p>
-                </div>
-                <Image src={props.activeUserData.picture} />
-                <div className={isListDisplayed?"dropDownList":"hideDropdownlist"}>
-                    <div className="options" role="button" onClick={handleProfileDisplay}>
-                            <ProfileOutlined className="logOut" />
-                            Edit Profile
-                    </div>
-                    <div className="options" role="button" onClick={handleLogOut}>
-                            <Logout className="logOut" />
-                            Log Out
-                    </div>
-                </div>
-            </div>
+        <Tabs
+          id="settings"
+          modal={ModalDetails}
+          click={handleTabClickEvent}
+          icon={<MdSettings className="icon" />}
+          class={"section-name"}
+          text={"Settings"}
+        />
+        {modal}
+      </div>
+      <div className="simpleActions-section">
+        <Icon
+          icon={
+            props.displayMode ? (
+              <LightModeOutlined
+                style={{ color: "white" }}
+                onClick={() => props.handleDarkMode()}
+                className="icon"
+              />
+            ) : (
+              <DarkModeOutlined
+                style={{ color: "white" }}
+                onClick={() => props.handleDarkMode()}
+                className="icon"
+              />
+            )
+          }
+        />
+        <Icon icon={<MdCall className="icon" id="myCall" />} />
+      </div>
+      <div className="profile" onClick={handleDropDownDisplay}>
+        <div className="details">
+          <p style={{ color: "#ccc", fontSize: "1.2rem" }}>
+            {props.activeUserData?.firstname}{" "}
+          </p>
         </div>
-        );
+        <Image src={props.activeUserData?.picture} />
+        <div className={isListDisplayed ? "dropDownList" : "hideDropdownlist"}>
+          <div className="options" role="button" onClick={handleProfileDisplay}>
+            <ProfileOutlined className="logOut" />
+            Edit Profile
+          </div>
+          <div className="options" role="button" onClick={handleLogOut}>
+            <Logout className="logOut" />
+            Log Out
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -2,7 +2,7 @@ import axios from "axios";
 import {showToast} from '../utility/showToast';
 import sampleUsers from "../assets/data/sampleUsers";
 import jwt_decode from "jwt-decode";
-import { ControlCamera } from "@mui/icons-material";
+
 
 
 const user_access_token=window.sessionStorage.getItem('access-token')
@@ -12,6 +12,8 @@ const Headers= {
         ['Content-Type']:'application/json'
     }
 }
+
+const baseurl= "http://localhost:3000";
 
 function checkJWExpiryDate(){
     let data= jwt_decode(sessionStorage.getItem("access-token"));
@@ -37,59 +39,59 @@ function JWTExpiredRedirect(data){
     }
 }
 
-async function fetchData(baseurl) {
+async function fetchData(path) {
     try{
-        let results= await axios.get(baseurl, Headers);
+        let endpoint= baseurl.concat(path);
+        let results= await axios.get(endpoint, Headers);
         JWTExpiredRedirect(results.data)
-        return results.data;
+        return results;
     }catch(e){
-        console.error(e)
+        throw e;
     }
 }
 
-async function SendData(baseurl,Body) {
+async function SendData(path,Body) {
     try{
+        let endpoint= baseurl.concat(path);
+        Headers.headers['Content-Type']='application/json';
+        let results= await axios.post(endpoint, Body, Headers );
+        return results;
+    }catch(e){
+        throw e;
+    }
         
-            Headers.headers['Content-Type']='application/json';
-            let results= await axios.post(baseurl, Body, Headers );
-            return results;
+}
+
+async function UpdateData(path,Body) {
+    try{
+        let endpoint= baseurl.concat(path);
+        Headers.headers['Content-Type']='application/json';
+        let results= await axios.put(endpoint, Body, Headers );
+        return results;
         
     }catch(e){
         console.error(e.response.data)
-        return e.response;
+        throw e;
     }
     
       
 }
 
-async function UpdateData(baseurl,Body) {
-    try{
-        
-            Headers.headers['Content-Type']='application/json';
-            let results= await axios.put(baseurl, Body, Headers );
-            return results;
-        
-    }catch(e){
-        console.error(e.response.data)
-        return e.response;
-    }
-    
-      
-}
 
 
-
-async function sendFormData(baseurl,Body){
+async function sendFormData(path,Body){
     try{
         Headers.headers['Content-Type']='multipart/form-data';
-        let response= await axios.post(baseurl,Body,Headers)
+        let endpoint=baseurl.concat(path);
+        let response= await axios.post(endpoint,Body,Headers)
         return response;
     }catch(e){
         console.error(e)
+        throw e;
     }
 }
 
-async function sendAndVerifyUserDataLocaly(data){
+/*async function sendAndVerifyUserDataLocaly(data){
     let existingUser=sampleUsers.filter((x)=> {
         if(x.email === data.email && x.password === data.password){
             return x;
@@ -122,6 +124,6 @@ async function fetchUserDataLocally(token){
             message:"User does not exists"
         }
     }
-}
+}*/
 
-export {fetchData,SendData, UpdateData,sendFormData, sendAndVerifyUserDataLocaly, fetchUserDataLocally}
+export {fetchData,SendData, UpdateData,sendFormData}
